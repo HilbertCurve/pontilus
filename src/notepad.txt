@@ -1,0 +1,17 @@
+An OpenGL program has shaders, vertex buffers, a window, a camera, mouse/keyboard callbacks, 
+and the rest of the program logic. 
+
+OpenGL:
+ | DONE ;; Application.cpp - inits everything / sets up a window / sets up callbacks
+ | TODO -- Camera.cpp - camera
+ | DONE ;; Renderer.cpp - renders stuff
+ | DONE ;; Shader.cpp - handles getting shader data
+ | TODO -- Texture.cpp - textures, when that becomes necessary
+ | TODO -- InputListener.cpp - mouse and keyboard callbacks/data
+Application:
+ | ...?
+ | 
+ | 
+Things To Do:
+ | DONE ;; Get renderer chugging out things
+ | TODO -- Do github stuffs
