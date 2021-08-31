@@ -3,8 +3,8 @@
 #include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
 
-#include "../include/Application.h"
-#include "../include/Renderer.h"
+#include "Application.h"
+#include "Renderer.h"
 
 namespace Application
 {

@@ -4,8 +4,8 @@
 #include <regex>
 #include <GLES3/gl32.h>
 
-#include "../include/Application.h"
-#include "../include/Shader.h"
+#include "Application.h"
+#include "Shader.h"
 //TODO: safety functions: Application::init() must've been called before we do ANYTHING with shaders.
 
 namespace Application

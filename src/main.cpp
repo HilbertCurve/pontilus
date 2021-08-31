@@ -1,13 +1,11 @@
 #include <stdio.h>
 
-#include "../include/Application.h"
-
-using namespace Application;
+#include "Application.h"
 
 int main() 
 {
-    init();
-    loop();
+    Application::init();
+    Application::loop();
     
     return 0;
 }

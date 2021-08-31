@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../include/Math.h"
+#include "Math.h"
 
 namespace Application
 {

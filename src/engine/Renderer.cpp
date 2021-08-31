@@ -1,7 +1,7 @@
 #include <GLES3/gl32.h>
 
-#include "../include/Application.h"
-#include "../include/Shader.h"
+#include "Application.h"
+#include "Shader.h"
 
 namespace Application
 {

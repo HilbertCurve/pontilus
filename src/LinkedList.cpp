@@ -1,4 +1,4 @@
-#include "../include/LinkedList.h"
+#include "LinkedList.h"
 
 namespace Application
 {
