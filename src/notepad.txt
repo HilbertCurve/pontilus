@@ -1,18 +1,30 @@
 An OpenGL program has shaders, vertex buffers, a window, a camera, mouse/keyboard callbacks, 
 and the rest of the program logic. 
+Windows is hard.
 
 OpenGL:
  | DONE ;; Application.cpp - inits everything / sets up a window / sets up callbacks
- | TODO -- Camera.cpp - camera
+ | DONE ;; Camera.cpp - camera
  | DONE ;; Renderer.cpp - renders stuff
  | DONE ;; Shader.cpp - handles getting shader data
  | TODO -- Texture.cpp - textures, when that becomes necessary
  | TODO -- InputListener.cpp - mouse and keyboard callbacks/data
 Application:
- | ...?
+ | DONE ;; Math.cpp - linear algebra, especially for the camera.
  | 
- | 
-Things To Do:
+
+Main Checklist:
  | DONE ;; Get renderer chugging out things
  | DONE ;; Do github stuffs
+ | TODO -- Windows build
  | TODO -- Refactor
+ | LIST [] Math library
+	 * DONE ;; Data structs
+	 * DONE ;; Operations
+	 * DONE ;; Prepare for camera
+ | TODO -- More rendering
+ | 
+
+Issues:
+ | `namespace Math`: should it not just be `namespace Application`? What about `namespace Utils`?
+ | Shader.cpp takes too long to compile; I think it has to do with <ifstream> stuff.

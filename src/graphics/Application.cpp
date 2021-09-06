@@ -52,6 +52,8 @@ namespace Application
         // setup callbacks
         glfwSetWindowSizeCallback(window.ptr, [](GLFWwindow* w, int newWidth, int newHeight) {
                                       glViewport(0, 0, newWidth, newHeight);
+                                      window.width = newWidth;
+                                      window.height = newHeight;
                                   });
         
         // make the window visible
@@ -76,7 +78,7 @@ namespace Application
             glClear(GL_COLOR_BUFFER_BIT);
             
             // render
-            Renderer::update();
+            Renderer::render();
             // swap buffers (makes things smoother)
             glfwSwapBuffers(window.ptr);
             // poll events
@@ -84,6 +86,6 @@ namespace Application
         }
         
         glLinkProgram(0);
-        //TODO(hilbertcurve): other garbage collaction thangs
+        //TODO(HilbertCurve): other garbage collection things
     }
 }

@@ -1,7 +1,7 @@
 /* date = August 22nd 2021 10:38 am */
 
-#ifndef _WINDOW_H
-#define _WINDOW_H
+#ifndef _PONTILUS_WINDOW_H
+#define _PONTILUS_WINDOW_H
 
 #include <GLFW/glfw3.h>
 
@@ -12,4 +12,4 @@ namespace Application
     void init();
 }
 
-#endif //_WINDOW_H
+#endif //_PONTILUS_WINDOW_H

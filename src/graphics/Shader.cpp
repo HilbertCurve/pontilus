@@ -111,26 +111,47 @@ namespace Application
             return shader;
         }
         
-        void attachShader(Shader &shader) 
+        void Shader::attach() 
         {
             // link shader to program
-            glUseProgram(shader.shaderProgramID);
-            shader.beingUsed = true;
+            glUseProgram(this->shaderProgramID);
+            this->beingUsed = true;
         }
         
-        void detachShader(Shader &shader)
+        void Shader::detach()
         {
             // unlink shader from program
             glUseProgram(0);
-            shader.beingUsed = false;
+            this->beingUsed = false;
         }
         
-        void deleteShader(Shader &shader)
+        void Shader::clear()
         {
             // TODO: implement deletion
             
-            glDeleteShader(shader.vertexID);
-            glDeleteShader(shader.fragmentID);
+            glDeleteShader(this->vertexID);
+            glDeleteShader(this->fragmentID);
+        }
+        
+        void Shader::uploadMat4(const char* name, const Math::Mat4& data)
+        {
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed) this->attach();
+            
+            float* arr = new float[16];
+            Math::intoArray<Math::Mat4>(data, arr);
+            
+            glUniformMatrix4fv(varLocation, 1, GL_FALSE, arr);
+            
+            delete[] arr;
+        }
+        
+        void Shader::uploadFloat(const char* name, const float& data)
+        {
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed) this->attach();
+            
+            glUniform1fv(varLocation, 1, &data);
         }
     }
 }

@@ -1,7 +1,9 @@
 /* date = August 28th 2021 5:09 pm */
 
-#ifndef _SHADER_H
-#define _SHADER_H
+#ifndef _PONTILUS_SHADER_H
+#define _PONTILUS_SHADER_H
+
+#include "Math.h"
 
 namespace Application
 {
@@ -18,13 +20,17 @@ namespace Application
             GLuint shaderProgramID;
             
             bool beingUsed;
+            
+            void attach();
+            void detach();
+            void clear();
+            
+            void uploadMat4(const char* name, const Math::Mat4& data);
+            void uploadFloat(const char* name, const float& data);
         };
         
         Shader initShader(const char* filepath);
-        void attachShader(Shader &shader);
-        void detachShader(Shader &shader);
-        void deleteShader(Shader &shader);
     }
 }
 
-#endif //_SHADER_H
+#endif //_PONTILUS_SHADER_H

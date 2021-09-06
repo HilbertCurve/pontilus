@@ -1,7 +1,7 @@
 /* date = August 22nd 2021 0:36 pm */
 
-#ifndef _LINKED_LIST_H
-#define _LINKED_LIST_H
+#ifndef _PONTILUS_LINKED_LIST_H
+#define _PONTILUS_LINKED_LIST_H
 
 namespace Application
 {
@@ -27,4 +27,4 @@ namespace Application
     }
 }
 
-#endif //_LINKED_LIST_H
+#endif //_PONTILUS_LINKED_LIST_H

@@ -1,7 +1,7 @@
 /* date = August 22nd 2021 10:47 am */
 
-#ifndef _APPLICATION_H
-#define _APPLICATION_H
+#ifndef _PONTILUS_APPLICATION_H
+#define _PONTILUS_APPLICATION_H
 
 #include <GLES3/gl3.h>
 
@@ -15,4 +15,4 @@ namespace Application
     GLuint* getProgramID();
 }
 
-#endif //_APPLICATION_H
+#endif //_PONTILUS_APPLICATION_H

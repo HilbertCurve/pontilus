@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "Shader.h"
+#include "Camera.h"
 
 namespace Application
 {
@@ -10,14 +11,16 @@ namespace Application
         GLuint vaoID;
         GLuint vboID;
         
+        Camera camera;
+        
         static const GLfloat g_vertex_buffer_data[] = 
         {
-            -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            -0.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
             1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
             0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
         };
         
-        // TODO: make this swappable
+        // TODO(HilbertCurve): make this swappable
         Shader currentShader;
         
         void start() 
@@ -54,20 +57,24 @@ namespace Application
             glEnableVertexAttribArray(1);
         }
         
-        void update() 
+        void render() 
         {
-            attachShader(currentShader);
+            currentShader.attach();
+            currentShader.uploadMat4("uProjection", camera.getProjection());
+            currentShader.uploadMat4("uView", camera.getView());
+            
             glBindVertexArray(vaoID);
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             
-            // Draw the triangle !
             glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
             glBindVertexArray(0);
-            detachShader(currentShader);
+            currentShader.detach();
+            
+            camera.position.x+=0.01f;
         }
     }
 }
