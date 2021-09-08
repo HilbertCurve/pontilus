@@ -3,7 +3,9 @@
 #ifndef _PONTILUS_SHADER_H
 #define _PONTILUS_SHADER_H
 
-#include "Math.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Application
 {
@@ -25,7 +27,7 @@ namespace Application
             void detach();
             void clear();
             
-            void uploadMat4(const char* name, const Math::Mat4& data);
+            void uploadMat4(const char* name, const glm::mat4& data);
             void uploadFloat(const char* name, const float& data);
         };
         

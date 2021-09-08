@@ -15,9 +15,12 @@ namespace Application
         
         static const GLfloat g_vertex_buffer_data[] = 
         {
-            -0.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, -1.0f, 5.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 5.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            0.0f,  1.0f, 5.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, -1.0f, -4.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, -4.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            0.0f,  1.0f, -4.0f, 0.0f, 0.0f, 1.0f, 1.0f,
         };
         
         // TODO(HilbertCurve): make this swappable
@@ -67,14 +70,14 @@ namespace Application
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             
-            glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+            glDrawArrays(GL_TRIANGLES, 0, 6); // Starting from vertex 0; 3 vertices total -> 1 triangle
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
             glBindVertexArray(0);
             currentShader.detach();
             
-            camera.position.x+=0.01f;
+            //camera.position.z+=1.0f;
         }
     }
 }

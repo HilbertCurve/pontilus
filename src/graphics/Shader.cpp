@@ -4,6 +4,10 @@
 #include <regex>
 #include <GLES3/gl32.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Application.h"
 #include "Shader.h"
 //TODO: safety functions: Application::init() must've been called before we do ANYTHING with shaders.
@@ -133,17 +137,12 @@ namespace Application
             glDeleteShader(this->fragmentID);
         }
         
-        void Shader::uploadMat4(const char* name, const Math::Mat4& data)
+        void Shader::uploadMat4(const char* name, const glm::mat4& data)
         {
             GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
             if (!this->beingUsed) this->attach();
             
-            float* arr = new float[16];
-            Math::intoArray<Math::Mat4>(data, arr);
-            
-            glUniformMatrix4fv(varLocation, 1, GL_FALSE, arr);
-            
-            delete[] arr;
+            glUniformMatrix4fv(varLocation, 1, GL_FALSE, glm::value_ptr(data));
         }
         
         void Shader::uploadFloat(const char* name, const float& data)

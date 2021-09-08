@@ -1,29 +1,37 @@
-#include "Camera.h"
-#include "Math.h"
-#include "Application.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-using namespace Application::Math;
+#include "Camera.h"
+#include "Application.h"
 
 namespace Application
 {
     namespace Renderer
     {
-        Mat4& Camera::getProjection()
+        glm::mat4& Camera::getProjection()
         {
-            return this->projection.setOrtho(-20.0f,
-                                             20.0f,
-                                             -10.5f,
-                                             10.5f,
-                                             0.0f, 100.0f);
+            static bool hasInit = false;
+            if (!hasInit)
+            {
+                this->projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.0f, 15.0f);
+            }
+            
+            return this->projection;
         }
         
-        Mat4& Camera::getView()
+        glm::mat4& Camera::getView()
         {
-            Vec3 cameraEye = this->position;
-            Vec3 cameraFront = this->position + Vec3{0.0f, 0.0f, -1.0f};
-            Vec3 cameraUp = Vec3{0.0f, 1.0f, 0.0f}; //TODO(HilbertCurve): incorporate camera rotation.
+            this->rotation.z += 0.01f;
+            this->rotation.x += 0.01f;
             
-            return this->view.setLookAt(cameraEye, cameraFront, cameraUp);
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), this->position) *
+                glm::rotate(glm::mat4(1.0f), this->rotation.x, glm::vec3(1, 0, 0)) * // pitch
+                glm::rotate(glm::mat4(1.0f), this->rotation.y, glm::vec3(0, 1, 0)) * // yaw
+                glm::rotate(glm::mat4(1.0f), this->rotation.z, glm::vec3(0, 0, 1));  // roll
+            
+            this->view = glm::inverse(transform);
+            
+            return view;
         }
     }
 }

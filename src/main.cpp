@@ -1,9 +1,6 @@
 #include <stdio.h>
 
 #include "Application.h"
-#include "Math.h"
-
-using namespace Application::Math;
 
 int main() 
 {
