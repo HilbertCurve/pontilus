@@ -14,34 +14,45 @@ namespace Application
         int height;
         const char* title;
         GLFWwindow* ptr;
+        bool open = false;
     };
     
     Window window {800, 600, "Test", nullptr};
     GLuint glProgramID;
     
+    static void printError(int error, const char* description) 
+    {
+        fputs(description, stderr);
+        fputs("\n", stderr);
+    }
+
     void init() 
     {
+        glfwSetErrorCallback(printError);
+
         if(!glfwInit()) 
         {
             printf("ERROR: COULD NOT INITIALIZE GLFW.\n");
-            abort();
+            exit(-1);
         }
         
         // GLFW
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        //glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
         
         // Initialize the window
-        window.ptr = glfwCreateWindow(window.width, window.height, window.title, nullptr, nullptr);
+        window.ptr = glfwCreateWindow(100, 100, "EEE", glfwGetPrimaryMonitor(), NULL);
         
-        if (window.ptr == nullptr) 
+        if (!window.ptr) 
         {
             printf("ERROR: COULD NOT INITIALIZE WINDOW.\n");
-            abort();
+            exit(-1);
         }
         
         glfwMakeContextCurrent(window.ptr);

@@ -4,6 +4,8 @@
 #include "Shader.h"
 #include "Camera.h"
 
+#define file() {return __FILE__};
+
 namespace Application
 {
     namespace Renderer
@@ -38,7 +40,7 @@ namespace Application
             // Give our vertices to OpenGL.
             glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
             
-            currentShader = initShader("/home/ben/c/game/assets/shaders/default.glsl");
+            currentShader = initShader("/home/rivendell/c/pontilus/assets/shaders/default.glsl");
             
             glVertexAttribPointer(
                                   0,                  // attribute id
