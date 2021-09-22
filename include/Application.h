@@ -3,16 +3,12 @@
 #ifndef _PONTILUS_APPLICATION_H
 #define _PONTILUS_APPLICATION_H
 
-#include <GLES3/gl3.h>
-
-namespace Application 
+namespace Pontilus 
 {
     struct Window;
     
     void init();
     void loop();
-    
-    GLuint* getProgramID();
 }
 
 #endif //_PONTILUS_APPLICATION_H

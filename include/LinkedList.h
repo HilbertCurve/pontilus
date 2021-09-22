@@ -3,7 +3,7 @@
 #ifndef _PONTILUS_LINKED_LIST_H
 #define _PONTILUS_LINKED_LIST_H
 
-namespace Application
+namespace Pontilus
 {
     namespace Collections
     {

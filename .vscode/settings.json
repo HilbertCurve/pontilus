@@ -1,3 +1,11 @@
 {
-    "C_Cpp.errorSquiggles": "Disabled"
+    "files.associations": {
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "memory": "cpp",
+        "istream": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
+    }
 }

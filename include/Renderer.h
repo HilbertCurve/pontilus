@@ -5,7 +5,7 @@
 
 #include "Camera.h"
 
-namespace Application
+namespace Pontilus
 {
     namespace Renderer
     {
