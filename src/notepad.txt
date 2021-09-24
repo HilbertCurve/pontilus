@@ -22,7 +22,7 @@ Main Checklist:
  | | DONE ;; Keyboard
  | | DONE ;; Mouse
  |
- | TODO -- Refactoring
+ | DONE ;; Refactoring
  |
  | TODO -- Debug Camera.cpp
  | TODO -- Documentation

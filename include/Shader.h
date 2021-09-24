@@ -26,8 +26,8 @@ namespace Pontilus
                 bool beingUsed;
             };
 
-            void uploadMat4(const char* name, const glm::mat4& data);
-            void uploadFloat(const char* name, const float& data);
+            void uploadMat4(Shader &s, const char* name, const glm::mat4& data);
+            void uploadFloat(Shader &s, const char* name, const float& data);
             
             Shader initShader(const char* filepath);
             void initShader(const char *filepath, Shader &dest);

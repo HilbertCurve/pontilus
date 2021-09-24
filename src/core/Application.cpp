@@ -90,12 +90,26 @@ namespace Pontilus
 
     void loop()
     {
+        double t1;
+        double t2;
+        double dt = 0.16f;
         while (!glfwWindowShouldClose(window.ptr))
         {
+            t1 = glfwGetTime();
+
             glClearColor(0.01f, 0.01f, 0.01f, 0.01f);
 
             // set default background
             glClear(GL_COLOR_BUFFER_BIT);
+
+            if (IO::isKeyPressed(GLFW_KEY_W))
+            {
+                Renderer::Camera::move(0, 0, dt);
+            }
+            if (IO::isKeyPressed(GLFW_KEY_D))
+            {
+                Renderer::Camera::move(0, 0, -dt);
+            }
 
             // render
             Renderer::render();
@@ -104,6 +118,9 @@ namespace Pontilus
             glfwSwapBuffers(window.ptr);
             // poll events
             glfwPollEvents();
+
+            t2 = glfwGetTime();
+            dt = t2 - t1;
         }
 
         glLinkProgram(0);

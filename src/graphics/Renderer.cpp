@@ -61,8 +61,9 @@ namespace Pontilus
         void render()
         {
             Shaders::attachShader(currentShader);
-            Shaders::uploadMat4("uProjection", Camera::getProjection());
-            Shaders::uploadMat4("uView", Camera::getView());
+            // default shader uniforms
+            Shaders::uploadMat4(currentShader, "uProjection", Camera::getProjection());
+            Shaders::uploadMat4(currentShader, "uView", Camera::getView());
 
             glBindVertexArray(vaoID);
             glEnableVertexAttribArray(0);
