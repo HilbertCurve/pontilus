@@ -7,46 +7,40 @@
 
 #define NUM_MOUSE_BUTTONS 6
 #define NUM_KEYS 350
+#define LEFTOVER_MEM 475
 
 namespace Pontilus
 {
     namespace IO
     {
+        // TODO: phase out the singleton
+        
         struct Mouse
         {
-            static Mouse &get();
-
-            double scrollX, scrollY;
-            double xPos, yPos, lastX, lastY;
+            // 199 bits
+            float scrollX, scrollY;
+            float xPos, yPos, lastX, lastY;
             bool buttonsPressed[NUM_MOUSE_BUTTONS];
             bool isDragging;
-
-            static void mousePosCallback(GLFWwindow *window, double xPos, double yPos);
-            static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
-            static void mouseScrollCallback(GLFWwindow *window, double xOffset, double yOffset);
-
-            void endFrame();
-
-            private:
-            // no touchy
-            Mouse();
         };
 
         struct Keyboard
         {
-            static Keyboard &get();
-
-
+            // 350 bits
             bool keysPressed[NUM_KEYS];
-
-            static void keyPressedCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
-
-            private:
-            Keyboard();
         };
 
-        Mouse &getMouse();
-        Keyboard &getKeyboard();
+        // TOTAL MEMORY: 1 kb
+        struct _IO
+        {
+            union {
+                // 549 bits
+                Mouse _m;
+                Keyboard _k;
+            } core;
+            // do with this as you please (perhaps some other usb input method)
+            bool misc[LEFTOVER_MEM];
+        };
 
         /**
          * Checks to see if a certain mouse button is pressed.
@@ -56,6 +50,16 @@ namespace Pontilus
          * Checks to see if a certain key is pressed.
          */
         bool isKeyPressed(int key);
+        /**
+         * Resets mouse drag.
+         */
+        void endFrame();
+
+        // GLFW callbacks
+        void mousePosCallback(GLFWwindow *window, double xPos, double yPos);
+        void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+        void mouseScrollCallback(GLFWwindow *window, double xOffset, double yOffset);
+        void keyPressedCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
     }
 }
 

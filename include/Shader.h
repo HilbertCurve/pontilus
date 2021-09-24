@@ -11,27 +11,31 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        struct Shader
+        namespace Shaders
         {
-            GLuint vertexID;
-            GLuint fragmentID;
-            const char* vertexSource;
-            const char* fragmentSource;
-            
-            const char* filepath;
-            GLuint shaderProgramID;
-            
-            bool beingUsed;
-            
-            void attach();
-            void detach();
-            void clear();
-            
+            struct Shader
+            {
+                GLuint vertexID;
+                GLuint fragmentID;
+                const char* vertexSource;
+                const char* fragmentSource;
+                
+                const char* filepath;
+                GLuint shaderProgramID;
+                
+                bool beingUsed;
+            };
+
             void uploadMat4(const char* name, const glm::mat4& data);
             void uploadFloat(const char* name, const float& data);
-        };
-        
-        Shader initShader(const char* filepath);
+            
+            Shader initShader(const char* filepath);
+            void initShader(const char *filepath, Shader &dest);
+
+            void attachShader(Shader &s);
+            void detachShader(Shader &s);
+            void deleteShader(Shader &s);
+        }
     }
 }
 

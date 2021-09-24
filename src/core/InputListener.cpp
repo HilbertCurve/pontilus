@@ -7,95 +7,73 @@ namespace Pontilus
 {
     namespace IO
     {
+        
+        static _IO instance = _IO();
+
         //***********************************************
         // MOUSE
         //***********************************************
-        Mouse &Mouse::get()
+        
+        void mousePosCallback(GLFWwindow *window, double xPos, double yPos)
         {
-            static Mouse mouse = Mouse();
-            return mouse;
+            instance.core._m.lastX = instance.core._m.xPos;
+            instance.core._m.lastY = instance.core._m.yPos;
+            instance.core._m.xPos = xPos;
+            instance.core._m.yPos = yPos;
         }
 
-        void Mouse::mousePosCallback(GLFWwindow *window, double xPos, double yPos)
-        {
-            Mouse::get().lastX = Mouse::get().xPos;
-            Mouse::get().lastY = Mouse::get().yPos;
-            Mouse::get().xPos = xPos;
-            Mouse::get().yPos = yPos;
-        }
-
-        void Mouse::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+        void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
         {
             if (action == GLFW_PRESS)
             {
                 if (button < NUM_MOUSE_BUTTONS)
                 {
-                    Mouse::get().buttonsPressed[button] = true;
+                    instance.core._m.buttonsPressed[button] = true;
                 }
             }
             else if (action == GLFW_RELEASE)
             {
                 if (button < NUM_MOUSE_BUTTONS)
                 {
-                    Mouse::get().buttonsPressed[button] = false;
+                    instance.core._m.buttonsPressed[button] = false;
                 }
-                Mouse::get().isDragging = false;
+                instance.core._m.isDragging = false;
             }
         }
 
-        void Mouse::mouseScrollCallback(GLFWwindow *window, double xOffset, double yOffset)
+        void mouseScrollCallback(GLFWwindow *window, double xOffset, double yOffset)
         {
-            Mouse::get().scrollX = xOffset;
-            Mouse::get().scrollY = yOffset;
+            instance.core._m.scrollX = xOffset;
+            instance.core._m.scrollY = yOffset;
         }
 
-        void Mouse::endFrame()
+        void endFrame()
         {
-            Mouse::get().scrollX = 0;
-            Mouse::get().scrollY = 0;
-            Mouse::get().lastX = Mouse::get().xPos;
-            Mouse::get().lastY = Mouse::get().yPos;
-        }
-
-        Mouse::Mouse()
-        {
-            scrollX = scrollY = 0;
-            xPos = yPos = lastX = lastY = 0;
-
-            for (int i = 0; i < NUM_MOUSE_BUTTONS; i++)
-                buttonsPressed[i] = false;
-            isDragging = false;
+            instance.core._m.scrollX = 0;
+            instance.core._m.scrollY = 0;
+            instance.core._m.lastX = instance.core._m.xPos;
+            instance.core._m.lastY = instance.core._m.yPos;
         }
 
         //***********************************************
         // KEYBOARD
         //***********************************************
-        void Keyboard::keyPressedCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+
+        void keyPressedCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
         {
             if (action == GLFW_PRESS)
             {
-                Keyboard::get().keysPressed[key] = true;
+                instance.core._k.keysPressed[key] = true;
             }
             else if (action == GLFW_RELEASE)
             {
-                Keyboard::get().keysPressed[key] = false;
+                instance.core._k.keysPressed[key] = false;
             }
-        }
-
-        Keyboard::Keyboard()
-        {
-            for (int i = 0; i < NUM_KEYS; i++)
-                keysPressed[i] = false;
         }
 
         //***********************************************
         // OTHERS
         //***********************************************
-        Keyboard &Keyboard::get()
-        {
-            static Keyboard keyboard = Keyboard();
-            return keyboard;
-        }
 
         bool isButtonPressed(int button)
         {
@@ -104,7 +82,7 @@ namespace Pontilus
                 fprintf(stderr, "ERROR: tried to access illegal mouse button: %d", button);
                 return false;
             }
-            return Mouse::get().buttonsPressed[button];
+            return instance.core._m.buttonsPressed[button];
         }
 
         bool isKeyPressed(int key)
@@ -114,7 +92,7 @@ namespace Pontilus
                 fprintf(stderr, "ERROR: tried to access illegal key: %d", key);
                 return false;
             }
-            return Keyboard::get().keysPressed[key];
+            return instance.core._k.keysPressed[key];
         }
     }
 }

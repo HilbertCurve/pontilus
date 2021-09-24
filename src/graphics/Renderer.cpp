@@ -13,8 +13,6 @@ namespace Pontilus
         GLuint vaoID;
         GLuint vboID;
 
-        Camera camera;
-
         static const GLfloat g_vertex_buffer_data[] =
         {
             -1.0f, -1.0f, 5.0f, 1.0f, 1.0f, 1.0f, 1.0f,
@@ -26,7 +24,7 @@ namespace Pontilus
         };
 
         // TODO(HilbertCurve): make this swappable
-        Shader currentShader;
+        Shaders::Shader currentShader;
 
         void start()
         {
@@ -40,7 +38,7 @@ namespace Pontilus
             // Give our vertices to OpenGL.
             glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
 
-            currentShader = initShader("/home/rivendell/c/pontilus/assets/shaders/default.glsl");
+            currentShader = Shaders::initShader("/home/rivendell/c/pontilus/assets/shaders/default.glsl");
 
             glVertexAttribPointer(
                 0,                 // attribute id
@@ -62,9 +60,9 @@ namespace Pontilus
 
         void render()
         {
-            currentShader.attach();
-            currentShader.uploadMat4("uProjection", camera.getProjection());
-            currentShader.uploadMat4("uView", camera.getView());
+            Shaders::attachShader(currentShader);
+            Shaders::uploadMat4("uProjection", Camera::getProjection());
+            Shaders::uploadMat4("uView", Camera::getView());
 
             glBindVertexArray(vaoID);
             glEnableVertexAttribArray(0);
@@ -75,7 +73,7 @@ namespace Pontilus
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
             glBindVertexArray(0);
-            currentShader.detach();
+            Shaders::detachShader(currentShader);
         }
     }
 }

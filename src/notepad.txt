@@ -22,6 +22,8 @@ Main Checklist:
  | | DONE ;; Keyboard
  | | DONE ;; Mouse
  |
+ | TODO -- Refactoring
+ |
  | TODO -- Debug Camera.cpp
  | TODO -- Documentation
  | TODO -- Textures
@@ -30,6 +32,7 @@ Main Checklist:
 Issues:
  | Shader.cpp takes too long to compile; I think it has to do with <ifstream> stuff.
  | Camera.cpp has wierd visual bugs involving an object rotating out of frame.
+ | 
 
 Backburner:
  | BURN ~~ Windows build

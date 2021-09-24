@@ -67,11 +67,12 @@ namespace Pontilus
                                       window.width = newWidth;
                                       window.height = newHeight;
                                   });
-        glfwSetCursorPosCallback(window.ptr, IO::Mouse::mousePosCallback);
-        glfwSetScrollCallback(window.ptr, IO::Mouse::mouseScrollCallback);
-        glfwSetMouseButtonCallback(window.ptr, IO::Mouse::mouseButtonCallback);
 
-        glfwSetKeyCallback(window.ptr, IO::Keyboard::keyPressedCallback);
+        glfwSetCursorPosCallback(window.ptr, IO::mousePosCallback);
+        glfwSetScrollCallback(window.ptr, IO::mouseScrollCallback);
+        glfwSetMouseButtonCallback(window.ptr, IO::mouseButtonCallback);
+
+        glfwSetKeyCallback(window.ptr, IO::keyPressedCallback);
 
         // make the window visible
         glfwShowWindow(window.ptr);
