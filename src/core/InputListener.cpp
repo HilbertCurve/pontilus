@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include "InputListener.h"
 
@@ -11,13 +12,11 @@ namespace Pontilus
         static _IO instance = _IO();
 
         //***********************************************
-        // MOUSE
+        // MOUSE CALLBACKS
         //***********************************************
         
         void mousePosCallback(GLFWwindow *window, double xPos, double yPos)
         {
-            instance.core._m.lastX = instance.core._m.xPos;
-            instance.core._m.lastY = instance.core._m.yPos;
             instance.core._m.xPos = xPos;
             instance.core._m.yPos = yPos;
         }
@@ -49,14 +48,14 @@ namespace Pontilus
 
         void endFrame()
         {
-            instance.core._m.scrollX = 0;
-            instance.core._m.scrollY = 0;
             instance.core._m.lastX = instance.core._m.xPos;
             instance.core._m.lastY = instance.core._m.yPos;
+            instance.core._m.scrollX = 0;
+            instance.core._m.scrollY = 0;
         }
 
         //***********************************************
-        // KEYBOARD
+        // KEYBOARD CALLBACKS
         //***********************************************
 
         void keyPressedCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -83,6 +82,19 @@ namespace Pontilus
                 return false;
             }
             return instance.core._m.buttonsPressed[button];
+        }
+        
+        glm::vec2 mousePos()
+        {
+            return glm::vec2(instance.core._m.xPos, instance.core._m.yPos);
+        }
+        
+        glm::vec2 mousePosChange()
+        {
+            return glm::vec2(
+                             instance.core._m.xPos - instance.core._m.lastX,
+                             instance.core._m.yPos - instance.core._m.lastY
+                             );
         }
 
         bool isKeyPressed(int key)

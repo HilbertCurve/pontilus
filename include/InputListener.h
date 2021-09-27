@@ -4,6 +4,7 @@
 #define _PONTILUS_INPUT_LISTENER_H
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #define NUM_MOUSE_BUTTONS 6
 #define NUM_KEYS 350
@@ -12,9 +13,7 @@
 namespace Pontilus
 {
     namespace IO
-    {
-        // TODO: phase out the singleton
-        
+    {        
         struct Mouse
         {
             // 199 bits
@@ -46,6 +45,13 @@ namespace Pontilus
          * Checks to see if a certain mouse button is pressed.
          */
         bool isButtonPressed(int button);
+        
+        /**
+         * Gets the change in position the mouse cursor took.
+         */
+        glm::vec2 mousePos();
+        glm::vec2 mousePosChange();
+        
         /**
          * Checks to see if a certain key is pressed.
          */

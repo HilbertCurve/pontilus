@@ -28,6 +28,7 @@ namespace Pontilus
             glm::mat4& getProjection();
             glm::mat4& getView();
             void move(float dx, float dy, float dz);
+            void rotate(float dpitch, float dyaw);
         }
     }
 }

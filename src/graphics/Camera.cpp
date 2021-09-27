@@ -25,10 +25,9 @@ namespace Pontilus
 
             glm::mat4 &getView()
             {
-                glm::mat4 transform = glm::translate(glm::mat4(1.0f), camera.position) * (
+                glm::mat4 transform = glm::translate(glm::mat4(1.0f), camera.position) * 
                     glm::rotate(glm::mat4(1.0f), camera.rotation.x, glm::vec3(1, 0, 0)) * // pitch
-                    glm::rotate(glm::mat4(1.0f), camera.rotation.y, glm::vec3(0, 1, 0))   // yaw
-                );
+                    glm::rotate(glm::mat4(1.0f), camera.rotation.y, glm::vec3(0, 1, 0));  // yaw
 
                 camera.view = glm::inverse(transform);
 
@@ -38,6 +37,10 @@ namespace Pontilus
             void move(float dx, float dy, float dz)
             {
                 camera.position += glm::vec3(dx, dy, dz);
+            }
+            void rotate(float dpitch, float dyaw)
+            {
+                camera.rotation += glm::vec3(dpitch, dyaw, 0);
             }
         }
     }
