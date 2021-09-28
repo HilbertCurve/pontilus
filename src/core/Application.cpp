@@ -109,13 +109,22 @@ namespace Pontilus
             // poll events
             glfwPollEvents();
             
+
             if (IO::isKeyPressed(GLFW_KEY_W))
             {
-                Renderer::Camera::move(1, 0, 0);
+                Renderer::Camera::move(0, 0, 0.01);
             }
             if (IO::isKeyPressed(GLFW_KEY_S))
             {
-                Renderer::Camera::move(-1, 0, 0);
+                Renderer::Camera::move(0, 0, -0.01);
+            }
+            if (IO::isKeyPressed(GLFW_KEY_A))
+            {
+                Renderer::Camera::move(0.01, 0, 0);
+            }
+            if (IO::isKeyPressed(GLFW_KEY_D))
+            {
+                Renderer::Camera::move(-0.01, 0, 0);
             }
             if (IO::isKeyPressed(GLFW_KEY_R))
             {
@@ -123,10 +132,8 @@ namespace Pontilus
             }
             
             glm::vec2 dMousePos = IO::mousePosChange();
-            printf("%2.2f\n", dMousePos.x);
             
-            Renderer::Camera::rotate(dMousePos.y/15.0f, 0);
-            Renderer::Camera::rotate(0, dMousePos.x/15.0f);
+            Renderer::Camera::rotate(dMousePos.y/50.0f, dMousePos.x/50.0f);
             
             // render
             Renderer::render();
@@ -148,7 +155,7 @@ namespace Pontilus
                 " Slowest: " + std::to_string(1/highestdt) + 
                 " Current: " + std::to_string(1/dt);
             
-            glfwSetWindowTitle(window.ptr, title.c_str());
+            //glfwSetWindowTitle(window.ptr, title.c_str());
             
             IO::endFrame();
         }

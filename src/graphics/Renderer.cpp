@@ -19,10 +19,16 @@ namespace Pontilus
             -1.0f, -1.0f, -4.0f, 1.0f, 1.0f, 1.0f, 1.0f,
             1.0f, -1.0f, -4.0f, 0.0f, 1.0f, 1.0f, 1.0f,
             0.0f,  1.0f, -4.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            5.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            5.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            5.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            -4.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            -4.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            -4.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
         };
         
         // TODO(HilbertCurve): make this swappable
-        Shaders::Shader currentShader;
+        Shader::Shader currentShader;
         
         void start()
         {
@@ -36,7 +42,8 @@ namespace Pontilus
             // Give our vertices to OpenGL.
             glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
             
-            currentShader = Shaders::initShader("./assets/shaders/default.glsl");
+            currentShader = Shader::initShader("./assets/shaders/default.glsl");
+            if (currentShader.filepath == nullptr) exit(-1);
             
             glVertexAttribPointer(
                                   0,                 // attribute id
@@ -58,21 +65,21 @@ namespace Pontilus
         
         void render()
         {
-            Shaders::attachShader(currentShader);
+            Shader::attachShader(currentShader);
             // default shader uniforms
-            Shaders::uploadMat4(currentShader, "uProjection", Camera::getProjection());
-            Shaders::uploadMat4(currentShader, "uView", Camera::getView());
+            Shader::uploadMat4(currentShader, "uProjection", Camera::getProjection());
+            Shader::uploadMat4(currentShader, "uView", Camera::getView());
             
             glBindVertexArray(vaoID);
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             
-            glDrawArrays(GL_TRIANGLES, 0, 6); // Starting from vertex 0; 3 vertices total -> 1 triangle
+            glDrawArrays(GL_TRIANGLES, 0, 12); // Starting from vertex 0; 12 vertices total -> 4 triangles
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
             glBindVertexArray(0);
-            Shaders::detachShader(currentShader);
+            Shader::detachShader(currentShader);
         }
     }
 }

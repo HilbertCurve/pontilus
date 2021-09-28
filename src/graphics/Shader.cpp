@@ -16,7 +16,7 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        namespace Shaders
+        namespace Shader
         {
             Shader initShader(const char *filepath)
             {

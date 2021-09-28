@@ -11,7 +11,7 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        namespace Shaders
+        namespace Shader
         {
             struct Shader
             {
