@@ -17,7 +17,7 @@ namespace Pontilus
                 static bool hasInit = false;
                 if (!hasInit)
                 {
-                    camera.projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.0f, 10000.0f);
+                    camera.projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, -10.0f, 10000.0f);
                 }
 
                 return camera.projection;

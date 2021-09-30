@@ -9,6 +9,7 @@ OpenGL:
  | DONE ;; Shader.cpp - handles getting shader data
  | TODO -- Texture.cpp - textures, when that becomes necessary
  | DONE ;; InputListener.cpp - mouse and keyboard callbacks/data
+ | TODO -- JSON.cpp - for glTF files
 
 Misc:
  | DEPR == Math.cpp - not needed, replaced with glm

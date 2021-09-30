@@ -1,8 +1,12 @@
+#include "Renderer.h"
+
 #include <GLES3/gl32.h>
+#include <stdio.h>
 
 #include "Application.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Obj3D.h"
 
 namespace Pontilus
 {
@@ -34,16 +38,22 @@ namespace Pontilus
         {
             glGenVertexArrays(1, &vaoID);
             glBindVertexArray(vaoID);
+
+            Model::Obj3D test;
             
+            Model::loadObjFromBinary("./assets/models/monkee.bin", test);
+
             // Generate 1 buffer, put the resulting identifier in vboID
             glGenBuffers(1, &vboID);
             // The following commands will talk about our 'vboID' buffer
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             // Give our vertices to OpenGL.
-            glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, test.numFloats, test.vertexBufferData, GL_DYNAMIC_DRAW);
             
             currentShader = Shader::initShader("./assets/shaders/default.glsl");
             if (currentShader.filepath == nullptr) exit(-1);
+            
+            // TODO(HilbertCurve): automate the glTF file reading process here.
             
             glVertexAttribPointer(
                                   0,                 // attribute id
@@ -56,9 +66,10 @@ namespace Pontilus
                                   1,
                                   4,
                                   GL_FLOAT,
-                                  GL_FALSE,
+                                  GL_TRUE,
                                   sizeof(float) * 7,
                                   (void *)(sizeof(float) * 3));
+            
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
         }
@@ -74,7 +85,7 @@ namespace Pontilus
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             
-            glDrawArrays(GL_TRIANGLES, 0, 12); // Starting from vertex 0; 12 vertices total -> 4 triangles
+            glDrawArrays(GL_LINES, 0, 12); // Starting from vertex 0; 12 vertices total -> 4 triangles
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);

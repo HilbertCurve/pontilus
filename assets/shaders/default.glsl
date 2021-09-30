@@ -14,7 +14,7 @@ out vec4 fColor;
 
 void main()
 {
-    fColor = aColor;
+    fColor = vec4(1, 1, 1, 1);
     gl_Position = uProjection * uView * vec4(aPos, 1.0);
 }
 
