@@ -9,12 +9,20 @@ OpenGL:
  | DONE ;; Shader.cpp - handles getting shader data
  | TODO -- Texture.cpp - textures, when that becomes necessary
  | DONE ;; InputListener.cpp - mouse and keyboard callbacks/data
- | TODO -- JSON.cpp - for glTF files
+ /
+
+ECS:
+ | TODO -- Textures
+ | TODO -- Vertex buffers
+ | TODO -- Transforms and rotations
+ | BURN ~~ Physics body
+ /
 
 Misc:
- | DEPR == Math.cpp - not needed, replaced with glm
- | TODO -- Box.cpp - a struct encapsulating the idea of a box; can be rendered and stuff
- | 
+ | DEPR // Math.cpp - not needed, replaced with glm
+ | DEPR // JSON.cpp - for glTF files, replaced with rapidjson
+ | TODO -- Box.cpp - a unit test encapsulating the idea of a box; can be rendered and stuff
+ / 
 
 Main Checklist:
  | DONE ;; Get renderer chugging out things
@@ -24,22 +32,27 @@ Main Checklist:
  | | DONE ;; Mouse
  |
  | DONE ;; Refactoring
+ | 
+ | LIST [] ECS
+ | | TODO -- Plan out the ECS
+ | | TODO -- Refactor Obj2D and Obj3D
+ | | TODO -- Make some components
  |
  | TODO -- Debug Camera.cpp
  | TODO -- Documentation
  | TODO -- Textures
- | 
+ / 
 
 Issues:
  | Shader.cpp takes too long to compile; I think it has to do with <ifstream> stuff.
  | Camera.cpp has wierd visual bugs involving an object rotating out of frame.
- | 
+ / 
 
 Backburner:
  | BURN ~~ Windows build
- | 
+ / 
 
 Future Plans:
- | BURN ~~ ECS
  | BURN ~~ Physics
- | 
+ | BURN ~~ GUI
+ /

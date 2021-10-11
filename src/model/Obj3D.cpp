@@ -24,16 +24,9 @@ namespace Pontilus
 
             dest.numFloats = filesize/4;
 
-            dest.vertexBufferData = new GLfloat[filesize/4];
+            dest.vertexBufferData = new GLfloat[dest.numFloats];
 
             fread(dest.vertexBufferData, filesize/4, 4, ptr);
-            
-            for (int i = 0; i < filesize/4; i++)
-            {
-                printf("%1.2f\n", dest.vertexBufferData[i]);
-            }
-
-            printf("\b\b\n");
 
             printf("Filesize in floats: %ld\n", dest.numFloats);
 

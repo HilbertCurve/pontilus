@@ -1,8 +1,8 @@
-#include "JSON.h"
+#include "Obj2D.h"
 
 namespace Pontilus
 {
-    namespace JSON
+    namespace Model
     {
         
     }

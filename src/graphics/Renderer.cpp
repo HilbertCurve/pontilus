@@ -33,13 +33,12 @@ namespace Pontilus
         
         // TODO(HilbertCurve): make this swappable
         Shader::Shader currentShader;
+        Model::Obj3D test;
         
         void start()
         {
             glGenVertexArrays(1, &vaoID);
             glBindVertexArray(vaoID);
-
-            Model::Obj3D test;
             
             Model::loadObjFromBinary("./assets/models/monkee.bin", test);
 
@@ -85,7 +84,7 @@ namespace Pontilus
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             
-            glDrawArrays(GL_LINES, 0, 12); // Starting from vertex 0; 12 vertices total -> 4 triangles
+            glDrawArrays(GL_TRIANGLES, 0, sizeof(test.vertexBufferData)); // Starting from vertex 0; 12 vertices total -> 4 triangles
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);

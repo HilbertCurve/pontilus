@@ -11,7 +11,7 @@ namespace Pontilus
 {
     namespace Model
     {
-        struct Obj3D
+        struct GLTF
         {
             struct Accessor
             {
@@ -94,7 +94,10 @@ namespace Pontilus
                 unsigned int sampler;
                 unsigned int source;
             };
+        };
 
+        struct Obj3D
+        {
             const char *filepath;
             long numFloats;
 
