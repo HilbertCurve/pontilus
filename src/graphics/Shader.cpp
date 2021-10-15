@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 #include <regex>
-#include <GLES3/gl32.h>
+#include <GL/gl.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -159,6 +159,18 @@ namespace Pontilus
                     attachShader(s);
                 
                 glUniform1fv(varLocation, 1, &data);
+            }
+            /**
+             * Note: data is the array in question, count is the number of elements in the array to upload.
+             *
+             */
+            void uploadIntArr(Shader &s, const char *name, const int *data, int count)
+            {
+                GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
+                if (!s.beingUsed)
+                    attachShader(s);
+                
+                glUniform1iv(varLocation, count, data);
             }
         }
     }

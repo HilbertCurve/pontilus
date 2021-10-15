@@ -4,7 +4,7 @@
 #define _PONTILUS_OBJ_3D_H
 
 #include <string>
-#include <GLES3/gl3.h>
+#include <GL/gl.h>
 #include <glm/glm.hpp>
 
 namespace Pontilus

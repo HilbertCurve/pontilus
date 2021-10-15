@@ -1,12 +1,12 @@
 #include "Renderer.h"
 
-#include <GLES3/gl32.h>
+#include <GL/gl.h>
 #include <stdio.h>
 
 #include "Application.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "Obj3D.h"
+#include "Obj2D.h"
 
 namespace Pontilus
 {
@@ -17,60 +17,81 @@ namespace Pontilus
         
         static const GLfloat g_vertex_buffer_data[] =
         {
-            -1.0f, -1.0f, 5.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, 5.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            0.0f,  1.0f, 5.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, -4.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, -4.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            0.0f,  1.0f, -4.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-            5.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            5.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            5.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-            -4.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            -4.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            -4.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+             1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   //     0
+            -1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   //     1
+            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,   //     2
+             1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f    //     3
+        };
+
+        static const GLuint g_element_indices[] = 
+        {
+            3, 2, 0, 0, 2, 1, 7, 6, 4, 4, 6, 5
+        };
+
+        static const GLint texSlots[] = {0, 1, 2, 3, 4, 5, 6, 7};
+
+        /* 
+         * 1         0
+         * 
+         * 
+         * 
+         * 2         3
+         */
+
+        static GLfloat quad[] = {
+            -1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f, -1.0f, 0.0f,   //     3
+            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f,   //     2
+             1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f,  1.0f, 0.0f,   //     0
+             1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f,  1.0f, 0.0f,   //     0
+            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f,   //     2
+            -1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f,  1.0f, 0.0f    //     1
+        };
+        
+        static Model::Obj2D square = {
+            quad,
+            10 * 6,
+            nullptr
         };
         
         // TODO(HilbertCurve): make this swappable
         Shader::Shader currentShader;
-        Model::Obj3D test;
         
         void start()
         {
             glGenVertexArrays(1, &vaoID);
             glBindVertexArray(vaoID);
-            
-            Model::loadObjFromBinary("./assets/models/monkee.bin", test);
 
             // Generate 1 buffer, put the resulting identifier in vboID
             glGenBuffers(1, &vboID);
             // The following commands will talk about our 'vboID' buffer
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             // Give our vertices to OpenGL.
-            glBufferData(GL_ARRAY_BUFFER, test.numFloats, test.vertexBufferData, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+
+            GLuint eboID;
+            glGenBuffers(1, &eboID);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_element_indices), g_element_indices, GL_STATIC_DRAW);
             
             currentShader = Shader::initShader("./assets/shaders/default.glsl");
             if (currentShader.filepath == nullptr) exit(-1);
             
-            // TODO(HilbertCurve): automate the glTF file reading process here.
+            // TODO(HilbertCurve): automate the glTF file reading process.
             
-            glVertexAttribPointer(
-                                  0,                 // attribute id
-                                  3,                 // size
-                                  GL_FLOAT,          // type
-                                  GL_FALSE,          // normalized?
-                                  sizeof(float) * 7, // stride
-                                  (void *)0);
-            glVertexAttribPointer(
-                                  1,
-                                  4,
-                                  GL_FLOAT,
-                                  GL_TRUE,
-                                  sizeof(float) * 7,
-                                  (void *)(sizeof(float) * 3));
-            
+            // Enable the buffer attribute pointers
+            glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
             glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
             glEnableVertexAttribArray(1);
+
+            glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
+            glEnableVertexAttribArray(2);
+
+            glVertexAttribPointer(3, 1, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
+            glEnableVertexAttribArray(3);
+
+            Texture::initTexture("./assets/textures/cookie.png", square.t);
         }
         
         void render()
@@ -79,16 +100,27 @@ namespace Pontilus
             // default shader uniforms
             Shader::uploadMat4(currentShader, "uProjection", Camera::getProjection());
             Shader::uploadMat4(currentShader, "uView", Camera::getView());
+            Shader::uploadIntArr(currentShader, "uTextures", texSlots, 8);
+
+            glActiveTexture(GL_TEXTURE1);
+            Texture::bindTexture(square.t);
             
             glBindVertexArray(vaoID);
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
+            glEnableVertexAttribArray(2);
+            glEnableVertexAttribArray(3);
             
-            glDrawArrays(GL_TRIANGLES, 0, sizeof(test.vertexBufferData)); // Starting from vertex 0; 12 vertices total -> 4 triangles
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
+            glDisableVertexAttribArray(2);
+            glDisableVertexAttribArray(3);
             glBindVertexArray(0);
+
+            Texture::unbindTexture(square.t);
+
             Shader::detachShader(currentShader);
         }
     }

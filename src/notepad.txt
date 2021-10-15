@@ -32,6 +32,7 @@ Main Checklist:
  | | DONE ;; Mouse
  |
  | DONE ;; Refactoring
+ | TODO -- Textures and images
  | 
  | LIST [] ECS
  | | TODO -- Plan out the ECS

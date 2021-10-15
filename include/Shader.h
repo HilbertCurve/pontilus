@@ -3,6 +3,8 @@
 #ifndef _PONTILUS_SHADER_H
 #define _PONTILUS_SHADER_H
 
+#include <vector>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -17,19 +19,20 @@ namespace Pontilus
             {
                 GLuint vertexID;
                 GLuint fragmentID;
-                const char* vertexSource;
-                const char* fragmentSource;
-                
-                const char* filepath;
+                const char *vertexSource;
+                const char *fragmentSource;
+
+                const char *filepath;
                 GLuint shaderProgramID;
-                
+
                 bool beingUsed;
             };
 
-            void uploadMat4(Shader &s, const char* name, const glm::mat4& data);
-            void uploadFloat(Shader &s, const char* name, const float& data);
-            
-            Shader initShader(const char* filepath);
+            void uploadMat4(Shader &s, const char *name, const glm::mat4 &data);
+            void uploadFloat(Shader &s, const char *name, const float &data);
+            void uploadIntArr(Shader &s, const char *name, const int *data, int count);
+
+            Shader initShader(const char *filepath);
             void initShader(const char *filepath, Shader &dest);
 
             void attachShader(Shader &s);

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include <stdlib.h>
-#include <GLES3/gl3.h>
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #define STB_IMAGE_IMPLEMENTATION
@@ -42,8 +42,8 @@ namespace Pontilus
         
         // GLFW
         glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
@@ -111,7 +111,7 @@ namespace Pontilus
             // poll events
             glfwPollEvents();
             
-
+            /*
             if (IO::isKeyPressed(GLFW_KEY_W))
             {
                 Renderer::Camera::move(0, 0, 0.01);
@@ -136,7 +136,8 @@ namespace Pontilus
             glm::vec2 dMousePos = IO::mousePosChange();
             
             Renderer::Camera::rotate(dMousePos.y/50.0f, dMousePos.x/50.0f);
-            
+            */
+           
             // render
             Renderer::render();
             

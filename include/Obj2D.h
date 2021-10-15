@@ -15,6 +15,7 @@ namespace Pontilus
         struct Obj2D
         {
             GLfloat *vbo;
+            GLint size;
 
             Renderer::Texture::Texture t;
         };
