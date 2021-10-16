@@ -67,7 +67,6 @@ namespace Pontilus
         // setup callbacks
         glfwSetWindowSizeCallback(window.ptr, [](GLFWwindow *w, int newWidth, int newHeight)
                                   {
-                                      glViewport(0, 0, newWidth, newHeight);
                                       window.width = newWidth;
                                       window.height = newHeight;
                                   });

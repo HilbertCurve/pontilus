@@ -18,7 +18,7 @@ out float fTexID;
 
 void main()
 {
-    fColor = aColor;
+    fColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     fTexCoords = aTexCoords;
     fTexID = aTexID;
     gl_Position = uProjection * uView * vec4(aPos, 1.0);
@@ -29,20 +29,21 @@ void main()
 #ifdef GL_ES
  precision mediump float;
 #endif
+
 in vec4 fColor;
 in vec2 fTexCoords;
 in float fTexID;
 
-uniform sampler2D uTextures[8];
+uniform sampler2D uTexture;
 
 out vec4 color;
 
 void main()
 {
-    if (true) 
+    if (fTexID > 0) 
     {
         int id = int(fTexID);
-        color = texture(uTextures[id], fTexCoords);
+        color = fColor * texture(uTexture, fTexCoords);
         //color = vec4(fTexCoords, 0, 1);
     } 
     else

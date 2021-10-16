@@ -17,10 +17,10 @@ namespace Pontilus
         
         static const GLfloat g_vertex_buffer_data[] =
         {
-             1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   //     0
-            -1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   //     1
-            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,   //     2
-             1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f    //     3
+             8.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   //     4
+            -1.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   //     5
+            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,   //     6
+             8.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f    //     7
         };
 
         static const GLuint g_element_indices[] = 
@@ -39,12 +39,10 @@ namespace Pontilus
          */
 
         static GLfloat quad[] = {
-            -1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f, -1.0f, 0.0f,   //     3
-            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f,   //     2
-             1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f,  1.0f, 0.0f,   //     0
-             1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f,  1.0f, 0.0f,   //     0
-            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f,   //     2
-            -1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f,  1.0f, 0.0f    //     1
+             8.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   //     4
+            -1.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   //     5
+            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,   //     6
+             8.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f    //     7
         };
         
         static Model::Obj2D square = {
@@ -66,7 +64,7 @@ namespace Pontilus
             // The following commands will talk about our 'vboID' buffer
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             // Give our vertices to OpenGL.
-            glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(quad), square.vbo, GL_DYNAMIC_DRAW);
 
             GLuint eboID;
             glGenBuffers(1, &eboID);
@@ -82,13 +80,13 @@ namespace Pontilus
             glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
             glEnableVertexAttribArray(0);
 
-            glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
+            glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(float) * 10, (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
 
-            glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
+            glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(float) * 10, (void*)(7 * sizeof(float)));
             glEnableVertexAttribArray(2);
 
-            glVertexAttribPointer(3, 1, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
+            glVertexAttribPointer(3, 1, GL_FLOAT, false, sizeof(float) * 10, (void*)(9 * sizeof(float)));
             glEnableVertexAttribArray(3);
 
             Texture::initTexture("./assets/textures/cookie.png", square.t);
@@ -111,7 +109,7 @@ namespace Pontilus
             glEnableVertexAttribArray(2);
             glEnableVertexAttribArray(3);
             
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
