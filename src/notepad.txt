@@ -7,7 +7,7 @@ OpenGL:
  | DONE ;; Camera.cpp - camera
  | DONE ;; Renderer.cpp - renders stuff
  | DONE ;; Shader.cpp - handles getting shader data
- | TODO -- Texture.cpp - textures, when that becomes necessary
+ | DONE ;; Texture.cpp - textures, when that becomes necessary
  | DONE ;; InputListener.cpp - mouse and keyboard callbacks/data
  /
 
@@ -32,7 +32,7 @@ Main Checklist:
  | | DONE ;; Mouse
  |
  | DONE ;; Refactoring
- | TODO -- Textures and images
+ | DONE ;; Textures and images
  | 
  | LIST [] ECS
  | | TODO -- Plan out the ECS
@@ -41,7 +41,6 @@ Main Checklist:
  |
  | TODO -- Debug Camera.cpp
  | TODO -- Documentation
- | TODO -- Textures
  / 
 
 Issues:

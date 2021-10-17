@@ -71,8 +71,8 @@ namespace Pontilus
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_element_indices), g_element_indices, GL_STATIC_DRAW);
             
-            currentShader = Shader::initShader("./assets/shaders/default.glsl");
-            if (currentShader.filepath == nullptr) exit(-1);
+            currentShader = Shader::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
+            if (currentShader.vertPath == nullptr || currentShader.fragPath == nullptr) exit(-1);
             
             // TODO(HilbertCurve): automate the glTF file reading process.
             

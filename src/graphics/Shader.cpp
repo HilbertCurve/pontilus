@@ -1,7 +1,9 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <regex>
+#include "Shader.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
 #include <GL/gl.h>
 
 #include <glm/glm.hpp>
@@ -9,7 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Application.h"
-#include "Shader.h"
+#include "Utils.h"
 //TODO: safety functions: Application::init() must've been called before we do ANYTHING with shaders.
 
 namespace Pontilus
@@ -18,62 +20,69 @@ namespace Pontilus
     {
         namespace Shader
         {
-            Shader initShader(const char *filepath)
+            Shader initShader(const char *vertPath, const char *fragPath)
             {
-                std::string shaderCode;
-                std::ifstream shaderStream;
-                shaderStream.open(filepath);
-                
-                if (shaderStream.is_open())
+                // read vertex shader source
+                FILE *vertFile = fopen(vertPath, "rb");
+                long filesize = 0;
+
+                if (vertFile == nullptr)
                 {
-                    std::stringstream sstr;
-                    std::string linebuf;
-                    while (getline(shaderStream, linebuf))
-                    {
-                        sstr << linebuf << "\n";
-                    }
-                    shaderCode = sstr.str();
-                    shaderStream.close();
+                    fprintf(stderr, "Could not open \"%s\".\n", vertPath);
+                    exit(-1);
                 }
-                else
+
+                fseek(vertFile, 0L, SEEK_END);
+                filesize = ftell(vertFile);
+                rewind(vertFile);
+
+                char vertCode[filesize];
+
+                fread((void *)vertCode, filesize, 1, vertFile);
+
+                for (int i = 0; i < filesize; i++)
                 {
-                    fprintf(stderr, "Could not open %s.\n", filepath);
-                    getchar();
-                    return {};
+                    printf("%c", vertCode[i]);
+                }
+
+                // read fragment shader source
+                FILE *fragFile = fopen(fragPath, "rb");
+                filesize = 0;
+
+                if (fragFile == nullptr)
+                {
+                    fprintf(stderr, "Could not open \"%s\".\n", fragPath);
+                    exit(-1);
+                }
+
+                fseek(fragFile, 0L, SEEK_END);
+                filesize = ftell(fragFile);
+                rewind(fragFile);
+
+                char fragCode[filesize];
+
+                fread((void *)fragCode, filesize, 1, fragFile);
+
+                for (int i = 0; i < filesize; i++)
+                {
+                    printf("%c", fragCode[i]);
                 }
                 
                 Shader shader;
                 shader.vertexID = glCreateShader(GL_VERTEX_SHADER);
                 shader.fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
                 
-                std::string *splitShader = new std::string[3];
-                
-                std::regex rgx("(#type)( )+([a-zA-Z])+");
-                std::sregex_token_iterator iter(shaderCode.begin(),
-                                                shaderCode.end(),
-                                                rgx,
-                                                -1);
-                std::sregex_token_iterator end;
-                for (int i = 0; iter != end; ++iter)
-                {
-                    splitShader[i] = *iter;
-                    i++;
-                    if (i >= 3)
-                    {
-                        break;
-                    }
-                }
-                
-                shader.vertexSource = splitShader[1].c_str();
-                shader.fragmentSource = splitShader[2].c_str();
-                
-                shader.filepath = filepath;
+                shader.vertexSource = vertCode;
+                shader.fragmentSource = fragCode;
+
+                shader.vertPath = vertPath;
+                shader.fragPath = fragPath;
                 
                 GLint result = GL_FALSE;
                 int infoLogLength;
                 
                 // Compile Vertex Shader
-                printf("Compiling vertex shader: %s\n", shader.filepath);
+                printf("Compiling vertex shader: %s\n", shader.vertPath);
                 glShaderSource(shader.vertexID, 1, &shader.vertexSource, NULL);
                 glCompileShader(shader.vertexID);
                 
@@ -88,7 +97,7 @@ namespace Pontilus
                 }
                 
                 // compile fragment shader
-                printf("Compiling fragment shader: %s\n", shader.filepath);
+                printf("Compiling fragment shader: %s\n", shader.fragPath);
                 glShaderSource(shader.fragmentID, 1, &shader.fragmentSource, NULL);
                 glCompileShader(shader.fragmentID);
                 

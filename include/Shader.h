@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <GL/gl.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -21,19 +23,19 @@ namespace Pontilus
                 GLuint fragmentID;
                 const char *vertexSource;
                 const char *fragmentSource;
+                const char *vertPath;
+                const char *fragPath;
 
-                const char *filepath;
                 GLuint shaderProgramID;
 
                 bool beingUsed;
             };
 
+            Shader initShader(const char *vertPath, const char *fragPath);
+            
             void uploadMat4(Shader &s, const char *name, const glm::mat4 &data);
             void uploadFloat(Shader &s, const char *name, const float &data);
             void uploadIntArr(Shader &s, const char *name, const int *data, int count);
-
-            Shader initShader(const char *filepath);
-            void initShader(const char *filepath, Shader &dest);
 
             void attachShader(Shader &s);
             void detachShader(Shader &s);
