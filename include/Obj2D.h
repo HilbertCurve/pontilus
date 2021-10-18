@@ -4,7 +4,7 @@
 #define _PONTILUS_OBJ_2D_H
 
 #include <vector>
-#include <GLES3/gl3.h>
+#include <GL/gl.h>
 
 #include "Texture.h"
 
