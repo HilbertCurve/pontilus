@@ -8,12 +8,10 @@ namespace Pontilus
     typedef short _PONTILUS_SETTINGS;
     struct Window;
 
-    static _PONTILUS_SETTINGS args;
-
     void init();
     void loop();
 
-    _PONTILUS_SETTINGS getArgs();
+    _PONTILUS_SETTINGS *getArgs();
     bool debugMode();
 }
 

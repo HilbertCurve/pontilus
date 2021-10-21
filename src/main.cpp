@@ -1,5 +1,4 @@
 #include <string.h>
-#include <stdio.h>
 
 #include "Application.h"
 
@@ -7,14 +6,13 @@ int main(int argc, char *args[])
 {
     if (argc > 0)
     {
+        Pontilus::_PONTILUS_SETTINGS *a = Pontilus::getArgs();
         for (int i = 0; i < argc; i++)
         {
-            if (strncmp(args[i], "debug", 5) == 1)
+            if (strcmp(args[i], "debug") == 0)
             {
-                Pontilus::args |= 0x0001;
-                printf("hello\n");
+                *a |= 0x0001;
             }
-            printf("%s\n", args[i]);
         }
     }
 

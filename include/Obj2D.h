@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 
 #include "Texture.h"
+#include "Renderer.h"
 
 namespace Pontilus
 {
@@ -14,8 +15,7 @@ namespace Pontilus
     {
         struct Obj2D
         {
-            GLfloat *vbo;
-            GLint size;
+            Renderer::RenderableData data;
 
             Renderer::Texture::Texture t;
         };

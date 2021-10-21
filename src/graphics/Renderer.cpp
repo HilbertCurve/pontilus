@@ -46,8 +46,10 @@ namespace Pontilus
         };
         
         static Model::Obj2D square = {
-            quad,
-            10 * 6,
+            {
+                quad,
+                10 * 6
+            },
             nullptr
         };
         
@@ -64,7 +66,7 @@ namespace Pontilus
             // The following commands will talk about our 'vboID' buffer
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             // Give our vertices to OpenGL.
-            glBufferData(GL_ARRAY_BUFFER, sizeof(quad), square.vbo, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(quad), square.data.vbo, GL_DYNAMIC_DRAW);
 
             GLuint eboID;
             glGenBuffers(1, &eboID);

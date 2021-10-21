@@ -9,6 +9,7 @@ OpenGL:
  | DONE ;; Shader.cpp - handles getting shader data
  | DONE ;; Texture.cpp - textures, when that becomes necessary
  | DONE ;; InputListener.cpp - mouse and keyboard callbacks/data
+ | TODO -- RenderBatch.cpp - a way to contain a lot of a single primitive type
  /
 
 ECS:
@@ -22,6 +23,7 @@ Misc:
  | DEPR // Math.cpp - not needed, replaced with glm
  | DEPR // JSON.cpp - for glTF files, replaced with rapidjson
  | TODO -- Box.cpp - a unit test encapsulating the idea of a box; can be rendered and stuff
+ | DONE ;; Primitive.h - basic renderable primitives
  / 
 
 Main Checklist:
@@ -33,6 +35,8 @@ Main Checklist:
  |
  | DONE ;; Refactoring
  | DONE ;; Textures and images
+ | 
+ | TODO -- Render batches
  | 
  | LIST [] ECS
  | | TODO -- Plan out the ECS

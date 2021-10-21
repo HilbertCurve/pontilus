@@ -19,7 +19,7 @@ namespace Pontilus
 
         namespace Primitives
         {
-            Primitive QUAD = Primitive{4, GL_TRIANGLE, [](int *elements, int location)
+            Primitive QUAD = Primitive{4, GL_TRIANGLES, [](int *elements, int location)
                                        {
                                            int index = location * 6;
 
