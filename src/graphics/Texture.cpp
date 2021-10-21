@@ -1,4 +1,6 @@
 #include "Texture.h"
+
+#include "Application.h"
 #include "stb/stb_image.h"
 
 namespace Pontilus
@@ -19,9 +21,9 @@ namespace Pontilus
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                 // When stretching the image, pixelate
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 //When shrinking an image, pixelate
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
                 GLint *width = new int;
                 GLint *height = new int;
@@ -39,21 +41,26 @@ namespace Pontilus
                         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
                     else if (*channels == 4)
                         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, *width, *height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-                    else 
+                    else
                     {
-                        fprintf(stderr, "Unknown number of channels: \"%d\"\n", *channels); exit(-1);
+                        fprintf(stderr, "Unknown number of channels: \"%d\"\n", *channels);
+                        exit(-1);
                     }
                 }
                 else
                 {
-                    fprintf(stderr, "Error: Could not load image \"%s\"\n", filepath); exit(-1);
+                    fprintf(stderr, "Error: Could not load image \"%s\"\n", filepath);
+                    exit(-1);
                 }
 
                 stbi_image_free(image);
                 tex.width = *width;
                 tex.height = *height;
 
-                printf("%d, %d, %d\n", *width, *height, *channels);
+                if (debugMode())
+                {
+                    printf("Rendering Image: %s\nWidth: %d\nHeight: %d\nNumber of Channels: %d\n", filepath, *width, *height, *channels);
+                }
 
                 delete width;
                 delete height;
