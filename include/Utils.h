@@ -5,10 +5,18 @@
 
 namespace Pontilus
 {
-    namespace Utils
+
+    /**
+     * Use this struct if you want to return a pair of useful data in a function.
+     */
+    //template<typename T.
+    struct BiReturn
     {
-        void loadFile(const char *filepath, char *data);
-    }
+        void *first;
+        int second;
+    };
+
+    void loadFile(const char *filepath, char *data);
 }
 
 #endif // _PONTILUS_UTILS_H

@@ -9,11 +9,8 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        typedef struct RenderableData
-        {
-            GLfloat *vbo;
-            GLint size;
-        };
+        
+        //void addBatch(Graphics::RenderBatch &b);
         void start();
         void render();
     }

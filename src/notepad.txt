@@ -12,11 +12,15 @@ OpenGL:
  | TODO -- RenderBatch.cpp - a way to contain a lot of a single primitive type
  /
 
-ECS:
- | TODO -- Textures
- | TODO -- Vertex buffers
- | TODO -- Transforms and rotations
- | BURN ~~ Physics body
+Rend (Renderable Element-based Nugget of Data):
+    Here are some questions I'd like to answer about 
+    Rends, like how to use them or how/why I chose
+    to implement them. 
+ | What is a Rend?
+ | Why separate RenderBatch from Rend?
+ | Why Nugget? 
+ | | Phonaesthetics: https://en.wikipedia.org/wiki/Phonaesthetics
+ | | Also because I was hungry at the time.
  /
 
 Misc:
@@ -38,10 +42,9 @@ Main Checklist:
  | 
  | TODO -- Render batches
  | 
- | LIST [] ECS
- | | TODO -- Plan out the ECS
- | | TODO -- Refactor Obj2D and Obj3D
- | | TODO -- Make some components
+ | LIST [] Engine
+ | | TODO -- Plan out the Engine
+ | | TODO -- ? I need to plan the engine before I make a checklist.
  |
  | TODO -- Debug Camera.cpp
  | TODO -- Documentation

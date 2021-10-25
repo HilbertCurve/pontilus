@@ -7,23 +7,21 @@
 
 namespace Pontilus
 {
-    namespace Renderer
+    namespace Graphics
     {
-        namespace Texture
+        struct Texture
         {
-            struct Texture
-            {
-                const char *filepath;
-                GLuint texID;
-                GLint width, height;
-                bool beingUsed;
-            };
+            const char *filepath;
+            GLuint texID;
+            GLint width, height;
+            bool beingUsed;
+        };
 
-            void initTexture(const char *filepath, Texture &tex);
+        void initTexture(const char *filepath, Texture &tex);
 
-            void bindTexture(Texture &t);
-            void unbindTexture(Texture &t);
-        }
+        void bindTexture(Texture &t);
+        void unbindTexture(Texture &t);
+
     }
 }
 

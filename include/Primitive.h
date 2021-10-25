@@ -1,45 +1,30 @@
 /* date = October 21th 2021 8:31 am */
 
-#ifndef _PONTILUS_PRIMITIVE_H
-#define _PONTILUS_PRIMITIVE_H
+#pragma once
 
 #include <GL/gl.h>
 
+#include "Renderer.h"
+#include "Rend.h"
+
 namespace Pontilus
 {
-    namespace Model
+    namespace Graphics
     {
-        typedef void (*primCallback)(int *elements, int location);
+        typedef void (*elementsCallback)(int *elements, int location);
         struct Primitive
         {
             unsigned int vertexCount;
+            unsigned int elementSize;
             GLenum renderType;
-            primCallback generateIndices;
+            elementsCallback generateIndices;
         };
 
         namespace Primitives
         {
-            Primitive QUAD = Primitive{4, GL_TRIANGLES, [](int *elements, int location)
-                                       {
-                                           int index = location * 6;
+            extern Primitive QUAD;
 
-                                           elements[location + 0] = 3;
-                                           elements[location + 1] = 2;
-                                           elements[location + 2] = 0;
-
-                                           elements[location + 3] = 0;
-                                           elements[location + 4] = 2;
-                                           elements[location + 5] = 1;
-                                       }};
-            Primitive LINE = Primitive{2, GL_LINE, [](int *elements, int location)
-                                       {
-                                           int index = location * 2;
-                                           
-                                           elements[location + 0] = 0;
-                                           elements[location + 1] = 1;
-                                       }};
+            extern Primitive LINE;
         }
     }
 }
-
-#endif // _PONTILUS_PRIMITIVE_H

@@ -1,14 +1,11 @@
 #include "Primitive.h"
 
+#include <vector>
+
 namespace Pontilus
 {
-    namespace Renderer
+    namespace Graphics
     {
-        struct RenderBatch
-        {
-            Model::Primitive type;
-
-            
-        };
+        
     }
 }
