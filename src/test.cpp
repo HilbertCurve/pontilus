@@ -1,13 +1,11 @@
 #include <stdio.h>
-#include "Utils.h"
+#include <stdlib.h>
 
 int main()
 {
-    Pontilus::BiReturn r;
+    int *i = (int *) malloc(50);
 
-    r.second = 100;
-
-    printf("%d\n", r.second);
+    printf("%ld\n", sizeof(i));
 
     return 0;
 }

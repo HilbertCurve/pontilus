@@ -51,12 +51,13 @@ namespace Pontilus
         
         // TODO(HilbertCurve): make this swappable
         Graphics::Shader currentShader;
-        
+        Engine::GameObject g;
+        Graphics::Rend r;
+
         void start()
         {
-            Engine::GameObject g = {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
-            Graphics::Rend r;
-
+            g = {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
+            
             Graphics::initRend(r, 4);
 
             Engine::gameStateToRend(g, r);

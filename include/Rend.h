@@ -42,7 +42,8 @@ namespace Pontilus
         {
             void *data;
             
-            std::vector<vAttrib> layout;
+            vAttrib *layout;
+            unsigned int layoutCount;
             unsigned int vertCount;
         };
 
@@ -54,7 +55,8 @@ namespace Pontilus
         unsigned int getLayoutLen(Rend &r);
 
         typedef BiReturn pos_len;
-        pos_len getAttribMetaData(Rend &r, vProp p);
+        extern pos_len result;
+        void getAttribMetaData(Rend &r, vProp p);
 
         /**
          * Gets the pointer to the first instance of Rend r's vertex attribute property p.

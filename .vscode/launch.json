@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/../build/game",
+            "program": "/home/rivendell/c/pontilus/build/game",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

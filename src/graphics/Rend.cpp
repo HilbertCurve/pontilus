@@ -13,27 +13,40 @@ namespace Pontilus
 {
     namespace Graphics
     {
-        static vAttrib vAttribDefault[] =
+        static const vAttrib vAttribDefault[] =
             {
-                {PONT_POS, PONT_FLOAT, 3},
-                {PONT_COLOR, PONT_FLOAT, 4},
+                {PONT_POS,      PONT_FLOAT, 3},
+                {PONT_COLOR,    PONT_FLOAT, 4},
                 {PONT_TEXCOORD, PONT_FLOAT, 2},
-                {PONT_TEXID, PONT_FLOAT, 1}};
+                {PONT_TEXID,    PONT_FLOAT, 1}
+            };
 
         void initRend(Rend &r, unsigned int numVerts)
         {
-            r.layout.assign(vAttribDefault, vAttribDefault + 4);
-
             r.data = malloc(getLayoutLen(r) * numVerts);
+
+            r.layoutCount = 4;
+            r.layout = (vAttrib *) malloc(sizeof(vAttrib) * r.layoutCount);
+            for (int i = 0; i < r.layoutCount; i++)
+            {
+                r.layout[i] = vAttribDefault[i];
+            }
+            printf("%d\n", r.layoutCount);
+            //printf("0: %d, 4: %d, 8: %d, Last: %d\n", *(int *)(r.data), *(int *)((char *)r.data + 4), *(int *)((char *)r.data + 8), *(int *)((char *)r.data + getLayoutLen(r) * numVerts - 4));
 
             r.vertCount = numVerts;
         }
 
         void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
         {
-            r.layout.assign(attribs, attribs + numAttribs);
-
             r.data = malloc(getLayoutLen(r) * numVerts);
+            
+            r.layoutCount = numAttribs;
+            r.layout = (vAttrib *) malloc(sizeof(vAttrib) * r.layoutCount);
+            for (int i = 0; i < r.layoutCount; i++)
+            {
+                r.layout[i] = attribs[i];
+            }
 
             r.vertCount = numVerts;
         }
@@ -70,7 +83,7 @@ namespace Pontilus
         unsigned int getLayoutLen(Rend &r)
         {
             unsigned int len = 0;
-            for (unsigned int i = 0; i < r.layout.size(); i++)
+            for (unsigned int i = 0; i < r.layoutCount; i++)
             {
                 len += getVPropLen(r.layout[i].type);
             }
@@ -79,43 +92,48 @@ namespace Pontilus
         }
 
         // this should, theoretically, return the pointer to a place in the Rend and the size of that attribute.
-        pos_len getAttribMetaData(Rend &r, vProp p)
+        pos_len result = { nullptr, 0 };
+        void getAttribMetaData(Rend &r, vProp p)
         {
-            pos_len result = { nullptr, 0 };
+            result = { nullptr, p };
 
-            char *posInBytes = (char *)&r;
+            char *posInBytes = (char *)&(r.data);
+            printf("Is it the same as %d?\n", p);
             
-            for (int i = 0; i < r.layout.size(); i++)
+            for (int i = 0; i < r.layoutCount; i++)
             {
-                if (r.layout[i].prop == p)
+                printf("%ld\n", r.layoutCount);
+                if (r.layout[0].prop == p)
                 {
+                printf("Sanity check: %d?\n", p);
                     if (debugMode())
                     {
                         printf("Rend Layout Property #%d: %d\n", i, r.layout[i].prop);
                     }
                     int attribTypeSize = getVPropLen(r.layout[i].type);
-                     
-                    printf("beans\n");
-                    //result.first = (void *)&r;
-                    result.first = malloc(10);
-                    result.second = 100;
-                    printf("well that worked \n");
-                    return result;
+                    
+                    result.first = posInBytes;
+                    result.second = attribTypeSize * r.layout[i].size;
+                    printf("Attribute #%d size: %d\n", p, attribTypeSize * r.layout[i].size);
+                    return;
                 }
                 else
                 {
-                    //posInBytes += r.layout[i].size * getVPropLen(r.layout[i].type);
+                    posInBytes += r.layout[i].size * getVPropLen(r.layout[i].type);
                 }
             }
 
-            fprintf(stderr, "Rend Layout Size: %ld", r.layout.size());
+            //return;
+            fprintf(stderr, "Rend Layout Size: %ld\n", r.layoutCount);
+            /*
 
             // if you've gotten to this point, you've either specified an illegal
             // vProp or the Rend doesn't have this property. I should implement
             // error handling sometime in the future, but for now, byebye, program!
+            */
             fprintf(stderr, "Could not query rend for property %d.\n", p);
             exit(-1);
-            return {0, 0};
+            //return {0, 0};
         }
     }
 }
