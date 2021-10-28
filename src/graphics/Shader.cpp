@@ -23,7 +23,7 @@ namespace Pontilus
         {
             // read vertex shader source
             FILE *vertFile = fopen(vertPath, "rb");
-            long filesize = 0;
+            int vertFilesize = 0;
 
             if (vertFile == nullptr)
             {
@@ -32,16 +32,16 @@ namespace Pontilus
             }
 
             fseek(vertFile, 0L, SEEK_END);
-            filesize = ftell(vertFile);
+            vertFilesize = ftell(vertFile);
             rewind(vertFile);
 
-            char vertCode[filesize];
+            char vertCode[vertFilesize];
 
-            fread((void *)vertCode, filesize, 1, vertFile);
+            fread((void *)vertCode, vertFilesize, 1, vertFile);
 
             if (debugMode())
             {
-                for (int i = 0; i < filesize; i++)
+                for (int i = 0; i < vertFilesize; i++)
                 {
                     printf("%c", vertCode[i]);
                 }
@@ -49,7 +49,7 @@ namespace Pontilus
 
             // read fragment shader source
             FILE *fragFile = fopen(fragPath, "rb");
-            filesize = 0;
+            int fragFilesize = 0;
 
             if (fragFile == nullptr)
             {
@@ -58,16 +58,16 @@ namespace Pontilus
             }
 
             fseek(fragFile, 0L, SEEK_END);
-            filesize = ftell(fragFile);
+            fragFilesize = ftell(fragFile);
             rewind(fragFile);
 
-            char fragCode[filesize];
+            char fragCode[fragFilesize];
 
-            fread((void *)fragCode, filesize, 1, fragFile);
+            fread((void *)fragCode, fragFilesize, 1, fragFile);
 
             if (debugMode())
             {
-                for (int i = 0; i < filesize; i++)
+                for (int i = 0; i < fragFilesize; i++)
                 {
                     printf("%c", fragCode[i]);
                 }
@@ -88,7 +88,7 @@ namespace Pontilus
 
             // Compile Vertex Shader
             printf("Compiling vertex shader: %s\n", shader.vertPath);
-            glShaderSource(shader.vertexID, 1, &shader.vertexSource, NULL);
+            glShaderSource(shader.vertexID, 1, &shader.vertexSource, &vertFilesize);
             glCompileShader(shader.vertexID);
 
             // Check Vertex Shader
@@ -103,7 +103,7 @@ namespace Pontilus
 
             // compile fragment shader
             printf("Compiling fragment shader: %s\n", shader.fragPath);
-            glShaderSource(shader.fragmentID, 1, &shader.fragmentSource, NULL);
+            glShaderSource(shader.fragmentID, 1, &shader.fragmentSource, &fragFilesize);
             glCompileShader(shader.fragmentID);
 
             // check fragment shadieur

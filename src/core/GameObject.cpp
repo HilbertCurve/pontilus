@@ -19,30 +19,36 @@ namespace Pontilus
                 glm::vec3 orientation;
                 switch (i)
                 {
-                    case 0: orientation = {1.0f, 1.0f, 0.0f}; break;
-                    case 1: orientation = {0.0f, 1.0f, 0.0f}; break;
+                    case 0: orientation = {15.0f, 15.0f, 0.0f}; break;
+                    case 1: orientation = {0.0f, 15.0f, 0.0f}; break;
                     case 2: orientation = {0.0f, 0.0f, 0.0f}; break;
-                    case 3: orientation = {1.0f, 0.0f, 0.0f}; break;
+                    case 3: orientation = {15.0f, 0.0f, 0.0f}; break;
                 }
 
-                getAttribMetaData(r, PONT_POS);
+                off_len result = getAttribMetaData(r, PONT_POS);
                 if (result.second >= 3 * sizeof(float))
                 {
                     g.pos += orientation;
-                    memcpy((char *)(result.first) + stride, (void *)&(g.pos), sizeof(g.pos));
+
+                    // makeshift memcpy(), because doing memcpy seems to 
+                    // mess up malloc tables, or something.
+                    for (int i = 0; i < 3; i++)
+                    {
+                        ((float *)((char *)r.data + result.first + stride))[i] = ((float *)&g.pos)[i];
+                    }
                     g.pos -= orientation;
                 }
-                printf("hello\n");
-                getAttribMetaData(r, (vProp)0);
-                printf("hello2\n");
+                
+                result = getAttribMetaData(r, PONT_COLOR);
+                /*
                 if (result.second >= 4 * sizeof(float))
                 {
-                    printf("hello3\n");
-                    memcpy((char *)(result.first) + stride, (void *)&(g.color), sizeof(g.color));
-                    printf("hello4\n");                
+                    for (int i = 0; i < 4; i++)
+                    {
+                        ((float *)((char *)r.data + result.first + stride))[i] = ((float *)&g.color)[i];
+                    }             
                 }
-                printf("hello5\n");
-
+*/
                 stride += getLayoutLen(r);
             }
         }

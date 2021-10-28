@@ -4,6 +4,7 @@
 #define _PONTILUS_RENDERER_H
 
 #include "Camera.h"
+#include "Rend.h"
 
 namespace Pontilus
 {
@@ -13,6 +14,8 @@ namespace Pontilus
         //void addBatch(Graphics::RenderBatch &b);
         void start();
         void render();
+        void addRend(Graphics::Rend &r);
+        void clean();
     }
 }
 

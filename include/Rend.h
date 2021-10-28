@@ -54,9 +54,9 @@ namespace Pontilus
         unsigned int getVPropLen(vProp p);
         unsigned int getLayoutLen(Rend &r);
 
-        typedef BiReturn pos_len;
-        extern pos_len result;
-        void getAttribMetaData(Rend &r, vProp p);
+        typedef BiReturn off_len;
+        extern off_len result;
+        off_len getAttribMetaData(Rend &r, vProp p);
 
         /**
          * Gets the pointer to the first instance of Rend r's vertex attribute property p.

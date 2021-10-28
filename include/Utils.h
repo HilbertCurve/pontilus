@@ -3,8 +3,11 @@
 #ifndef _PONTILUS_UTILS_H
 #define _PONTILUS_UTILS_H
 
+#include <stdint.h>
+
 namespace Pontilus
 {
+    typedef int8_t byte;
 
     /**
      * Use this struct if you want to return a pair of useful data in a function.
@@ -12,7 +15,7 @@ namespace Pontilus
     //template<typename T.
     struct BiReturn
     {
-        void *first;
+        byte first;
         int second;
     };
 

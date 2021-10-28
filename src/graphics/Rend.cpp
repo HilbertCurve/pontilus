@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "Utils.h"
 #include "Application.h"
+#include "Renderer.h"
 
 namespace Pontilus
 {
@@ -23,15 +24,16 @@ namespace Pontilus
 
         void initRend(Rend &r, unsigned int numVerts)
         {
+            Renderer::addRend(r);
+
             r.data = malloc(getLayoutLen(r) * numVerts);
 
-            r.layoutCount = 4;
-            r.layout = (vAttrib *) malloc(sizeof(vAttrib) * r.layoutCount);
+            r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
+            r.layout = (vAttrib *) malloc(sizeof(vAttribDefault));
             for (int i = 0; i < r.layoutCount; i++)
             {
                 r.layout[i] = vAttribDefault[i];
             }
-            printf("%d\n", r.layoutCount);
             //printf("0: %d, 4: %d, 8: %d, Last: %d\n", *(int *)(r.data), *(int *)((char *)r.data + 4), *(int *)((char *)r.data + 8), *(int *)((char *)r.data + getLayoutLen(r) * numVerts - 4));
 
             r.vertCount = numVerts;
@@ -92,18 +94,18 @@ namespace Pontilus
         }
 
         // this should, theoretically, return the pointer to a place in the Rend and the size of that attribute.
-        pos_len result = { nullptr, 0 };
-        void getAttribMetaData(Rend &r, vProp p)
+        off_len getAttribMetaData(Rend &r, vProp p)
         {
-            result = { nullptr, p };
+            off_len result = { 0, p };
 
-            char *posInBytes = (char *)&(r.data);
+            int offsetInBytes = 0;
             printf("Is it the same as %d?\n", p);
             
             for (int i = 0; i < r.layoutCount; i++)
             {
-                printf("%ld\n", r.layoutCount);
-                if (r.layout[0].prop == p)
+                printf("Number of elements in r.layout: %d\n", r.layoutCount);
+                printf("A quick test accessing r.data: %2.3f\n", *(float *)r.data);
+                if (r.layout[i].prop == p)
                 {
                 printf("Sanity check: %d?\n", p);
                     if (debugMode())
@@ -112,14 +114,14 @@ namespace Pontilus
                     }
                     int attribTypeSize = getVPropLen(r.layout[i].type);
                     
-                    result.first = posInBytes;
+                    result.first = offsetInBytes;
                     result.second = attribTypeSize * r.layout[i].size;
                     printf("Attribute #%d size: %d\n", p, attribTypeSize * r.layout[i].size);
-                    return;
+                    return result;
                 }
                 else
                 {
-                    posInBytes += r.layout[i].size * getVPropLen(r.layout[i].type);
+                    offsetInBytes += r.layout[i].size * getVPropLen(r.layout[i].type);
                 }
             }
 

@@ -16,6 +16,8 @@ namespace Pontilus
     {
         GLuint vaoID;
         GLuint vboID;
+
+        static std::vector<Graphics::Rend *> rends;
         
         /*
         static const GLfloat g_vertex_buffer_data[] =
@@ -128,6 +130,20 @@ namespace Pontilus
             //Graphics::unbindTexture(square.t);
 
             Graphics::detachShader(currentShader);
+        }
+
+        void addRend(Graphics::Rend &r)
+        {
+            rends.push_back(&r);
+        }
+
+        void clean()
+        {
+            for (int i = 0; i < rends.size(); i++)
+            {
+                free(rends[i]->data);
+                free(rends[i]->layout);
+            }
         }
     }
 }

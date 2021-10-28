@@ -174,6 +174,8 @@ namespace Pontilus
             
             IO::endFrame();
         }
+
+        Renderer::clean();
         
         glLinkProgram(0);
         glfwDestroyWindow(window.ptr);
