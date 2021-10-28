@@ -25,11 +25,6 @@ namespace Pontilus
             data = new char[filesize];
 
             fread((void *)data, filesize, 1, ptr);
-
-            for (int i = 0; i < filesize; i++)
-            {
-                printf("%c", data[i]);
-            }
         }
     }
 }

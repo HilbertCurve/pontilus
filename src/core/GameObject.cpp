@@ -32,15 +32,17 @@ namespace Pontilus
 
                     // makeshift memcpy(), because doing memcpy seems to 
                     // mess up malloc tables, or something.
+
                     for (int i = 0; i < 3; i++)
                     {
                         ((float *)((char *)r.data + result.first + stride))[i] = ((float *)&g.pos)[i];
                     }
                     g.pos -= orientation;
+                    
                 }
                 
                 result = getAttribMetaData(r, PONT_COLOR);
-                /*
+                
                 if (result.second >= 4 * sizeof(float))
                 {
                     for (int i = 0; i < 4; i++)
@@ -48,7 +50,6 @@ namespace Pontilus
                         ((float *)((char *)r.data + result.first + stride))[i] = ((float *)&g.color)[i];
                     }             
                 }
-*/
                 stride += getLayoutLen(r);
             }
         }

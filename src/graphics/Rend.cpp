@@ -22,18 +22,21 @@ namespace Pontilus
                 {PONT_TEXID,    PONT_FLOAT, 1}
             };
 
+        // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
         void initRend(Rend &r, unsigned int numVerts)
         {
             Renderer::addRend(r);
 
-            r.data = malloc(getLayoutLen(r) * numVerts);
-
             r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
+
             r.layout = (vAttrib *) malloc(sizeof(vAttribDefault));
             for (int i = 0; i < r.layoutCount; i++)
             {
                 r.layout[i] = vAttribDefault[i];
             }
+
+            r.data = malloc(getLayoutLen(r) * numVerts);
+
             //printf("0: %d, 4: %d, 8: %d, Last: %d\n", *(int *)(r.data), *(int *)((char *)r.data + 4), *(int *)((char *)r.data + 8), *(int *)((char *)r.data + getLayoutLen(r) * numVerts - 4));
 
             r.vertCount = numVerts;
@@ -41,14 +44,15 @@ namespace Pontilus
 
         void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
         {
-            r.data = malloc(getLayoutLen(r) * numVerts);
-            
             r.layoutCount = numAttribs;
+            
             r.layout = (vAttrib *) malloc(sizeof(vAttrib) * r.layoutCount);
             for (int i = 0; i < r.layoutCount; i++)
             {
                 r.layout[i] = attribs[i];
             }
+
+            r.data = malloc(getLayoutLen(r) * numVerts);
 
             r.vertCount = numVerts;
         }
@@ -58,9 +62,9 @@ namespace Pontilus
             // Waiting on Shader.h's todo to be completed.
         }
 
-        unsigned int getVPropLen(vPropType p)
+        int getVTypeLen(vPropType p)
         {
-            unsigned int len = 0;
+            int len = 0;
             switch (p)
             {
             case PONT_SHORT:
@@ -82,12 +86,12 @@ namespace Pontilus
             return len;
         }
 
-        unsigned int getLayoutLen(Rend &r)
+        int getLayoutLen(Rend &r)
         {
-            unsigned int len = 0;
-            for (unsigned int i = 0; i < r.layoutCount; i++)
+            int len = 0;
+            for (int i = 0; i < r.layoutCount; i++)
             {
-                len += getVPropLen(r.layout[i].type);
+                len += getVTypeLen(r.layout[i].type) * r.layout[i].size;
             }
 
             return len;
@@ -99,33 +103,27 @@ namespace Pontilus
             off_len result = { 0, p };
 
             int offsetInBytes = 0;
-            printf("Is it the same as %d?\n", p);
             
             for (int i = 0; i < r.layoutCount; i++)
             {
-                printf("Number of elements in r.layout: %d\n", r.layoutCount);
-                printf("A quick test accessing r.data: %2.3f\n", *(float *)r.data);
                 if (r.layout[i].prop == p)
                 {
-                printf("Sanity check: %d?\n", p);
                     if (debugMode())
                     {
                         printf("Rend Layout Property #%d: %d\n", i, r.layout[i].prop);
                     }
-                    int attribTypeSize = getVPropLen(r.layout[i].type);
+                    int attribTypeSize = getVTypeLen(r.layout[i].type);
                     
                     result.first = offsetInBytes;
                     result.second = attribTypeSize * r.layout[i].size;
-                    printf("Attribute #%d size: %d\n", p, attribTypeSize * r.layout[i].size);
                     return result;
                 }
                 else
                 {
-                    offsetInBytes += r.layout[i].size * getVPropLen(r.layout[i].type);
+                    offsetInBytes += r.layout[i].size * getVTypeLen(r.layout[i].type);
                 }
             }
 
-            //return;
             fprintf(stderr, "Rend Layout Size: %ld\n", r.layoutCount);
             /*
 
@@ -135,7 +133,6 @@ namespace Pontilus
             */
             fprintf(stderr, "Could not query rend for property %d.\n", p);
             exit(-1);
-            //return {0, 0};
         }
     }
 }
