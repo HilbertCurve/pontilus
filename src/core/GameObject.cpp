@@ -32,6 +32,7 @@ namespace Pontilus
 
                     // makeshift memcpy(), because doing memcpy seems to 
                     // mess up malloc tables, or something.
+                    // TODO: just use memcpy, it doesn't matter.
 
                     for (int i = 0; i < 3; i++)
                     {

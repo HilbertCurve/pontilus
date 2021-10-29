@@ -19,6 +19,7 @@ namespace Pontilus
         int second;
     };
 
+    void printRend(Graphics::Rend &r);
     void loadFile(const char *filepath, char *data);
 }
 

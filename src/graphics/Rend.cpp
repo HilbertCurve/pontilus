@@ -10,6 +10,8 @@
 #include "Application.h"
 #include "Renderer.h"
 
+// TODO: Must change the name of Rend, it sucks.
+
 namespace Pontilus
 {
     namespace Graphics
@@ -36,8 +38,6 @@ namespace Pontilus
             }
 
             r.data = malloc(getLayoutLen(r) * numVerts);
-
-            //printf("0: %d, 4: %d, 8: %d, Last: %d\n", *(int *)(r.data), *(int *)((char *)r.data + 4), *(int *)((char *)r.data + 8), *(int *)((char *)r.data + getLayoutLen(r) * numVerts - 4));
 
             r.vertCount = numVerts;
         }

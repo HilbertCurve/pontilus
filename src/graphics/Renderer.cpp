@@ -66,6 +66,8 @@ namespace Pontilus
             GLint elementIndices[g.prim.elementSize];
             g.prim.generateIndices(elementIndices, 0);
 
+            //printRend(r);
+
             glGenVertexArrays(1, &vaoID);
             glBindVertexArray(vaoID);
 

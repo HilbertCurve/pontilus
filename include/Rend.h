@@ -1,4 +1,7 @@
-#pragma once
+//#pragma once
+
+#ifndef _PONTILUS_REND_H
+#define _PONTILUS_REND_H
 
 #include <vector>
 
@@ -54,8 +57,7 @@ namespace Pontilus
         int getVTypeLen(vProp p);
         int getLayoutLen(Rend &r);
 
-        typedef BiReturn off_len;
-        extern off_len result;
+        typedef BiReturn<int, int> off_len;
         off_len getAttribMetaData(Rend &r, vProp p);
 
         /**
@@ -64,3 +66,5 @@ namespace Pontilus
         void *getAttribPointer(Rend &r, vProp p);
     }
 }
+
+#endif // _PONTILUS_REND_H
