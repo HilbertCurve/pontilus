@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 #ifdef GL_ES
  precision mediump float;
 #endif
@@ -20,5 +20,5 @@ void main()
     fColor = aColor;
     fTexCoords = aTexCoords;
     fTexID = aTexID;
-    gl_Position = vec4(aPos / 15.0, 1);
+    gl_Position = uProjection * uView * vec4(aPos, 1);
 }

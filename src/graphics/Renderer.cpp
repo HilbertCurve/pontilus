@@ -42,14 +42,14 @@ namespace Pontilus
          * 
          * 2         3
         
-
+*/
         static GLfloat quad[] = {
-             8.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   //     4
-            -1.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   //     5
-            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,   //     6
-             8.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f    //     7
+            15.00, 15.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00, 
+    0.00, 15.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00, 
+    0.00, 0.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00, 
+    15.00, 0.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00,
         };
-        */
+        
         
         // TODO(HilbertCurve): make this swappable
         Graphics::Shader currentShader;
@@ -63,10 +63,11 @@ namespace Pontilus
             Graphics::initRend(r, 4);
 
             Engine::gameStateToRend(g, r);
-            GLint elementIndices[g.prim.elementSize];
-            g.prim.generateIndices(elementIndices, 0);
+            //GLint elementIndices[g.prim.elementSize];
+            //g.prim.generateIndices(elementIndices, 0);
+            GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
-            //printRend(r);
+            printRend(r);
 
             glGenVertexArrays(1, &vaoID);
             glBindVertexArray(vaoID);
@@ -81,7 +82,7 @@ namespace Pontilus
             GLuint eboID;
             glGenBuffers(1, &eboID);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, g.prim.elementSize, elementIndices, GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementIndices), elementIndices, GL_STATIC_DRAW);
             
             currentShader = Graphics::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
             if (currentShader.vertPath == nullptr || currentShader.fragPath == nullptr) exit(-1);

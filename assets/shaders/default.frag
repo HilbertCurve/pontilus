@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 #ifdef GL_ES
  precision mediump float;
 #endif
@@ -13,14 +13,14 @@ out vec4 color;
 
 void main()
 {
-    if (fTexID > 0) 
-    {
-        int id = int(fTexID);
-        color = fColor * texture(uTexture, fTexCoords);
-        //color = vec4(fTexCoords, 0, 1);
-    } 
-    else
-    {
+    //if (fTexID > 0) 
+    //{
+        //int id = int(fTexID);
+        //color = fColor * texture(uTexture, fTexCoords);
+        //color = fColor;
+    //} 
+    //else
+    //{
         color = fColor;
-    }
+    //}
 }

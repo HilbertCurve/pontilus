@@ -19,10 +19,10 @@ namespace Pontilus
                 glm::vec3 orientation;
                 switch (i)
                 {
-                    case 0: orientation = {15.0f, 15.0f, 0.0f}; break;
-                    case 1: orientation = {0.0f, 15.0f, 0.0f}; break;
+                    case 0: orientation = {0.5f, 0.5f, 0.0f}; break;
+                    case 1: orientation = {0.0f, 0.5f, 0.0f}; break;
                     case 2: orientation = {0.0f, 0.0f, 0.0f}; break;
-                    case 3: orientation = {15.0f, 0.0f, 0.0f}; break;
+                    case 3: orientation = {0.5f, 0.0f, 0.0f}; break;
                 }
 
                 off_len result = getAttribMetaData(r, PONT_POS);

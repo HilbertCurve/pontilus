@@ -10,7 +10,7 @@
 #include "Application.h"
 #include "Renderer.h"
 
-// TODO: Must change the name of Rend, it sucks.
+// TODO: change the name Rend, it sucks.
 
 namespace Pontilus
 {
@@ -18,11 +18,10 @@ namespace Pontilus
     {
         static const vAttrib vAttribDefault[] =
             {
-                {PONT_POS,      PONT_FLOAT, 3},
-                {PONT_COLOR,    PONT_FLOAT, 4},
+                {PONT_POS, PONT_FLOAT, 3},
+                {PONT_COLOR, PONT_FLOAT, 4},
                 {PONT_TEXCOORD, PONT_FLOAT, 2},
-                {PONT_TEXID,    PONT_FLOAT, 1}
-            };
+                {PONT_TEXID, PONT_FLOAT, 1}};
 
         // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
         void initRend(Rend &r, unsigned int numVerts)
@@ -31,7 +30,7 @@ namespace Pontilus
 
             r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
 
-            r.layout = (vAttrib *) malloc(sizeof(vAttribDefault));
+            r.layout = (vAttrib *)malloc(sizeof(vAttribDefault));
             for (int i = 0; i < r.layoutCount; i++)
             {
                 r.layout[i] = vAttribDefault[i];
@@ -45,8 +44,8 @@ namespace Pontilus
         void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
         {
             r.layoutCount = numAttribs;
-            
-            r.layout = (vAttrib *) malloc(sizeof(vAttrib) * r.layoutCount);
+
+            r.layout = (vAttrib *)malloc(sizeof(vAttrib) * r.layoutCount);
             for (int i = 0; i < r.layoutCount; i++)
             {
                 r.layout[i] = attribs[i];
@@ -100,10 +99,10 @@ namespace Pontilus
         // this should, theoretically, return the pointer to a place in the Rend and the size of that attribute.
         off_len getAttribMetaData(Rend &r, vProp p)
         {
-            off_len result = { 0, p };
+            off_len result = {0, p};
 
             int offsetInBytes = 0;
-            
+
             for (int i = 0; i < r.layoutCount; i++)
             {
                 if (r.layout[i].prop == p)
@@ -113,7 +112,7 @@ namespace Pontilus
                         printf("Rend Layout Property #%d: %d\n", i, r.layout[i].prop);
                     }
                     int attribTypeSize = getVTypeLen(r.layout[i].type);
-                    
+
                     result.first = offsetInBytes;
                     result.second = attribTypeSize * r.layout[i].size;
                     return result;
@@ -133,6 +132,58 @@ namespace Pontilus
             */
             fprintf(stderr, "Could not query rend for property %d.\n", p);
             exit(-1);
+        }
+
+        void printRend(Rend &r)
+        {
+            printf("Rend at %p:\n{\n    ", &r);
+
+            int stride = 0;
+            for (int i = 0; i < r.vertCount; i++)
+            {
+                for (int j = 0; j < r.layoutCount; j++)
+                {
+                    Graphics::off_len result = Graphics::getAttribMetaData(r, r.layout[j].prop);
+                    switch (r.layout[j].type)
+                    {
+                    case Graphics::PONT_SHORT:
+                    {
+                        for (int k = 0; k < r.layout[j].size; k++)
+                        {
+                            printf("%3s, ", ((short *)((char *)r.data + result.first + stride))[k]);
+                        }
+                    }
+                    break;
+                    case Graphics::PONT_INT:
+                    {
+                        for (int k = 0; k < r.layout[j].size; k++)
+                        {
+                            printf("%3d, ", ((int *)((char *)r.data + result.first + stride))[k]);
+                        }
+                    }
+                    break;
+                    case Graphics::PONT_UINT:
+                    {
+                        for (int k = 0; k < r.layout[j].size; k++)
+                        {
+                            printf("%3d, ", ((unsigned int *)((char *)r.data + result.first + stride))[k]);
+                        }
+                    }
+                    break;
+                    case Graphics::PONT_FLOAT:
+                    {
+                        for (int k = 0; k < r.layout[j].size; k++)
+                        {
+                            printf("%1.2f, ", ((float *)((char *)r.data + result.first + stride))[k]);
+                        }
+                    }
+                    break;
+                    }
+                }
+                printf("\n    ");
+                stride += Graphics::getLayoutLen(r);
+            }
+            printf("\b\b\b\b}\n");
         }
     }
 }

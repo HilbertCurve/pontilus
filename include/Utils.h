@@ -12,14 +12,13 @@ namespace Pontilus
     /**
      * Use this struct if you want to return a pair of useful data in a function.
      */
-    //template<typename T.
+    template <typename T, typename U>
     struct BiReturn
     {
-        byte first;
-        int second;
+        T first;
+        U second;
     };
 
-    void printRend(Graphics::Rend &r);
     void loadFile(const char *filepath, char *data);
 }
 
