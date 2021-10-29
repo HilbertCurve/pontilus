@@ -1,14 +1,9 @@
 /* date = October 17th 2021 5:25 pm */
 
-#pragma once
-
-//#ifndef _PONTILUS_UTILS_H
-//#define _PONTILUS_UTILS_H
+#ifndef _PONTILUS_UTILS_H
+#define _PONTILUS_UTILS_H
 
 #include <stdint.h>
-#include "Rend.h"
-#include "GameObject.h"
-#include "Renderer.h"
 
 namespace Pontilus
 {
@@ -17,16 +12,14 @@ namespace Pontilus
     /**
      * Use this struct if you want to return a pair of useful data in a function.
      */
-    template<typename T, typename U>
+    //template<typename T.
     struct BiReturn
     {
-        T first;
-        U second;
+        byte first;
+        int second;
     };
 
-    // by way of the GCC folks and whatever goes on there,
-    void printRend(Graphics::Rend &r); // THIS IS A VARIABLE,
-    void loadFile(const char *filepath, char *data); // WHILE THIS IS NOT?
+    void loadFile(const char *filepath, char *data);
 }
 
-//#endif // _PONTILUS_UTILS_H
+#endif // _PONTILUS_UTILS_H
