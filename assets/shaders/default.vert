@@ -11,14 +11,16 @@ layout (location=3) in float aTexID;
 uniform mat4 uProjection;
 uniform mat4 uView;
 
+out vec4 fPos;
 out vec4 fColor;
 out vec2 fTexCoords;
 out float fTexID;
 
 void main()
 {
+    fPos = uProjection * uView * vec4(aPos, 1.0);
     fColor = aColor;
     fTexCoords = aTexCoords;
     fTexID = aTexID;
-    gl_Position = uProjection * uView * vec4(aPos, 1);
+    gl_Position = uProjection * uView * vec4(aPos, 1.0);
 }

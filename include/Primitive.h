@@ -23,7 +23,6 @@ namespace Pontilus
         namespace Primitives
         {
             extern Primitive QUAD;
-
             extern Primitive LINE;
         }
     }

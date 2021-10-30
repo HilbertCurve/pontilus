@@ -1,0 +1,53 @@
+An OpenGL program has shaders, vertex buffers, a window, a camera, mouse/keyboard callbacks, 
+and the rest of the program logic. 
+Windows is hard.
+
+OpenGL:
+    [+] Application.cpp - inits everything / sets up a window / sets up callbacks
+    [+] Camera.cpp - camera
+    [+] Renderer.cpp - renders stuff
+    [+] Shader.cpp - handles getting shader data
+    [+] Texture.cpp - textures, when that becomes necessary
+    [+] InputListener.cpp - mouse and keyboard callbacks/data
+    [ ] RenderBatch.cpp - a way to contain a lot of a single primitive type
+
+Pontilus Language:
+    I probably have a terrible idea, but what if scene functions are transpiled from 
+    a custom language into C, JIT-compiled, then ran??? This would separate the engine
+    from the game code, and making a custom language looks good on my portfolio...
+
+Misc:
+    [-] Math.cpp - not needed, replaced with glm
+    [-] JSON.cpp - for glTF files, replaced with rapidjson
+    [+] Primitive.h - basic renderable primitives
+ 
+
+Main Checklist:
+    [+] Get renderer chugging out things
+    [+] Do github stuffs
+    IO stuff:
+        [+] Keyboard
+        [+] Mouse
+    [+] Refactoring
+    [+] Textures and images
+    [ ] Rename Rend to rData
+    [ ] Render batches
+    Engine:
+        [ ] Plan out the Engine
+        [ ] ? I need to plan the engine before I make a checklist.
+
+    [ ] Debug Camera.cpp
+    [ ] Documentation
+    
+
+Issues:
+Camera.cpp has wierd visual bugs involving an object rotating out of frame.
+
+
+Backburner:
+[ ] Windows build
+ 
+
+Future Plans:
+[ ] Physics
+[ ] GUI

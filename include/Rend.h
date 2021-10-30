@@ -54,6 +54,8 @@ namespace Pontilus
         void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs); // I'd love to know how to do typed variadic arguments without templates, but I guess not right now 
         void initRendByShader(Rend &r, Graphics::Shader &s);
 
+        void resizeRend(Rend &r, unsigned int newNumVerts);
+
         int getVTypeLen(vProp p);
         int getLayoutLen(Rend &r);
         void printRend(Graphics::Rend &r);

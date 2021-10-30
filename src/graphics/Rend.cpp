@@ -43,6 +43,8 @@ namespace Pontilus
 
         void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
         {
+            Renderer::addRend(r);
+
             r.layoutCount = numAttribs;
 
             r.layout = (vAttrib *)malloc(sizeof(vAttrib) * r.layoutCount);
@@ -59,6 +61,18 @@ namespace Pontilus
         void initRendByShader(Rend &r, Graphics::Shader &s)
         {
             // Waiting on Shader.h's todo to be completed.
+        }
+
+        void resizeRend(Rend &r, unsigned int newNumVerts)
+        {
+            // ensure r has been initialized
+            if (r.layoutCount == 0) // every rend should have a layout
+            {
+                initRend(r, newNumVerts);
+                return;
+            }
+
+            r.data = realloc(r.data, getLayoutLen(r) * newNumVerts);
         }
 
         int getVTypeLen(vPropType p)

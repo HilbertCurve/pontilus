@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "Utils.h"
+
+#define EXIT asm ("hlt")
+
 int main()
 {
-    int *i = (int *) malloc(50);
-
-    printf("%ld\n", sizeof(i));
+    __pError("oh no");
 
     return 0;
 }

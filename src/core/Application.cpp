@@ -170,6 +170,7 @@ namespace Pontilus
                 " Slowest: " + std::to_string(1/highestdt) + 
                 " Current: " + std::to_string(1/dt);
             
+            // for some reason, this crashes my computer
             //glfwSetWindowTitle(window.ptr, title.c_str());
             
             IO::endFrame();

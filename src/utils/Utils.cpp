@@ -4,8 +4,6 @@
 #include <stdlib.h>
 
 #include "Rend.h"
-#include "GameObject.h"
-#include "Renderer.h"
 
 namespace Pontilus
 {

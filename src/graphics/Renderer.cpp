@@ -18,38 +18,8 @@ namespace Pontilus
         GLuint vboID;
 
         static std::vector<Graphics::Rend *> rends;
-        
-        /*
-        static const GLfloat g_vertex_buffer_data[] =
-        {
-             8.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,   //     4
-            -1.0f,  8.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   //     5
-            -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,   //     6
-             8.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f    //     7
-        };
-
-        static const GLuint g_element_indices[] = 
-        {
-            3, 2, 0, 0, 2, 1, 7, 6, 4, 4, 6, 5
-        };
-
+          
         static const GLint texSlots[] = {0, 1, 2, 3, 4, 5, 6, 7};
-
-         
-         * 1         0
-         * 
-         * 
-         * 
-         * 2         3
-        
-*/
-        static GLfloat quad[] = {
-            15.00, 15.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00, 
-    0.00, 15.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00, 
-    0.00, 0.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00, 
-    15.00, 0.00, 0.00, 1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00,
-        };
-        
         
         // TODO(HilbertCurve): make this swappable
         Graphics::Shader currentShader;
@@ -58,14 +28,14 @@ namespace Pontilus
 
         void start()
         {
-            g = {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
+            g = {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 8.0f, 8.0f};
             
             Graphics::initRend(r, 4);
 
-            Engine::gameStateToRend(g, r);
-            //GLint elementIndices[g.prim.elementSize];
-            //g.prim.generateIndices(elementIndices, 0);
-            GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
+            Engine::gameStateToRend(g, r, 0);
+            GLint elementIndices[g.prim.elementSize];
+            g.prim.generateIndices(elementIndices, 0);
+            //GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
             printRend(r);
 
@@ -74,7 +44,6 @@ namespace Pontilus
 
             // Generate 1 buffer, put the resulting identifier in vboID
             glGenBuffers(1, &vboID);
-            // The following commands will talk about our 'vboID' buffer
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             // Give our vertices to OpenGL.
             glBufferData(GL_ARRAY_BUFFER, Graphics::getLayoutLen(r) * r.vertCount, r.data, GL_DYNAMIC_DRAW);
@@ -90,6 +59,7 @@ namespace Pontilus
             // TODO(HilbertCurve): automate the glTF file reading process.
             
             // Enable the buffer attribute pointers
+            // TODO: automate vertex attributes
             glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
             glEnableVertexAttribArray(0);
 
@@ -102,7 +72,7 @@ namespace Pontilus
             glVertexAttribPointer(3, 1, GL_FLOAT, false, sizeof(float) * 10, (void*)(9 * sizeof(float)));
             glEnableVertexAttribArray(3);
 
-            //Graphics::initTexture("./assets/textures/cookie.png", square.t);
+            Graphics::initTexture("./assets/textures/ghostSwole.png", g.tex);
         }
         
         void render()
@@ -114,7 +84,7 @@ namespace Pontilus
             //Graphics::uploadIntArr(currentShader, "uTextures", texSlots, 8);
 
             glActiveTexture(GL_TEXTURE1);
-            //Graphics::bindTexture(square.t);
+            Graphics::bindTexture(g.tex);
             
             glBindVertexArray(vaoID);
             glEnableVertexAttribArray(0);
