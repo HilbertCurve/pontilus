@@ -1,7 +1,10 @@
 /* date = October 30th 2021 3:16 pm */
 
 #pragma once
-#include "Application.h"
+
+#include <vector>
+
+#include "GameObject.h"
 
 namespace Pontilus
 {
@@ -12,9 +15,15 @@ namespace Pontilus
 
         struct Scene
         {
-            Pontilus::Window *parent;
             _init init;
             _update update; 
+
+            std::vector<GameObject> objs;
         };
+
+        void init();
+        void update(double dt);
+
+        Scene *getScene();
     }
 }

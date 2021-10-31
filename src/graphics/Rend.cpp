@@ -121,10 +121,7 @@ namespace Pontilus
             {
                 if (r.layout[i].prop == p)
                 {
-                    if (debugMode())
-                    {
-                        printf("Rend Layout Property #%d: %d\n", i, r.layout[i].prop);
-                    }
+
                     int attribTypeSize = getVTypeLen(r.layout[i].type);
 
                     result.first = offsetInBytes;

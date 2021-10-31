@@ -39,14 +39,6 @@ namespace Pontilus
 
             fread((void *)vertCode, vertFilesize, 1, vertFile);
 
-            if (debugMode())
-            {
-                for (int i = 0; i < vertFilesize; i++)
-                {
-                    printf("%c", vertCode[i]);
-                }
-            }
-
             // read fragment shader source
             FILE *fragFile = fopen(fragPath, "rb");
             int fragFilesize = 0;
@@ -65,14 +57,6 @@ namespace Pontilus
 
             fread((void *)fragCode, fragFilesize, 1, fragFile);
 
-            if (debugMode())
-            {
-                for (int i = 0; i < fragFilesize; i++)
-                {
-                    printf("%c", fragCode[i]);
-                }
-            }
-
             Shader shader;
             shader.vertexID = glCreateShader(GL_VERTEX_SHADER);
             shader.fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -87,7 +71,10 @@ namespace Pontilus
             int infoLogLength;
 
             // Compile Vertex Shader
-            printf("Compiling vertex shader: %s\n", shader.vertPath);
+            if (debugMode())
+            {
+                printf("Compiling vertex shader: %s\n", shader.vertPath);
+            }
             glShaderSource(shader.vertexID, 1, &shader.vertexSource, &vertFilesize);
             glCompileShader(shader.vertexID);
 
@@ -102,7 +89,10 @@ namespace Pontilus
             }
 
             // compile fragment shader
-            printf("Compiling fragment shader: %s\n", shader.fragPath);
+            if (debugMode())
+            {
+                printf("Compiling fragment shader: %s\n", shader.fragPath);
+            }
             glShaderSource(shader.fragmentID, 1, &shader.fragmentSource, &fragFilesize);
             glCompileShader(shader.fragmentID);
 
@@ -174,6 +164,16 @@ namespace Pontilus
 
             glUniform1fv(varLocation, 1, &data);
         }
+        
+        void uploadInt(Shader &s, const char *name, const int data)
+        {
+            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
+            if (!s.beingUsed)
+                attachShader(s);
+
+            glUniform1i(varLocation, data);
+        }
+
         /**
          * Note: data is the array in question, count is the number of elements in the array to upload.
          *

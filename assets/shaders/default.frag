@@ -9,7 +9,9 @@ in vec4 fColor;
 in vec2 fTexCoords;
 in float fTexID;
 
-uniform sampler2D uTexture;
+uniform sampler2D uTexture1;
+uniform sampler2D uTexture2;
+uniform sampler2D uTextures[8];
 
 out vec4 color;
 
@@ -24,10 +26,22 @@ void main()
 {
     if (fTexID > 0.0) 
     {
+        //if (fTexID > 1.5)
+        //{
+        //    color = fColor;
+        //    return;
+        //}
         vec3 point = vec3(0.0, 0.0, 0.0);
         int id = int(fTexID);
         float vignetteConst = dist(point, fPos.xyz) + 0.1;
-        color = fColor * texture(uTexture, fTexCoords) - vignetteConst;
+        if (fTexID > 1.5)
+        {
+            color = fColor * texture(uTextures[id - 1], fTexCoords) - vignetteConst;
+        }
+        else
+        {
+            color = fColor * texture(uTextures[id - 1], fTexCoords) - vignetteConst;
+        }
     } 
     else
     {

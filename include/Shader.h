@@ -36,6 +36,7 @@ namespace Pontilus
 
         void uploadMat4(Shader &s, const char *name, const glm::mat4 &data);
         void uploadFloat(Shader &s, const char *name, const float &data);
+        void uploadInt(Shader &s, const char *name, const int data);
         void uploadIntArr(Shader &s, const char *name, const int *data, int count);
 
         void attachShader(Shader &s);

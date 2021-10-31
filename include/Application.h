@@ -3,10 +3,27 @@
 #ifndef _PONTILUS_APPLICATION_H
 #define _PONTILUS_APPLICATION_H
 
+#include <GLFW/glfw3.h>
+
+#include "Rend.h"
+#include "Scene.h"
+
 namespace Pontilus
 {
     typedef short _PONTILUS_SETTINGS;
-    struct Window;
+
+    extern Graphics::Rend rDataPool;
+
+    struct Window
+    {
+        int width;
+        int height;
+        const char *title;
+        GLFWwindow *ptr;
+        Engine::Scene *scene;
+    };
+
+    extern Window window;
 
     void init();
     void loop();

@@ -10,20 +10,27 @@
 #include "Application.h"
 #include "Renderer.h"
 #include "InputListener.h"
+#include "Scene.h"
+#include "Rend.h"
 
 namespace Pontilus
 {
     static _PONTILUS_SETTINGS args = 0x0000;
 
-    struct Window
+    // rData pool:
+    Graphics::Rend rDataPool = {};
+    static void initRData()
     {
-        int width;
-        int height;
-        const char *title;
-        GLFWwindow *ptr;
-    };
-    
-    Window window{800, 600, "Test", nullptr};
+        Graphics::initRend(rDataPool, 8);
+    }
+
+    static void cleanRData()
+    {
+        free(rDataPool.data);
+        free(rDataPool.layout);
+    }
+
+    Window window{800, 600, "Test", nullptr, Engine::getScene()};
     GLuint glProgramID;
     
     static void printError(int error, const char *description)
@@ -45,6 +52,9 @@ namespace Pontilus
     
     void init()
     {
+        // init memory pools
+        initRData();
+
         glfwSetErrorCallback(printError);
         
         if (!glfwInit())
@@ -97,11 +107,14 @@ namespace Pontilus
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         
+        window.scene->init();
+
         // start renderer
         Renderer::start();
         
         // say hi
         printf("Hello: %s\n", glGetString(GL_VERSION));
+
     }
     
     void loop()
@@ -176,7 +189,7 @@ namespace Pontilus
             IO::endFrame();
         }
 
-        Renderer::clean();
+        cleanRData();
         
         glLinkProgram(0);
         glfwDestroyWindow(window.ptr);

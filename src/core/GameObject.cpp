@@ -12,9 +12,18 @@ namespace Pontilus
 {
     namespace Engine
     {
+        void initGameObject(GameObject &g, glm::vec3 pos, glm::vec4 color, float width, float height)
+        {
+            g.pos = pos;
+            g.color = color;
+            g.width = width;
+            g.height = height;
+        }
+
         using namespace Graphics;
         void gameStateToRend(GameObject &g, Rend &r, unsigned int rOffset)
         {
+            static int texID = 1;
             int stride = rOffset * getLayoutLen(r) * 4;
             for (int i = 0; i < 4; i++)
             {
@@ -66,10 +75,12 @@ namespace Pontilus
                 result = getAttribMetaData(r, PONT_TEXID);
                 if (result.second == 1 * sizeof(float)) // I'd be very confused if there was more than one texID.
                 {
-                    *(float *)((char *)r.data + result.first + stride) = 1.0f; // TODO: gameObject textures
+                    *(float *)((char *)r.data + result.first + stride) = texID; // TODO: gameObject textures
                 }
                 stride += getLayoutLen(r);
             }
+
+            texID++;
         }
 
         void gameStateToRend(std::vector<GameObject> gs, Rend &r)

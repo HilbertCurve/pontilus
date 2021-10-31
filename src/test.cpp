@@ -7,7 +7,7 @@
 
 int main()
 {
-    __pError("oh no");
+    __pError("oh no", "");
 
     return 0;
 }
