@@ -10,6 +10,7 @@ namespace Pontilus
 
         void initTexture(const char *filepath, Texture &tex)
         {
+            static int id = 0;
             tex.filepath = filepath;
 
             glGenTextures(1, &(tex.texID));
@@ -61,6 +62,9 @@ namespace Pontilus
                 printf("Rendering Image: %s\nWidth: %d\nHeight: %d\nNumber of Channels: %d\n", filepath, *width, *height, *channels);
                 printf("texID: %d\n\n", tex.texID);
             }
+
+            texPool[id] = &tex;
+            id++;
 
             delete width;
             delete height;

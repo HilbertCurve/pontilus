@@ -26,8 +26,6 @@ namespace Pontilus
         // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
         void initRend(Rend &r, unsigned int numVerts)
         {
-            Renderer::addRend(r);
-
             r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
 
             r.layout = (vAttrib *)malloc(sizeof(vAttribDefault));
@@ -43,8 +41,6 @@ namespace Pontilus
 
         void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
         {
-            Renderer::addRend(r);
-
             r.layoutCount = numAttribs;
 
             r.layout = (vAttrib *)malloc(sizeof(vAttrib) * r.layoutCount);
@@ -147,10 +143,15 @@ namespace Pontilus
 
         void printRend(Rend &r)
         {
+            printRend(r, r.vertCount);
+        }
+
+        void printRend(Rend &r, unsigned int numVerts)
+        {
             printf("Rend at %p:\n{\n    ", &r);
 
             int stride = 0;
-            for (int i = 0; i < r.vertCount; i++)
+            for (int i = 0; i < numVerts; i++)
             {
                 for (int j = 0; j < r.layoutCount; j++)
                 {

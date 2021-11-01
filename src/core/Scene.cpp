@@ -6,33 +6,35 @@ namespace Pontilus
 {
     namespace Engine
     {
-        static GameObject g1, g2;
+        static GameObject g1, g2, g3, g4;
         static Scene s = 
         {
             []()
             {
                 g1 = {};
                 initGameObject(g1, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
-                //Graphics::initTexture("./assets/textures/ghostSwole.png", g1.tex);
+                Graphics::initTexture("./assets/textures/ghostSwole.png", g1.tex);
                 s.objs.push_back(g1);
                 
                 g2 = {};
                 initGameObject(g2, { 3.0f, 3.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 5.0f, 5.0f);
-                //Graphics::initTexture("./assets/textures/cookie.png", g2.tex);
+                Graphics::initTexture("./assets/textures/cookie.png", g2.tex);
                 s.objs.push_back(g2);
 
+                g3 = {};
+                initGameObject(g3, { -3.0f, -3.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 5.0f, 5.0f);
+                Graphics::initTexture("./assets/textures/ghostSwole.png", g3.tex);
+                s.objs.push_back(g3);
 
-                /*
-                Graphics::initRend(Renderer::r, 4);
+                g4 = {};
+                initGameObject(g4, { -3.0f, 3.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 5.0f, 5.0f);
+                Graphics::initTexture("./assets/textures/ghostSwole.png", g4.tex);
+                s.objs.push_back(g4);
 
-                gameStateToRend(s.objs, Renderer::r, 0);
-
-                s.parent = &window;
-
-                Renderer::g = &s.objs[0];
-                */
-                gameStateToRend(s.objs[0], rDataPool, 0);
-                gameStateToRend(s.objs[1], rDataPool, 1);
+                for (int i = 0; i < s.objs.size(); i++)
+                {
+                    gameStateToRend(s.objs[i], rDataPool, i);
+                }
             },
             [](double dt)
             {

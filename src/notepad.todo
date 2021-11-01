@@ -9,7 +9,7 @@ OpenGL:
     [+] Shader.cpp - handles getting shader data
     [+] Texture.cpp - textures, when that becomes necessary
     [+] InputListener.cpp - mouse and keyboard callbacks/data
-    [ ] RenderBatch.cpp - a way to contain a lot of a single primitive type
+    [-] RenderBatch.cpp - a way to contain a lot of a single primitive type
 
 Pontilus Language:
     I probably have a terrible idea, but what if scene functions are transpiled from 
@@ -31,7 +31,8 @@ Main Checklist:
     [+] Refactoring
     [+] Textures and images
     [ ] Rename Rend to rData
-    [ ] Render batches
+    [+] Render batches
+    Batches aren't needed, we'll just use one large rData pool (which is basically a render batch)
     Engine:
         [ ] Plan out the Engine
         [ ] ? I need to plan the engine before I make a checklist.
@@ -41,13 +42,13 @@ Main Checklist:
     
 
 Issues:
-Camera.cpp has wierd visual bugs involving an object rotating out of frame.
+    [ ] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
 
 
 Backburner:
-[ ] Windows build
+    [ ] Windows build
  
 
 Future Plans:
-[ ] Physics
-[ ] GUI
+    [ ] Physics
+    [ ] GUI

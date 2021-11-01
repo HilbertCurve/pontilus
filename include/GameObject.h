@@ -18,7 +18,7 @@ namespace Pontilus
             glm::vec4 color;
             float width, height;
 
-            Graphics::Texture tex;
+            Graphics::Texture tex = {nullptr, 0, 0, 0, false};
             Graphics::Primitive prim = Graphics::Primitives::QUAD;
         };
 

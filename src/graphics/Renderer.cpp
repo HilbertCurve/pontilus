@@ -18,40 +18,43 @@ namespace Pontilus
         GLuint vaoID;
         GLuint vboID;
 
-        static std::vector<Graphics::Rend *> rends;
-        static Graphics::Rend currentRend;
+        static Graphics::Rend *currentRend;
         static Graphics::Primitive mode = Graphics::Primitives::QUAD;
           
         static const GLint texSlots[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        static Graphics::Texture textures[2];
+        static Graphics::Texture *textures[8] = 
+        {
+            {}, {}, {}, {}, {}, {}, {}, {}
+        };
         
         // TODO(HilbertCurve): make this swappable
         Graphics::Shader currentShader;
 
-        static void setRend(Graphics::Rend *r)
+        static void setRend(Graphics::Rend &r)
         {
-            currentRend = *r;
+            currentRend = &r;
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
-            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(currentRend) * currentRend.vertCount, currentRend.data, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRend) * currentRend->vertCount, currentRend->data, GL_DYNAMIC_DRAW);
         }
 
         Graphics::Rend r;
         void start()
         {
+            int numObjects = window.scene->objs.size();
+
             // Generate 1 buffer, put the resulting identifier in vboID
             glGenBuffers(1, &vboID);
 
-            setRend(rends[0]);
-
-            Graphics::initTexture("./assets/textures/ghostSwole.png", textures[0]);
-            Graphics::initTexture("./assets/textures/cookie.png", textures[1]);
-
-            GLint elementIndices[mode.elementSize * 2];
-            mode.generateIndices(elementIndices, 0);
-            mode.generateIndices(elementIndices, 1);
+            GLint elementIndices[mode.elementSize * numObjects];
+            for (int i = 0; i < numObjects; i++)
+            {
+                mode.generateIndices(elementIndices, i);
+            }
             //GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
-            printRend(currentRend);
+            setRend(rDataPool);
+
+            printRend(*currentRend, numObjects * 4);
 
             glGenVertexArrays(1, &vaoID);
             glBindVertexArray(vaoID);
@@ -83,24 +86,20 @@ namespace Pontilus
         
         void render()
         {
+            int numObjects = window.scene->objs.size();
+
             Graphics::attachShader(currentShader);
             // default shader uniforms
             Graphics::uploadMat4(currentShader, "uProjection", Camera::getProjection());
             Graphics::uploadMat4(currentShader, "uView", Camera::getView());
-            Graphics::uploadInt(currentShader, "uTexture1", 0);
-            Graphics::uploadInt(currentShader, "uTexture2", 1);
             Graphics::uploadIntArr(currentShader, "uTextures", texSlots, 8);
-            
-            Graphics::Texture t1;
-            Graphics::Texture t2;
-            Graphics::initTexture("./assets/textures/ghostSwole.png", t1);
-            Graphics::initTexture("./assets/textures/cookie.png", t2);
-            
 
-            for (int i = 0; i < sizeof(textures)/sizeof(Graphics::Texture); i++)
+            for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture *); i++)
             {
+                if (texPool[i] == nullptr) continue;
+
                 glActiveTexture(GL_TEXTURE0 + i + 1);
-                Graphics::bindTexture(textures[i]);
+                Graphics::bindTexture(*texPool[i]);
             }
             
             glBindVertexArray(vaoID);
@@ -109,7 +108,7 @@ namespace Pontilus
             glEnableVertexAttribArray(2);
             glEnableVertexAttribArray(3);
             
-            glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, numObjects * 6, GL_UNSIGNED_INT, 0);
             
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
@@ -117,18 +116,15 @@ namespace Pontilus
             glDisableVertexAttribArray(3);
             glBindVertexArray(0);
 
-            for (int i = 0; i < sizeof(textures)/sizeof(Graphics::Texture); i++)
+            for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture); i++)
             {
+                if (texPool[i] == nullptr) continue;
+                
                 glActiveTexture(GL_TEXTURE0 + i + 1);
-                Graphics::unbindTexture(textures[i]);
+                Graphics::unbindTexture(*texPool[i]);
             }
 
             Graphics::detachShader(currentShader);
-        }
-
-        void addRend(Graphics::Rend &r)
-        {
-            rends.push_back(&r);
         }
     }
 }

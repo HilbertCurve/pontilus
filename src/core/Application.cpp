@@ -12,6 +12,7 @@
 #include "InputListener.h"
 #include "Scene.h"
 #include "Rend.h"
+#include "Texture.h"
 
 namespace Pontilus
 {
@@ -21,13 +22,31 @@ namespace Pontilus
     Graphics::Rend rDataPool = {};
     static void initRData()
     {
-        Graphics::initRend(rDataPool, 8);
+        Graphics::initRend(rDataPool, 1000);
     }
 
     static void cleanRData()
     {
         free(rDataPool.data);
         free(rDataPool.layout);
+    }
+
+    // Texture pool:
+    Graphics::Texture *texPool[8];
+    static void initTexPool()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            texPool[i] = nullptr;
+        }
+    }
+
+    static void cleanTexPool()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            texPool[i] = nullptr;
+        }
     }
 
     Window window{800, 600, "Test", nullptr, Engine::getScene()};
@@ -92,6 +111,11 @@ namespace Pontilus
                                   {
                                       window.width = newWidth;
                                       window.height = newHeight;
+                                      glViewport(
+                                          (window.width  - 512) / 2, 
+                                          (window.height - 512) / 2, 
+                                          512, 
+                                          512);
                                   });
         
         glfwSetCursorPosCallback(window.ptr, IO::mousePosCallback);
@@ -103,6 +127,11 @@ namespace Pontilus
         // make the window visible
         glfwShowWindow(window.ptr);
         
+        glViewport(
+            (window.width  - 512) / 2, 
+            (window.height - 512) / 2, 
+            512, 
+            512);
         // transparency stuff
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -190,6 +219,7 @@ namespace Pontilus
         }
 
         cleanRData();
+        cleanTexPool();
         
         glLinkProgram(0);
         glfwDestroyWindow(window.ptr);

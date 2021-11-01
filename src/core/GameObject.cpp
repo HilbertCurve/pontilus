@@ -20,9 +20,11 @@ namespace Pontilus
             g.height = height;
         }
 
-        using namespace Graphics;
+        using namespace Graphics; // fight me
         void gameStateToRend(GameObject &g, Rend &r, unsigned int rOffset)
         {
+            __pAssert(!(rOffset >= r.vertCount / 4), "Rend not big enough to hold game states!");
+
             static int texID = 1;
             int stride = rOffset * getLayoutLen(r) * 4;
             for (int i = 0; i < 4; i++)
@@ -41,9 +43,7 @@ namespace Pontilus
                 {
                     g.pos += orientation - glm::vec3{g.width / 2, g.height / 2, 0.0f};
 
-                    // makeshift memcpy(), because doing memcpy seems to 
-                    // mess up malloc tables, or something.
-                    // TODO: just use memcpy, it doesn't matter.
+                    // TODO: just use memcpy, bonehead.
                     for (int i = 0; i < 3; i++)
                     {
                         ((float *)((char *)r.data + result.first + stride))[i] = ((float *)&g.pos)[i];

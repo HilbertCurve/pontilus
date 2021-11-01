@@ -13,6 +13,7 @@ namespace Pontilus
     typedef short _PONTILUS_SETTINGS;
 
     extern Graphics::Rend rDataPool;
+    extern Graphics::Texture *texPool[8];
 
     struct Window
     {

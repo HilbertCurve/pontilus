@@ -4,15 +4,14 @@
 #define _PONTILUS_RENDERER_H
 
 #include "Rend.h"
+#include "Texture.h"
 
 namespace Pontilus
 {
     namespace Renderer
-    {   
-        //void addBatch(Graphics::RenderBatch &b);
+    {
         void start();
         void render();
-        void addRend(Graphics::Rend &r);
         void clean();
     }
 }

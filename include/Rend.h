@@ -58,7 +58,9 @@ namespace Pontilus
 
         int getVTypeLen(vProp p);
         int getLayoutLen(Rend &r);
+
         void printRend(Graphics::Rend &r);
+        void printRend(Graphics::Rend &r, unsigned int numVerts);
 
         typedef BiReturn<int, int> off_len;
         off_len getAttribMetaData(Rend &r, vProp p);
