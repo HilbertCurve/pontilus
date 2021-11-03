@@ -26,5 +26,6 @@ namespace Pontilus
 
         void gameStateToRend(GameObject &s, Graphics::Rend &r, unsigned int rOffset);
         void gameStateToRend(std::vector<GameObject> gs, Graphics::Rend &r, unsigned int rOffset);
+        void gameStateToRend(GameObject &s, Graphics::Rend &r, unsigned int rOffset, Graphics::vProp property);
     }
 }

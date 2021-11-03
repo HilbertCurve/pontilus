@@ -27,7 +27,7 @@ namespace Pontilus
             {}, {}, {}, {}, {}, {}, {}, {}
         };
         
-        // TODO(HilbertCurve): make this swappable
+        // TODO: make this swappable
         Graphics::Shader currentShader;
 
         static void setRend(Graphics::Rend &r)
@@ -86,6 +86,12 @@ namespace Pontilus
         
         void render()
         {
+            if (currentRend->isDirty)
+            {
+                glBindBuffer(GL_ARRAY_BUFFER, vboID);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, getLayoutLen(*currentRend) * 4, currentRend->data); // automate me
+            }
+
             int numObjects = window.scene->objs.size();
 
             Graphics::attachShader(currentShader);
@@ -93,6 +99,7 @@ namespace Pontilus
             Graphics::uploadMat4(currentShader, "uProjection", Camera::getProjection());
             Graphics::uploadMat4(currentShader, "uView", Camera::getView());
             Graphics::uploadIntArr(currentShader, "uTextures", texSlots, 8);
+            Graphics::uploadFloat(currentShader, "uTime", (float) glfwGetTime());
 
             for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture *); i++)
             {
@@ -116,7 +123,7 @@ namespace Pontilus
             glDisableVertexAttribArray(3);
             glBindVertexArray(0);
 
-            for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture); i++)
+            for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture *); i++)
             {
                 if (texPool[i] == nullptr) continue;
                 

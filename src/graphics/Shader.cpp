@@ -45,7 +45,7 @@ namespace Pontilus
 
             if (fragFile == nullptr)
             {
-                __pError("Could not open \"%s\".\n");
+                __pError("Could not open \"%s\".\n", fragPath);
                 exit(-1);
             }
 

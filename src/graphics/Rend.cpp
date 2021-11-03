@@ -130,7 +130,7 @@ namespace Pontilus
                 }
             }
 
-            fprintf(stderr, "Rend Layout Size: %ld\n", r.layoutCount);
+            fprintf(stderr, "Rend Layout Size: %d\n", r.layoutCount);
             /*
 
             // if you've gotten to this point, you've either specified an illegal
@@ -162,7 +162,7 @@ namespace Pontilus
                     {
                         for (int k = 0; k < r.layout[j].size; k++)
                         {
-                            printf("%3s, ", ((short *)((char *)r.data + result.first + stride))[k]);
+                            printf("%3d, ", ((short *)((char *)r.data + result.first + stride))[k]);
                         }
                     }
                     break;

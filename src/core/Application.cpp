@@ -150,7 +150,8 @@ namespace Pontilus
     {
         double t1;
         double t2;
-        double dt = 0.16f;
+        double dt = 0.0f;
+        double timeAccum = 0.0f;
         double highestdt = 0.16f;
         double lowestdt = 0.16f;
         while (!glfwWindowShouldClose(window.ptr))
@@ -164,6 +165,9 @@ namespace Pontilus
             
             // poll events
             glfwPollEvents();
+
+            if ((int)(timeAccum * 100) % 100 >= 16)
+                window.scene->update(dt);
             
             /*
             if (IO::isKeyPressed(GLFW_KEY_W))
@@ -191,6 +195,10 @@ namespace Pontilus
             
             Renderer::Camera::rotate(dMousePos.y/50.0f, dMousePos.x/50.0f);
             */
+            if (IO::isKeyPressed(GLFW_KEY_R))
+            {
+                Graphics::printRend(rDataPool, 5);
+            }
            
             // render
             Renderer::render();
@@ -205,17 +213,12 @@ namespace Pontilus
             highestdt = highestdt > dt ? highestdt : dt;
             lowestdt = lowestdt < dt ? lowestdt : dt;
             
-            // display framerate
-            std::string title; // std::string is so much easier than const char *. I'm sorry. 
-            title += std::string(window.title) + 
-                " || Fastest: " + std::to_string(1/lowestdt) +
-                " Slowest: " + std::to_string(1/highestdt) + 
-                " Current: " + std::to_string(1/dt);
-            
             // for some reason, this crashes my computer
             //glfwSetWindowTitle(window.ptr, title.c_str());
             
             IO::endFrame();
+
+            timeAccum += dt;
         }
 
         cleanRData();

@@ -10,6 +10,7 @@ in vec2 fTexCoords;
 in float fTexID;
 
 uniform sampler2D uTextures[8];
+uniform float uTime;
 
 out vec4 color;
 
@@ -26,7 +27,7 @@ void main()
     {
         vec3 point = vec3(0.0, 0.0, 0.0);
         int id = int(fTexID);
-        float vignetteConst = dist(point, fPos.xyz) + 0.1;
+        float vignetteConst = dist(point, fPos.xyz) + (sin(2*uTime) * sin(2*uTime) / 10.0) + 0.2;
         
         color = fColor * texture(uTextures[id - 1], fTexCoords);// - vignetteConst;
         

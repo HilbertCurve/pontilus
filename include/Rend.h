@@ -48,6 +48,8 @@ namespace Pontilus
             vAttrib *layout;
             unsigned int layoutCount;
             unsigned int vertCount;
+
+            bool isDirty = false;
         };
 
         void initRend(Rend &r, unsigned int numVerts);

@@ -44,9 +44,9 @@ namespace Pontilus
                     g.pos += orientation - glm::vec3{g.width / 2, g.height / 2, 0.0f};
 
                     // TODO: just use memcpy, bonehead.
-                    for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
                     {
-                        ((float *)((char *)r.data + result.first + stride))[i] = ((float *)&g.pos)[i];
+                        ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&g.pos)[j];
                     }
 
                     g.pos -= orientation - glm::vec3{g.width / 2, g.height / 2, 0.0f};
@@ -55,9 +55,9 @@ namespace Pontilus
                 result = getAttribMetaData(r, PONT_COLOR);
                 if (result.second >= 4 * sizeof(float))
                 {
-                    for (int i = 0; i < 4; i++)
+                    for (int j = 0; j < 4; j++)
                     {
-                        ((float *)((char *)r.data + result.first + stride))[i] = ((float *)&g.color)[i];
+                        ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&g.color)[j];
                     }             
                 }
 
@@ -66,9 +66,9 @@ namespace Pontilus
                 {
                     orientation.x /= g.width;
                     orientation.y /= g.height;
-                    for (int i = 0; i < 2; i++)
+                    for (int j = 0; j < 2; j++)
                     {
-                        ((float *)((char *)r.data + result.first + stride))[i] = orientation[i];
+                        ((float *)((char *)r.data + result.first + stride))[j] = orientation[j];
                     }
                 }
 
@@ -81,6 +81,8 @@ namespace Pontilus
             }
 
             texID++;
+
+            r.isDirty = true;
         }
 
         void gameStateToRend(std::vector<GameObject> gs, Rend &r)
@@ -93,6 +95,73 @@ namespace Pontilus
                 gameStateToRend(g, r, stride);
                 stride += getLayoutLen(r) * 4;
             }
+        }
+
+        void gameStateToRend(GameObject &g, Rend &r, unsigned int rOffset, vProp property)
+        {
+            int offset = rOffset * 4 * getLayoutLen(r);
+            
+            off_len result = getAttribMetaData(r, property);
+            for (int i = 0; i < 4; i++)
+            {
+
+                glm::vec3 orientation;
+                switch (i)
+                {
+                    case 0: orientation = {1.0f * g.width, 1.0f * g.height, 0.0f}; break;
+                    case 1: orientation = {0.0f * g.width, 1.0f * g.height, 0.0f}; break;
+                    case 2: orientation = {0.0f * g.width, 0.0f * g.height, 0.0f}; break;
+                    case 3: orientation = {1.0f * g.width, 0.0f * g.height, 0.0f}; break;
+                }
+
+                switch (property)
+                {
+                    case PONT_POS:
+                    {
+                        if (result.second >= 3 * sizeof(float))
+                        {
+                            g.pos += orientation - glm::vec3{g.width / 2, g.height / 2, 0.0f};
+
+                            for (int j = 0; j < 3; j++)
+                            {
+                                ((float *)((char *)r.data + result.first + offset))[j] = ((float *)&g.pos)[j];
+                            }
+
+                            g.pos -= orientation - glm::vec3{g.width / 2, g.height / 2, 0.0f};
+                        }
+                    } break;
+                    case PONT_COLOR:
+                    {
+                        if (result.second >= 4 * sizeof(float))
+                        {
+                            for (int j = 0; j < 4; j++)
+                            {
+                                ((float *)((char *)r.data + result.first + offset))[j] = ((float *)&g.color)[j];
+                            }
+                        }
+                    } break;
+                    case PONT_TEXCOORD:
+                    {
+                        if (result.second >= 2 * sizeof(float))
+                        {
+                            orientation.x /= g.width;
+                            orientation.y /= g.height;
+                            for (int j = 0; j < 2; j++)
+                            {
+                                ((float *)((char *)r.data + result.first + offset))[j] = orientation[j];
+                            }
+                        }
+                    } break;
+                    case PONT_TEXID:
+                    {
+                        __pMessage("Don't change the TexID of a gameObject!");
+                    }
+                }
+
+                offset += getLayoutLen(r);
+            }
+
+            r.isDirty = true;
         }
     }
 }

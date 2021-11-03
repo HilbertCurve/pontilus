@@ -8,17 +8,25 @@
 
 #define __pError(message, ...) \
 {\
-    fprintf(stderr, "\x1B[31mERROR: Error at file %s, line %d:\x1B[0m ",\
+    fprintf(stderr, "\x1B[01m\x1B[31mERROR: Error at file %s, line %d:\x1B[0m ",\
             __FILE__, __LINE__);\
     fprintf(stderr, message __VA_OPT__(,) __VA_ARGS__);\
     fprintf(stderr, "\n");\
     exit(-1);\
 }
 
+#define __pMessage(message, ...) \
+{\
+    printf("\x1B[01m\x1B[32mINFO: Message at file %s, line %d:\x1B[0m ",\
+            __FILE__, __LINE__);\
+    printf(message __VA_OPT__(,) __VA_ARGS__);\
+    printf("\n");\
+}
+
 #define __pAssert(x, reason) \
 if (!(x))\
 {\
-    fprintf(stderr, "\x1B[31mERROR: Assertion failed at file %s, line %d:\x1B[0m %s\n",\
+    fprintf(stderr, "\x1B[01m\x1B[31mERROR: Assertion failed at file %s, line %d:\x1B[0m %s\n",\
             __FILE__, __LINE__, reason);\
     exit(-1);\
 }
