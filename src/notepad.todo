@@ -12,7 +12,7 @@ OpenGL:
     [-] RenderBatch.cpp - a way to contain a lot of a single primitive type
 
 Misc:
-    [-] Math.cpp - not needed, replaced with glm
+    [ ] Math.cpp - phase out glm
     [-] JSON.cpp - for glTF files, replaced with rapidjson
     [+] Primitive.h - basic renderable primitives
 

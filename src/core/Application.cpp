@@ -168,7 +168,7 @@ namespace Pontilus
 
             if (timeAccum >= 0.016f)
             {
-                window.scene->update(dt);
+                window.scene->update(0.016f);
                 timeAccum = 0;
             }
             /*
@@ -226,8 +226,8 @@ namespace Pontilus
             highestdt = highestdt > dt ? highestdt : dt;
             lowestdt = lowestdt < dt ? lowestdt : dt;
             
-            // for some reason, this crashes my computer
-            glfwSetWindowTitle(window.ptr, window.title);
+            // for some reason, this crashes my vm at school
+            //glfwSetWindowTitle(window.ptr, window.title);
             
             IO::endFrame();
 
