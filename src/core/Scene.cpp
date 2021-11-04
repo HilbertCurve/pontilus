@@ -31,14 +31,19 @@ namespace Pontilus
                 static bool atRestY = false;
 
                 static glm::vec3 velocity = { 0.0f, 0.0f, 0.0f };
-                static glm::vec3 gravity = { 0.0f, -98.0f, 0.0f };
+                static glm::vec3 gravity = { 0.0f, -9.8f, 0.0f };
                 static glm::vec3 drag = { 0.0f, 0.0f, 0.0f };
                 static glm::vec3 acceleration = { 0.0f, 0.0f, 0.0f };
                 static const float floorY = -7.0f;
-                static const float dragConst = 5.3f;
+                static const float dragConst = 1.75f;
 
-                drag = velocity * dragConst * (float) dt;
-
+                drag = velocity * dragConst;
+                
+                if (0.001f > drag.x && drag.x > -0.001f)
+                {
+                    drag.x = 0.0f;
+                }
+                
                 // jumping
                 if (IO::isKeyPressed(GLFW_KEY_SPACE) && atRestY)
                 {
