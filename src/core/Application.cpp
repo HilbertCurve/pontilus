@@ -152,8 +152,8 @@ namespace Pontilus
         double t2;
         double dt = 0.0f;
         double timeAccum = 0.0f;
-        double highestdt = 0.16f;
-        double lowestdt = 0.16f;
+        double highestdt = 0.016f;
+        double lowestdt = 0.016f;
         while (!glfwWindowShouldClose(window.ptr))
         {
             t1 = glfwGetTime();
@@ -166,9 +166,11 @@ namespace Pontilus
             // poll events
             glfwPollEvents();
 
-            if ((int)(timeAccum * 100) % 100 >= 16)
+            if (timeAccum >= 0.016f)
+            {
                 window.scene->update(dt);
-            
+                timeAccum = 0;
+            }
             /*
             if (IO::isKeyPressed(GLFW_KEY_W))
             {
@@ -195,9 +197,20 @@ namespace Pontilus
             
             Renderer::Camera::rotate(dMousePos.y/50.0f, dMousePos.x/50.0f);
             */
+            static bool keyIsPressed0 = false;
+            static bool keyIsPressed1 = false;
             if (IO::isKeyPressed(GLFW_KEY_R))
             {
-                Graphics::printRend(rDataPool, 5);
+                keyIsPressed0 = true;
+                if (!(keyIsPressed0 == keyIsPressed1))
+                {
+                    Graphics::printRend(rDataPool, 5);
+                    keyIsPressed1 = keyIsPressed0 = true;
+                }
+            }
+            else
+            {
+                keyIsPressed1 = keyIsPressed1 = false;
             }
            
             // render
@@ -214,7 +227,7 @@ namespace Pontilus
             lowestdt = lowestdt < dt ? lowestdt : dt;
             
             // for some reason, this crashes my computer
-            //glfwSetWindowTitle(window.ptr, title.c_str());
+            glfwSetWindowTitle(window.ptr, window.title);
             
             IO::endFrame();
 

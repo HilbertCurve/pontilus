@@ -2,12 +2,14 @@
 #include "Application.h"
 #include "GameObject.h"
 #include "Rend.h"
+#include "InputListener.h"
+#include "Math.h"
 
 namespace Pontilus
 {
     namespace Engine
     {
-        static GameObject g1, g2, g3, g4, g5;
+        static GameObject g1;
         static Scene s = 
         {
             []()
@@ -16,26 +18,6 @@ namespace Pontilus
                 initGameObject(g1, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
                 Graphics::initTexture("./assets/textures/ghostSwole.png", g1.tex);
                 s.objs.push_back(g1);
-                
-                g2 = {};
-                initGameObject(g2, { 3.0f, 3.0f, 0.0f }, { 0.7f, 0.7f, 0.7f, 0.7f }, 5.0f, 5.0f);
-                Graphics::initTexture("./assets/textures/ghostSwole.png", g2.tex);
-                s.objs.push_back(g2);
-
-                g3 = {};
-                initGameObject(g3, { -3.0f, -3.0f, 0.0f }, { 0.7f, 0.7f, 0.7f, 0.7f }, 5.0f, 5.0f);
-                Graphics::initTexture("./assets/textures/ghostSwole.png", g3.tex);
-                s.objs.push_back(g3);
-
-                g4 = {};
-                initGameObject(g4, { -3.0f, 3.0f, 0.0f }, { 0.7f, 0.7f, 0.7f, 0.7f }, 5.0f, 5.0f);
-                Graphics::initTexture("./assets/textures/ghostSwole.png", g4.tex);
-                s.objs.push_back(g4);
-
-                g5 = {};
-                initGameObject(g5, { 3.0f, -3.0f, 0.0f }, { 0.7f, 0.7f, 0.7f, 0.7f }, 5.0f, 5.0f);
-                Graphics::initTexture("./assets/textures/ghostSwole.png", g5.tex);
-                s.objs.push_back(g5);
 
                 for (int i = 0; i < s.objs.size(); i++)
                 {
@@ -44,12 +26,67 @@ namespace Pontilus
             },
             [](double dt)
             {
-                float acceleration = -3;
-                static float velocity = 5;
+                static bool keyIsPressed0 = false;
+                static bool keyIsPressed1 = false;
+                static bool atRestY = false;
 
-                velocity += acceleration * dt;
+                static glm::vec3 velocity = { 0.0f, 0.0f, 0.0f };
+                static glm::vec3 gravity = { 0.0f, -98.0f, 0.0f };
+                static glm::vec3 drag = { 0.0f, 0.0f, 0.0f };
+                static glm::vec3 acceleration = { 0.0f, 0.0f, 0.0f };
+                static const float floorY = -7.0f;
+                static const float dragConst = 5.3f;
 
-                g1.pos.y += velocity * dt;
+                drag = velocity * dragConst * (float) dt;
+
+                // jumping
+                if (IO::isKeyPressed(GLFW_KEY_SPACE) && atRestY)
+                {
+                    keyIsPressed0 = true;
+                    if (!(keyIsPressed0 == keyIsPressed1))
+                    {
+                        velocity.y += 7.0f;
+                        keyIsPressed1 = keyIsPressed0 = true;
+                    }
+                    atRestY = false;
+                }
+                else
+                {
+                    keyIsPressed1 = keyIsPressed1 = false;
+                }
+
+                // side-to-side motion (right has precedence over left)
+                if (IO::isKeyPressed(GLFW_KEY_D))
+                {
+                    acceleration.x = 5.0f;
+                }
+                else if (IO::isKeyPressed(GLFW_KEY_A))
+                {
+                    acceleration.x = -5.0f;
+                }
+                else
+                {
+                    acceleration.x = 0.0f;
+                }
+
+                // hitting the floor
+                glm::vec3 dpos = velocity * (float) dt;
+                if (g1.pos.y + dpos.y > floorY) // if the next frame won't put me in the floor...
+                {
+                    // impulse move
+                    g1.pos += velocity * (float) dt;
+                    velocity += (gravity + acceleration - drag) * (float) dt;
+                }
+                else
+                {
+                    // otherwise snap me to the floor
+                    velocity += (acceleration - drag) * (float) dt;
+                    velocity.y = 0.0f;
+                    g1.pos += velocity * (float) dt;
+                    g1.pos.y = floorY;
+                    atRestY = true;
+                }
+
                 gameStateToRend(g1, rDataPool, 0, Graphics::PONT_POS);
             }
         };
