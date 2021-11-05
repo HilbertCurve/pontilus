@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Rend.h"
+#include "rData.h"
 #include "Primitive.h"
 #include "Texture.h"
 
@@ -24,8 +24,8 @@ namespace Pontilus
 
         void initGameObject(GameObject &g, glm::vec3 pos, glm::vec4 color, float width, float height);
 
-        void gameStateToRend(GameObject &s, Graphics::Rend &r, unsigned int rOffset);
-        void gameStateToRend(std::vector<GameObject> gs, Graphics::Rend &r, unsigned int rOffset);
-        void gameStateToRend(GameObject &s, Graphics::Rend &r, unsigned int rOffset, Graphics::vProp property);
+        void gameStateToRData(GameObject &s, Graphics::rData &r, unsigned int rOffset);
+        void gameStateToRData(std::vector<GameObject> gs, Graphics::rData &r, unsigned int rOffset);
+        void gameStateToRData(GameObject &s, Graphics::rData &r, unsigned int rOffset, Graphics::vProp property);
     }
 }

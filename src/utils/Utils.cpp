@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Rend.h"
-
 namespace Pontilus
 {
     void loadFile(const char *filepath, char *data)

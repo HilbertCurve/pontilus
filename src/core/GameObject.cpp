@@ -5,7 +5,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "Rend.h"
+#include "rData.h"
 #include "Utils.h"
 
 namespace Pontilus
@@ -21,7 +21,7 @@ namespace Pontilus
         }
 
         using namespace Graphics; // fight me
-        void gameStateToRend(GameObject &g, Rend &r, unsigned int rOffset)
+        void gameStateToRData(GameObject &g, rData &r, unsigned int rOffset)
         {
             __pAssert(!(rOffset >= r.vertCount / 4), "Rend not big enough to hold game states!");
 
@@ -85,19 +85,19 @@ namespace Pontilus
             r.isDirty = true;
         }
 
-        void gameStateToRend(std::vector<GameObject> gs, Rend &r)
+        void gameStateToRData(std::vector<GameObject> gs, rData &r)
         {
             __pAssert(r.vertCount >= 4 * gs.size(), "Rend not big enough to hold game states!");
 
             int stride = 0;
             for (GameObject g : gs)
             {
-                gameStateToRend(g, r, stride);
+                gameStateToRData(g, r, stride);
                 stride += getLayoutLen(r) * 4;
             }
         }
 
-        void gameStateToRend(GameObject &g, Rend &r, unsigned int rOffset, vProp property)
+        void gameStateToRData(GameObject &g, rData &r, unsigned int rOffset, vProp property)
         {
             int offset = rOffset * 4 * getLayoutLen(r);
             

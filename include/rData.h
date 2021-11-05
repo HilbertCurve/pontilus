@@ -41,7 +41,7 @@ namespace Pontilus
          * to be pieces of data with a sensible structure that allows for 
          * easy access and pipelining.
          */
-        struct Rend
+        struct rData
         {
             void *data;
             
@@ -52,25 +52,25 @@ namespace Pontilus
             bool isDirty = false;
         };
 
-        void initRend(Rend &r, unsigned int numVerts);
-        void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs); // I'd love to know how to do typed variadic arguments without templates, but I guess not right now 
-        void initRendByShader(Rend &r, Graphics::Shader &s);
+        void initRData(rData &r, unsigned int numVerts);
+        void initRData(rData &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs); // I'd love to know how to do typed variadic arguments without templates, but I guess not right now 
+        void initRDataByShader(rData &r, Graphics::Shader &s);
 
-        void resizeRend(Rend &r, unsigned int newNumVerts);
+        void resizeRData(rData &r, unsigned int newNumVerts);
 
         int getVTypeLen(vProp p);
-        int getLayoutLen(Rend &r);
+        int getLayoutLen(rData &r);
 
-        void printRend(Graphics::Rend &r);
-        void printRend(Graphics::Rend &r, unsigned int numVerts);
+        void printRData(rData &r);
+        void printRData(rData &r, unsigned int numVerts);
 
         typedef BiReturn<int, int> off_len;
-        off_len getAttribMetaData(Rend &r, vProp p);
+        off_len getAttribMetaData(rData &r, vProp p);
 
         /**
          * Gets the pointer to the first instance of Rend r's vertex attribute property p.
          */
-        void *getAttribPointer(Rend &r, vProp p);
+        void *getAttribPointer(rData &r, vProp p);
     }
 }
 

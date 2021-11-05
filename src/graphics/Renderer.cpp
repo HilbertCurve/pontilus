@@ -8,7 +8,7 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "GameObject.h"
-#include "Rend.h"
+#include "rData.h"
 #include "Primitive.h"
 
 namespace Pontilus
@@ -18,7 +18,7 @@ namespace Pontilus
         GLuint vaoID;
         GLuint vboID;
 
-        static Graphics::Rend *currentRend;
+        static Graphics::rData *currentRData;
         static Graphics::Primitive mode = Graphics::Primitives::QUAD;
           
         static const GLint texSlots[] = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -30,14 +30,14 @@ namespace Pontilus
         // TODO: make this swappable
         Graphics::Shader currentShader;
 
-        static void setRend(Graphics::Rend &r)
+        static void setRData(Graphics::rData &r)
         {
-            currentRend = &r;
+            currentRData = &r;
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
-            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRend) * currentRend->vertCount, currentRend->data, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRData) * currentRData->vertCount, currentRData->data, GL_DYNAMIC_DRAW);
         }
 
-        Graphics::Rend r;
+        Graphics::rData r;
         void start()
         {
             int numObjects = window.scene->objs.size();
@@ -52,9 +52,9 @@ namespace Pontilus
             }
             //GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
-            setRend(rDataPool);
+            setRData(rDataPool);
 
-            printRend(*currentRend, numObjects * 4);
+            printRData(*currentRData, numObjects * 4);
 
             glGenVertexArrays(1, &vaoID);
             glBindVertexArray(vaoID);
@@ -86,10 +86,10 @@ namespace Pontilus
         
         void render()
         {
-            if (currentRend->isDirty)
+            if (currentRData->isDirty)
             {
                 glBindBuffer(GL_ARRAY_BUFFER, vboID);
-                glBufferSubData(GL_ARRAY_BUFFER, 0, getLayoutLen(*currentRend) * 4, currentRend->data); // automate me
+                glBufferSubData(GL_ARRAY_BUFFER, 0, getLayoutLen(*currentRData) * 4, currentRData->data); // automate me
             }
 
             int numObjects = window.scene->objs.size();

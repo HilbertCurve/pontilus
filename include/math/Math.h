@@ -58,7 +58,7 @@ namespace Pontilus
         };
         struct Vec3
         {
-            float x, y, x;
+            float x, y, z;
 
             Vec3 operator+(Vec3);
             Vec3 operator-(Vec3);

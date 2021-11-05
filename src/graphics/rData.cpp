@@ -1,4 +1,4 @@
-#include "Rend.h"
+#include "rData.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,7 +24,7 @@ namespace Pontilus
                 {PONT_TEXID, PONT_FLOAT, 1}};
 
         // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
-        void initRend(Rend &r, unsigned int numVerts)
+        void initRData(rData &r, unsigned int numVerts)
         {
             r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
 
@@ -39,7 +39,7 @@ namespace Pontilus
             r.vertCount = numVerts;
         }
 
-        void initRend(Rend &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
+        void initRData(rData &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
         {
             r.layoutCount = numAttribs;
 
@@ -54,17 +54,17 @@ namespace Pontilus
             r.vertCount = numVerts;
         }
 
-        void initRendByShader(Rend &r, Graphics::Shader &s)
+        void initRDataByShader(rData &r, Graphics::Shader &s)
         {
             // Waiting on Shader.h's todo to be completed.
         }
 
-        void resizeRend(Rend &r, unsigned int newNumVerts)
+        void resizeRData(rData &r, unsigned int newNumVerts)
         {
             // ensure r has been initialized
-            if (r.layoutCount == 0) // every rend should have a layout
+            if (r.layoutCount == 0) // every rData should have a layout
             {
-                initRend(r, newNumVerts);
+                initRData(r, newNumVerts);
                 return;
             }
 
@@ -95,7 +95,7 @@ namespace Pontilus
             return len;
         }
 
-        int getLayoutLen(Rend &r)
+        int getLayoutLen(rData &r)
         {
             int len = 0;
             for (int i = 0; i < r.layoutCount; i++)
@@ -107,7 +107,7 @@ namespace Pontilus
         }
 
         // this should, theoretically, return the pointer to a place in the Rend and the size of that attribute.
-        off_len getAttribMetaData(Rend &r, vProp p)
+        off_len getAttribMetaData(rData &r, vProp p)
         {
             off_len result = {0, p};
 
@@ -130,25 +130,25 @@ namespace Pontilus
                 }
             }
 
-            fprintf(stderr, "Rend Layout Size: %d\n", r.layoutCount);
+            fprintf(stderr, "rData Layout Size: %d\n", r.layoutCount);
             /*
 
             // if you've gotten to this point, you've either specified an illegal
-            // vProp or the Rend doesn't have this property. I should implement
+            // vProp or the rData doesn't have this property. I should implement
             // error handling sometime in the future, but for now, byebye, program!
             */
-            fprintf(stderr, "Could not query rend for property %d.\n", p);
+            fprintf(stderr, "Could not query rData for property %d.\n", p);
             exit(-1);
         }
 
-        void printRend(Rend &r)
+        void printRData(rData &r)
         {
-            printRend(r, r.vertCount);
+            printRData(r, r.vertCount);
         }
 
-        void printRend(Rend &r, unsigned int numVerts)
+        void printRData(rData &r, unsigned int numVerts)
         {
-            printf("Rend at %p:\n{\n    ", &r);
+            printf("rData at %p:\n{\n    ", &r);
 
             int stride = 0;
             for (int i = 0; i < numVerts; i++)

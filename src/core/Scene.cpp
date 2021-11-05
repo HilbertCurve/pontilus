@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "Application.h"
 #include "GameObject.h"
-#include "Rend.h"
+#include "rData.h"
 #include "InputListener.h"
 #include "math/Math.h"
 
@@ -21,7 +21,7 @@ namespace Pontilus
 
                 for (int i = 0; i < s.objs.size(); i++)
                 {
-                    gameStateToRend(s.objs[i], rDataPool, i);
+                    gameStateToRData(s.objs[i], rDataPool, i);
                 }
             },
             [](double dt)
@@ -92,7 +92,7 @@ namespace Pontilus
                     atRestY = true;
                 }
 
-                gameStateToRend(g1, rDataPool, 0, Graphics::PONT_POS);
+                gameStateToRData(g1, rDataPool, 0, Graphics::PONT_POS);
             }
         };
 

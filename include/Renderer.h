@@ -3,7 +3,7 @@
 #ifndef _PONTILUS_RENDERER_H
 #define _PONTILUS_RENDERER_H
 
-#include "Rend.h"
+#include "rData.h"
 #include "Texture.h"
 
 namespace Pontilus

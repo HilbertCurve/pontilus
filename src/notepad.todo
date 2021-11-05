@@ -14,7 +14,8 @@ OpenGL:
 Misc:
     [ ] Math.cpp - phase out glm
     [-] JSON.cpp - for glTF files, replaced with rapidjson
-    [+] Primitive.h - basic renderable primitives
+    [+] Primitive.cpp - basic renderable primitives
+    [+] rData.cpp - renderable data
 
 Physics:
     [ ] Math utils
@@ -58,7 +59,7 @@ Main Checklist:
         [+] Mouse
     [+] Refactoring
     [+] Textures and images
-    [ ] Rename Rend to rData
+    [+] Rename Rend to rData
     [+] Render batches
     Batches aren't needed, we'll just use one large rData pool (which is basically a render batch)
 

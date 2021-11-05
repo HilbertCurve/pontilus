@@ -5,7 +5,7 @@
 #include <GL/gl.h>
 
 #include "Renderer.h"
-#include "Rend.h"
+#include "rData.h"
 
 namespace Pontilus
 {

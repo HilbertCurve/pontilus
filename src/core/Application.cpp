@@ -11,7 +11,7 @@
 #include "Renderer.h"
 #include "InputListener.h"
 #include "Scene.h"
-#include "Rend.h"
+#include "rData.h"
 #include "Texture.h"
 
 namespace Pontilus
@@ -19,10 +19,10 @@ namespace Pontilus
     static _PONTILUS_SETTINGS args = 0x0000;
 
     // rData pool:
-    Graphics::Rend rDataPool = {};
+    Graphics::rData rDataPool = {};
     static void initRData()
     {
-        Graphics::initRend(rDataPool, 1000);
+        Graphics::initRData(rDataPool, 1000);
     }
 
     static void cleanRData()
@@ -204,7 +204,7 @@ namespace Pontilus
                 keyIsPressed0 = true;
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
-                    Graphics::printRend(rDataPool, 5);
+                    Graphics::printRData(rDataPool, 5);
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
             }

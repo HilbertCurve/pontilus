@@ -5,14 +5,14 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Rend.h"
+#include "rData.h"
 #include "Scene.h"
 
 namespace Pontilus
 {
     typedef short _PONTILUS_SETTINGS;
 
-    extern Graphics::Rend rDataPool;
+    extern Graphics::rData rDataPool;
     extern Graphics::Texture *texPool[8];
 
     struct Window
