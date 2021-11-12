@@ -64,7 +64,7 @@ namespace Pontilus
         void printRData(rData &r);
         void printRData(rData &r, unsigned int numVerts);
 
-        typedef BiReturn<int, int> off_len;
+        typedef Pair<int, int> off_len;
         off_len getAttribMetaData(rData &r, vProp p);
 
         /**

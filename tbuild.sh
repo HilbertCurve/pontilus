@@ -5,6 +5,6 @@ mkdir -p build
 
 cd build
 
-g++ -o test -I ../include ../src/test.cpp
+g++ -o test -I ../include ../src/utils/*.cpp ../src/test.cpp
 
 echo "Compiled"

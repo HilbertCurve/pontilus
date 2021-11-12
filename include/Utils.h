@@ -36,12 +36,11 @@ namespace Pontilus
     typedef int8_t byte;
 
     /**
-     * Use this struct if you want to return a pair of useful data in a function.
      * Typedef it like this:
-     * typedef BiReturn<(type one), (type two)> one_two
+     * typedef Pair<(type one), (type two)> one_two
      */
     template <typename T, typename U>
-    struct BiReturn
+    struct Pair
     {
         T first;
         U second;

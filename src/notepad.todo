@@ -12,7 +12,7 @@ OpenGL:
     [-] RenderBatch.cpp - a way to contain a lot of a single primitive type
 
 Misc:
-    [ ] Math.cpp - phase out glm
+    [-] Math.cpp - maybe later
     [-] JSON.cpp - for glTF files, replaced with rapidjson
     [+] Primitive.cpp - basic renderable primitives
     [+] rData.cpp - renderable data
@@ -21,6 +21,8 @@ Physics:
     [ ] Math utils
 
     2D:
+        [+] Body declarations
+
         [ ] Circle-circle collision
         [ ] Circle-AABB collision
         Accelerated Box-AABB collision, in case rotation is not permitted.
@@ -32,13 +34,9 @@ Physics:
         [ ] Polygon-AABB collision
         [ ] Polygon-polygon collision
 
-        [ ] Circle-circle collision resolution
-        [ ] Circle-AABB collision resolution
-        [ ] AABB-AABB collision resolution
-        [ ] Box-AABB collision resolution
-        [ ] Polygon-circle collision resolution
-        [ ] Polygon-AABB collision resolution
-        [ ] Polygon-polygon collision resolution
+        [ ] Collision resolution
+
+        [ ] Go back and optimize (try to remove sqrts & trig when possible)
     3D:
         [ ] Sphere-sphere collision
         [ ] Sphere-AABB collision

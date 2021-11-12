@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "rData.h"
 #include "InputListener.h"
-#include "math/Math.h"
+#include "glm/glm.hpp"
 
 namespace Pontilus
 {

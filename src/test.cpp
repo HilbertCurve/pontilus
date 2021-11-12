@@ -8,7 +8,7 @@
 int main()
 {
     //__pError("oh no");
-    __pMessage("HUI");
+    __pMessage("HI");
 
     return 0;
 }
