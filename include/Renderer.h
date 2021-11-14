@@ -10,8 +10,16 @@ namespace Pontilus
 {
     namespace Renderer
     {
+        enum rMode
+        {
+            PONT_GAME,
+            PONT_DEBUG
+        };
         void start();
         void render();
+        void postRender();
+
+        //void renderRData(Graphics::rData &r, Graphics::Primitive mode, unsigned int numObjects);
         void clean();
     }
 }

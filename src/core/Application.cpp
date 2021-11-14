@@ -13,23 +13,46 @@
 #include "Scene.h"
 #include "rData.h"
 #include "Texture.h"
+#include "postprocessing/PointMap.h"
 
 namespace Pontilus
 {
     static _PONTILUS_SETTINGS args = 0x0000;
 
-    // rData pool:
-    Graphics::rData rDataPool = {};
-    static void initRData()
+    // quad pool:
+    Graphics::rData quadPool = {};
+    static void initQuads()
     {
-        Graphics::initRData(rDataPool, 1000);
+        Graphics::initRData(quadPool, 1000);
     }
 
-    static void cleanRData()
+    static void cleanQuads()
     {
-        free(rDataPool.data);
-        free(rDataPool.layout);
+        free(quadPool.data);
+        free(quadPool.layout);
     }
+
+    // pointLight pool
+    Graphics::rData pointLightPool = {};
+    static Graphics::vAttrib pointLightAttributes[3] = 
+    {
+        { Graphics::PONT_POS,   Graphics::PONT_FLOAT, 3 },
+        { Graphics::PONT_COLOR, Graphics::PONT_FLOAT, 4 },
+        { Graphics::PONT_OTHER, Graphics::PONT_FLOAT, 1 }
+    };
+
+    static void initPointLights()
+    {
+        Graphics::initRData(pointLightPool, 16, pointLightAttributes, 2);
+    }
+
+    static void cleanPointLights()
+    {
+        free(pointLightPool.data);
+        free(pointLightPool.layout);
+    }
+
+    static Graphics::PointMap pm;
 
     // Texture pool:
     Graphics::Texture *texPool[8];
@@ -72,7 +95,8 @@ namespace Pontilus
     void init()
     {
         // init memory pools
-        initRData();
+        initQuads();
+        initPointLights();
 
         glfwSetErrorCallback(printError);
         
@@ -138,8 +162,8 @@ namespace Pontilus
         
         window.scene->init();
 
-        // start renderer
         Renderer::start();
+        Graphics::initPointMap(pm);
         
         // say hi
         printf("Hello: %s\n", glGetString(GL_VERSION));
@@ -204,7 +228,7 @@ namespace Pontilus
                 keyIsPressed0 = true;
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
-                    Graphics::printRData(rDataPool, 5);
+                    Graphics::printRData(quadPool, 4);
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
             }
@@ -212,9 +236,12 @@ namespace Pontilus
             {
                 keyIsPressed1 = keyIsPressed1 = false;
             }
+
+            Graphics::updatePointMap(pm);
            
             // render
             Renderer::render();
+            //Renderer::postRender();
             
             // swap buffers (makes things smoother)
             glfwSwapBuffers(window.ptr);
@@ -234,7 +261,8 @@ namespace Pontilus
             timeAccum += dt;
         }
 
-        cleanRData();
+        cleanQuads();
+        cleanPointLights();
         cleanTexPool();
         
         glLinkProgram(0);

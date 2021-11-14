@@ -21,7 +21,7 @@ namespace Pontilus
 
                 for (int i = 0; i < s.objs.size(); i++)
                 {
-                    gameStateToRData(s.objs[i], rDataPool, i);
+                    gameStateToRData(s.objs[i], quadPool, i);
                 }
             },
             [](double dt)
@@ -92,7 +92,7 @@ namespace Pontilus
                     atRestY = true;
                 }
 
-                gameStateToRData(g1, rDataPool, 0, Graphics::PONT_POS);
+                gameStateToRData(g1, quadPool, 0, Graphics::PONT_POS);
             }
         };
 

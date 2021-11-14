@@ -17,6 +17,7 @@ namespace Pontilus
             unsigned int vertexCount;
             unsigned int elementSize;
             GLenum renderType;
+            Renderer::rMode renderMode;
             elementsCallback generateIndices;
         };
 
@@ -24,6 +25,7 @@ namespace Pontilus
         {
             extern Primitive QUAD;
             extern Primitive LINE;
+            extern Primitive POINT;
         }
     }
 }
