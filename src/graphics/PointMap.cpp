@@ -1,4 +1,7 @@
 #include "postprocessing/PointMap.h"
+
+#include <glm/glm.hpp>
+
 #include "Application.h"
 
 namespace Pontilus
@@ -14,7 +17,7 @@ namespace Pontilus
 
         void updatePointMap(PointMap &pm)
         {
-            ((float *)pm.dataPtr->data)[0] += 0.001f;
+            
         }
     }
 }

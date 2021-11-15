@@ -21,9 +21,41 @@ namespace Pontilus
 
     // quad pool:
     Graphics::rData quadPool = {};
+
+    // fullScreenQuad
+    // TODO: combine this with quad pool
+    Graphics::rData fullWindowQuad = {};
+    Graphics::vAttrib fullWindowQuadAttribs[2] = 
+    {
+        { Graphics::PONT_POS, Graphics::PONT_FLOAT, 3 },
+        { Graphics::PONT_COLOR, Graphics::PONT_FLOAT, 4 }
+    };
+
     static void initQuads()
     {
         Graphics::initRData(quadPool, 1000);
+        Graphics::initRData(fullWindowQuad, 4, fullWindowQuadAttribs, 2);
+        glm::vec3 orientation;
+
+        for (int i = 0; i < 4; i++)
+        {
+            switch (i)
+            {
+                case 0: orientation = {1.0f, 1.0f, 0.0f}; break;
+                case 1: orientation = {0.0f, 1.0f, 0.0f}; break;
+                case 2: orientation = {0.0f, 0.0f, 0.0f}; break;
+                case 3: orientation = {1.0f, 0.0f, 0.0f}; break;
+            }
+            for (int j = 0; j < 3; j++)
+            {
+                ((float *)fullWindowQuad.data)[i * 7 + j] = orientation[j];
+            }
+
+            for (int j = 0; j < 4; j++)
+            {
+                ((float *)fullWindowQuad.data)[i * 7 + j + 3] = 1.00f;
+            }
+        }
     }
 
     static void cleanQuads()
@@ -31,6 +63,7 @@ namespace Pontilus
         free(quadPool.data);
         free(quadPool.layout);
     }
+
 
     // pointLight pool
     Graphics::rData pointLightPool = {};
@@ -228,7 +261,7 @@ namespace Pontilus
                 keyIsPressed0 = true;
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
-                    Graphics::printRData(quadPool, 4);
+                    Graphics::printRData(fullWindowQuad, 4);
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
             }
@@ -241,7 +274,7 @@ namespace Pontilus
            
             // render
             Renderer::render();
-            //Renderer::postRender();
+            Renderer::postRender();
             
             // swap buffers (makes things smoother)
             glfwSwapBuffers(window.ptr);

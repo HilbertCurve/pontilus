@@ -21,19 +21,6 @@ namespace Pontilus
 
         static Graphics::rData *currentRData;
         static Graphics::Primitive mode = Graphics::Primitives::QUAD;
-
-        static Graphics::rData fullWindowQuad;
-        static Graphics::vAttrib fullWindowQuadAttribs[2] = 
-        {
-            Graphics::vAttrib
-            {
-                Graphics::PONT_POS, Graphics::PONT_FLOAT, 3
-            },
-            Graphics::vAttrib
-            {
-                Graphics::PONT_COLOR, Graphics::PONT_FLOAT, 4
-            }
-        };
           
         static const GLint texSlots[] = {1, 2, 3, 4, 5, 6, 7, 8};
         static Graphics::Texture *textures[8] = 
@@ -84,45 +71,57 @@ namespace Pontilus
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementIndices), elementIndices, GL_STATIC_DRAW);
         }
 
-        Graphics::rData r;
+        static void enableVertexAttribs(Graphics::rData &r)
+        {
+            int propOffset = 0;
+            for (int i = 0; i < r.layoutCount; i++)
+            {
+                int propertyLen = r.layout[i].count;
+                Graphics::vPropType type = r.layout[i].type;
+                
+                glVertexAttribPointer(i, propertyLen, GL_FLOAT, false, getLayoutLen(r), (void *)propOffset);
+                glEnableVertexAttribArray(i);
+
+                propOffset += propertyLen * Graphics::getVTypeLen(type);
+            }
+        }
+
+        static void disableVertexAttribs(Graphics::rData &r)
+        {
+            for (int i = 0; i < r.layoutCount; i++)
+            {
+                glDisableVertexAttribArray(i);
+            }
+        }
+
         void start()
         {
             int numObjects = window.scene->objs.size();
 
             glGenBuffers(1, &vboID);
+            glGenBuffers(1, &postvboID);
 
             //GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
             setRData(quadPool);
 
             glGenVertexArrays(1, &vaoID);
+            glGenVertexArrays(1, &postvaoID);
             glBindVertexArray(vaoID);
-
             setPrimitive(Graphics::Primitives::QUAD);
+            glBindVertexArray(postvaoID);
+            setPrimitive(Graphics::Primitives::QUAD);
+            glBindVertexArray(vaoID);
             
             gameShader = Graphics::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
-            if (gameShader.vertPath == nullptr || gameShader.fragPath == nullptr) exit(-1);
+            postShader = Graphics::initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
 
-            int propOffset = 0;
-            for (int i = 0; i < currentRData->layoutCount; i++)
-            {
-                int propertyLen = currentRData->layout[i].count;
-                Graphics::vPropType type = currentRData->layout[i].type;
-                
-                glVertexAttribPointer(i, propertyLen, GL_FLOAT, false, getLayoutLen(*currentRData), (void *)propOffset);
-                glEnableVertexAttribArray(i);
-
-                propOffset += propertyLen * Graphics::getVTypeLen(type);
-            }
+            enableVertexAttribs(*currentRData);
         }
         
         void render()
         {
-            if (currentRData->isDirty)
-            {
-                glBindBuffer(GL_ARRAY_BUFFER, vboID);
-                glBufferSubData(GL_ARRAY_BUFFER, 0, getLayoutLen(*currentRData) * 4, currentRData->data); // automate me
-            }
+            setRData(quadPool);
 
             int numObjects = window.scene->objs.size();
 
@@ -142,17 +141,11 @@ namespace Pontilus
             }
             
             glBindVertexArray(vaoID);
-            glEnableVertexAttribArray(0);
-            glEnableVertexAttribArray(1);
-            glEnableVertexAttribArray(2);
-            glEnableVertexAttribArray(3);
+            enableVertexAttribs(*currentRData);
             
             glDrawElements(GL_TRIANGLES, numObjects * 6, GL_UNSIGNED_INT, 0);
             
-            glDisableVertexAttribArray(0);
-            glDisableVertexAttribArray(1);
-            glDisableVertexAttribArray(2);
-            glDisableVertexAttribArray(3);
+            disableVertexAttribs(*currentRData);
             glBindVertexArray(0);
 
             for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture *); i++)
@@ -183,24 +176,17 @@ namespace Pontilus
         {
             setRData(fullWindowQuad);
 
-            setPrimitive(Graphics::Primitives::QUAD);
+            //setPrimitive(Graphics::Primitives::QUAD);
 
             Graphics::attachShader(postShader);
             Graphics::uploadFloatArr(postShader, "uLights", (float *) pointLightPool.data, 8 * 4);
 
-            //glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
-            //glEnableVertexAttribArray(0);
-
-            //glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(float) * 10, (void*)(3 * sizeof(float)));
-            //glEnableVertexAttribArray(1); // automate me
-
-            glBindVertexArray(postvaoID);
+            glBindVertexArray(vaoID);
+            enableVertexAttribs(*currentRData);
             
-            //glDrawElements(GL_TRIANGLES, 1 * 6, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, 1 * 6, GL_UNSIGNED_INT, 0);
 
-            //glDisableVertexAttribArray(0);
-            //glDisableVertexAttribArray(1);
-
+            disableVertexAttribs(*currentRData);
             glBindVertexArray(0);
 
             Graphics::detachShader(postShader);

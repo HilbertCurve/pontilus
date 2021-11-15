@@ -40,6 +40,6 @@ void main()
 
     vec3 sColor = vec3(pct);
 
-	color = vec4( sColor, 1.0 );
+	color = vec4( 1.0, 1.0, 1.0, 1.0 );
     
 }
