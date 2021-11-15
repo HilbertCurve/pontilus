@@ -17,6 +17,11 @@ Misc:
     [+] Primitive.cpp - basic renderable primitives
     [+] rData.cpp - renderable data
 
+Postprocessing:
+    [ ] Point lights
+    [ ] Point light demo
+    [ ] Horizontal blur
+
 Physics:
     [ ] Math utils
 
@@ -60,6 +65,7 @@ Main Checklist:
     [+] Rename Rend to rData
     [+] Render batches
     Batches aren't needed, we'll just use one large rData pool (which is basically a render batch)
+    [ ] Automatic rData allocation
 
     [ ] Physics
 

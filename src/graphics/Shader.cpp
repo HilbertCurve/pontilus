@@ -27,7 +27,7 @@ namespace Pontilus
 
             if (vertFile == nullptr)
             {
-                fprintf(stderr, "Could not open \"%s\".\n", vertPath);
+                __pError("Could not open \"%s\".\n", vertPath);
                 exit(-1);
             }
 
@@ -187,5 +187,13 @@ namespace Pontilus
             glUniform1iv(varLocation, count, data);
         }
 
+        void uploadFloatArr(Shader &s, const char *name, float *arr, int count)
+        {
+            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
+            if (!s.beingUsed)
+                attachShader(s);
+            
+            glUniform1fv(varLocation, count, arr);
+        }
     }
 }

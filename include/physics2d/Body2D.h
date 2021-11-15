@@ -43,7 +43,7 @@ namespace Pontilus
         class Polygon : public Body2D
         {
             public:
-            static int numVerts = n;
+            static const int numVerts = n;
             glm::vec2 vertices[n];
         };
     }

@@ -15,8 +15,9 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        GLuint vaoID;
-        GLuint vboID;
+        GLuint vaoID, postvaoID;
+        GLuint vboID, postvboID;
+        GLuint eboID, posteboID;
 
         static Graphics::rData *currentRData;
         static Graphics::Primitive mode = Graphics::Primitives::QUAD;
@@ -28,78 +29,108 @@ namespace Pontilus
         };
         
         // TODO: make this swappable
-        Graphics::Shader currentShader;
+        Graphics::Shader gameShader;
+        Graphics::Shader postShader;
 
         static void setRData(Graphics::rData &r)
         {
             currentRData = &r;
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRData) * currentRData->vertCount, currentRData->data, GL_DYNAMIC_DRAW);
+            
         }
 
-        Graphics::rData r;
-        void start()
+        static void setPrimitive(Graphics::Primitive p)
         {
-            int numObjects = window.scene->objs.size();
+            mode = p;
 
-            // Generate 1 buffer, put the resulting identifier in vboID
-            glGenBuffers(1, &vboID);
+            int numElements = 10;
 
-            GLint elementIndices[mode.elementSize * numObjects];
-            for (int i = 0; i < numObjects; i++)
+            switch (p.renderMode)
+            {
+                case PONT_GAME:
+                {
+                    numElements = window.scene->objs.size();
+                } break;
+                case PONT_DEBUG:
+                {
+                    numElements = 1; // automate me
+                } break;
+            }
+            printf("%d\n", numElements * mode.elementSize);
+
+            GLint elementIndices[mode.elementSize * numElements];
+            for (int i = 0; i < numElements; i++)
             {
                 mode.generateIndices(elementIndices, i);
             }
-            //GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
-
-            setRData(rDataPool);
-
-            printRData(*currentRData, numObjects * 4);
-
-            glGenVertexArrays(1, &vaoID);
-            glBindVertexArray(vaoID);
 
             GLuint eboID;
             glGenBuffers(1, &eboID);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementIndices), elementIndices, GL_STATIC_DRAW);
-            
-            currentShader = Graphics::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
-            if (currentShader.vertPath == nullptr || currentShader.fragPath == nullptr) exit(-1);
-            
-            // TODO(HilbertCurve): automate the glTF file reading process.
-            
-            // Enable the buffer attribute pointers
-            // TODO: automate vertex attributes
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(float) * 10, (void*)0);
-            glEnableVertexAttribArray(0);
+        }
 
-            glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(float) * 10, (void*)(3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
+        static void enableVertexAttribs(Graphics::rData &r)
+        {
+            int propOffset = 0;
+            for (int i = 0; i < r.layoutCount; i++)
+            {
+                int propertyLen = r.layout[i].count;
+                Graphics::vPropType type = r.layout[i].type;
+                
+                glVertexAttribPointer(i, propertyLen, GL_FLOAT, false, getLayoutLen(r), (void *)propOffset);
+                glEnableVertexAttribArray(i);
 
-            glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(float) * 10, (void*)(7 * sizeof(float)));
-            glEnableVertexAttribArray(2);
+                propOffset += propertyLen * Graphics::getVTypeLen(type);
+            }
+        }
 
-            glVertexAttribPointer(3, 1, GL_FLOAT, false, sizeof(float) * 10, (void*)(9 * sizeof(float)));
-            glEnableVertexAttribArray(3);
+        static void disableVertexAttribs(Graphics::rData &r)
+        {
+            for (int i = 0; i < r.layoutCount; i++)
+            {
+                glDisableVertexAttribArray(i);
+            }
+        }
+
+        void start()
+        {
+            int numObjects = window.scene->objs.size();
+
+            glGenBuffers(1, &vboID);
+            glGenBuffers(1, &postvboID);
+
+            //GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
+
+            setRData(quadPool);
+
+            glGenVertexArrays(1, &vaoID);
+            glGenVertexArrays(1, &postvaoID);
+            glBindVertexArray(vaoID);
+            setPrimitive(Graphics::Primitives::QUAD);
+            glBindVertexArray(postvaoID);
+            setPrimitive(Graphics::Primitives::QUAD);
+            glBindVertexArray(vaoID);
+            
+            gameShader = Graphics::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
+            postShader = Graphics::initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
+
+            enableVertexAttribs(*currentRData);
         }
         
         void render()
         {
-            if (currentRData->isDirty)
-            {
-                glBindBuffer(GL_ARRAY_BUFFER, vboID);
-                glBufferSubData(GL_ARRAY_BUFFER, 0, getLayoutLen(*currentRData) * 4, currentRData->data); // automate me
-            }
+            setRData(quadPool);
 
             int numObjects = window.scene->objs.size();
 
-            Graphics::attachShader(currentShader);
+            Graphics::attachShader(gameShader);
             // default shader uniforms
-            Graphics::uploadMat4(currentShader, "uProjection", Camera::getProjection());
-            Graphics::uploadMat4(currentShader, "uView", Camera::getView());
-            Graphics::uploadIntArr(currentShader, "uTextures", texSlots, 8);
-            Graphics::uploadFloat(currentShader, "uTime", (float) glfwGetTime());
+            Graphics::uploadMat4(gameShader, "uProjection", Camera::getProjection());
+            Graphics::uploadMat4(gameShader, "uView", Camera::getView());
+            Graphics::uploadIntArr(gameShader, "uTextures", texSlots, 8);
+            Graphics::uploadFloat(gameShader, "uTime", (float) glfwGetTime());
 
             for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture *); i++)
             {
@@ -110,17 +141,11 @@ namespace Pontilus
             }
             
             glBindVertexArray(vaoID);
-            glEnableVertexAttribArray(0);
-            glEnableVertexAttribArray(1);
-            glEnableVertexAttribArray(2);
-            glEnableVertexAttribArray(3);
+            enableVertexAttribs(*currentRData);
             
             glDrawElements(GL_TRIANGLES, numObjects * 6, GL_UNSIGNED_INT, 0);
             
-            glDisableVertexAttribArray(0);
-            glDisableVertexAttribArray(1);
-            glDisableVertexAttribArray(2);
-            glDisableVertexAttribArray(3);
+            disableVertexAttribs(*currentRData);
             glBindVertexArray(0);
 
             for (int i = 0; i < sizeof(texPool)/sizeof(Graphics::Texture *); i++)
@@ -131,7 +156,49 @@ namespace Pontilus
                 Graphics::unbindTexture(*texPool[i]);
             }
 
-            Graphics::detachShader(currentShader);
+            Graphics::detachShader(gameShader);
+
+            /*for (int i = 0; i < currentRData->layoutCount; i++)
+            {
+                int propertyLen = currentRData->layout[i].count;
+                Graphics::vPropType type = currentRData->layout[i].type;
+                
+                glVertexAttribPointer(i, propertyLen, GL_FLOAT, false, getLayoutLen(*currentRData), (void *)propOffset);
+                glEnableVertexAttribArray(i);
+
+                propOffset += propertyLen * Graphics::getVTypeLen(type);
+            }*/
+
+            
+        }
+
+        void postRender()
+        {
+            setRData(fullWindowQuad);
+
+            //setPrimitive(Graphics::Primitives::QUAD);
+
+            Graphics::attachShader(postShader);
+            Graphics::uploadFloatArr(postShader, "uLights", (float *) pointLightPool.data, 8 * 4);
+
+            glBindVertexArray(vaoID);
+            enableVertexAttribs(*currentRData);
+            
+            glDrawElements(GL_TRIANGLES, 1 * 6, GL_UNSIGNED_INT, 0);
+
+            disableVertexAttribs(*currentRData);
+            glBindVertexArray(0);
+
+            Graphics::detachShader(postShader);
+        }
+
+        void renderRData(Graphics::rData &r, Graphics::Primitive mode, unsigned int numObjects)
+        {
+            setRData(r);
+
+            //setPrimitive(mode, gameeboID);
+
+
         }
     }
 }

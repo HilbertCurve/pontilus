@@ -38,6 +38,7 @@ namespace Pontilus
         void uploadFloat(Shader &s, const char *name, const float &data);
         void uploadInt(Shader &s, const char *name, const int data);
         void uploadIntArr(Shader &s, const char *name, const int *data, int count);
+        void uploadFloatArr(Shader &s, const char *name, float *arr, int count);
 
         void attachShader(Shader &s);
         void detachShader(Shader &s);

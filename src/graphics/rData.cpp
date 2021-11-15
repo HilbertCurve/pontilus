@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
-#include <cstdarg>
 
 #include "Shader.h"
 #include "Utils.h"
@@ -21,7 +20,8 @@ namespace Pontilus
                 {PONT_POS, PONT_FLOAT, 3},
                 {PONT_COLOR, PONT_FLOAT, 4},
                 {PONT_TEXCOORD, PONT_FLOAT, 2},
-                {PONT_TEXID, PONT_FLOAT, 1}};
+                {PONT_TEXID, PONT_FLOAT, 1}
+                /*{PONT_OTHER, PONT_FLOAT, 3}*/};
 
         // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
         void initRData(rData &r, unsigned int numVerts)
@@ -100,7 +100,7 @@ namespace Pontilus
             int len = 0;
             for (int i = 0; i < r.layoutCount; i++)
             {
-                len += getVTypeLen(r.layout[i].type) * r.layout[i].size;
+                len += getVTypeLen(r.layout[i].type) * r.layout[i].count;
             }
 
             return len;
@@ -121,12 +121,12 @@ namespace Pontilus
                     int attribTypeSize = getVTypeLen(r.layout[i].type);
 
                     result.first = offsetInBytes;
-                    result.second = attribTypeSize * r.layout[i].size;
+                    result.second = attribTypeSize * r.layout[i].count;
                     return result;
                 }
                 else
                 {
-                    offsetInBytes += r.layout[i].size * getVTypeLen(r.layout[i].type);
+                    offsetInBytes += r.layout[i].count * getVTypeLen(r.layout[i].type);
                 }
             }
 
@@ -148,46 +148,75 @@ namespace Pontilus
 
         void printRData(rData &r, unsigned int numVerts)
         {
-            printf("rData at %p:\n{\n    ", &r);
+            printf("rData at %p: \033[31mPosition\033[0m, \033[32mColor\033[0m, \033[33mTex Coord\033[0m, \033[34mTex ID\033[0m, \033[35mOther\033[0m\n{\n    ", &r);
 
             int stride = 0;
             for (int i = 0; i < numVerts; i++)
             {
                 for (int j = 0; j < r.layoutCount; j++)
                 {
+                    // set color of text
+                    switch (r.layout[j].prop)
+                    {
+                        case Graphics::PONT_POS:
+                        {
+                            printf("\033[31m");
+                        } break;
+                        case Graphics::PONT_COLOR:
+                        {
+                            printf("\033[32m");
+                        } break;
+                        case Graphics::PONT_TEXCOORD:
+                        {
+                            printf("\033[33m");
+                        } break;
+                        case Graphics::PONT_TEXID:
+                        {
+                            printf("\033[34m");
+                        } break;
+                        case Graphics::PONT_OTHER:
+                        {
+                            printf("\033[35m");
+                        } break;
+                    }
+
                     Graphics::off_len result = Graphics::getAttribMetaData(r, r.layout[j].prop);
                     switch (r.layout[j].type)
                     {
                     case Graphics::PONT_SHORT:
                     {
-                        for (int k = 0; k < r.layout[j].size; k++)
+                        for (int k = 0; k < r.layout[j].count; k++)
                         {
                             printf("%3d, ", ((short *)((char *)r.data + result.first + stride))[k]);
                         }
+                        printf("\033[0m");
                     }
                     break;
                     case Graphics::PONT_INT:
                     {
-                        for (int k = 0; k < r.layout[j].size; k++)
+                        for (int k = 0; k < r.layout[j].count; k++)
                         {
                             printf("%3d, ", ((int *)((char *)r.data + result.first + stride))[k]);
                         }
+                        printf("\033[0m");
                     }
                     break;
                     case Graphics::PONT_UINT:
                     {
-                        for (int k = 0; k < r.layout[j].size; k++)
+                        for (int k = 0; k < r.layout[j].count; k++)
                         {
                             printf("%3d, ", ((unsigned int *)((char *)r.data + result.first + stride))[k]);
                         }
+                        printf("\033[0m");
                     }
                     break;
                     case Graphics::PONT_FLOAT:
                     {
-                        for (int k = 0; k < r.layout[j].size; k++)
+                        for (int k = 0; k < r.layout[j].count; k++)
                         {
                             printf("%1.2f, ", ((float *)((char *)r.data + result.first + stride))[k]);
                         }
+                        printf("\033[0m");
                     }
                     break;
                     }

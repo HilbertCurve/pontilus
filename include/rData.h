@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <GL/gl.h>
+
 #include "Shader.h"
 #include "Utils.h"
 
@@ -32,7 +34,7 @@ namespace Pontilus
         {
             vProp prop;
             vPropType type;
-            unsigned int size;
+            unsigned int count;
         };
 
         /**
@@ -58,7 +60,7 @@ namespace Pontilus
 
         void resizeRData(rData &r, unsigned int newNumVerts);
 
-        int getVTypeLen(vProp p);
+        int getVTypeLen(vPropType p);
         int getLayoutLen(rData &r);
 
         void printRData(rData &r);
