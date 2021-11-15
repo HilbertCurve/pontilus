@@ -34,10 +34,7 @@ namespace Pontilus
 
         static void setRData(Graphics::rData &r)
         {
-            currentRData = &r;
-            glBindBuffer(GL_ARRAY_BUFFER, vboID);
-            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRData) * currentRData->vertCount, currentRData->data, GL_DYNAMIC_DRAW);
-            
+            currentRData = &r;            
         }
 
         static void setPrimitive(Graphics::Primitive p)
@@ -57,7 +54,6 @@ namespace Pontilus
                     numElements = 1; // automate me
                 } break;
             }
-            printf("%d\n", numElements * mode.elementSize);
 
             GLint elementIndices[mode.elementSize * numElements];
             for (int i = 0; i < numElements; i++)
@@ -103,25 +99,26 @@ namespace Pontilus
 
             //GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
-            setRData(quadPool);
-
             glGenVertexArrays(1, &vaoID);
             glGenVertexArrays(1, &postvaoID);
             glBindVertexArray(vaoID);
             setPrimitive(Graphics::Primitives::QUAD);
             glBindVertexArray(postvaoID);
             setPrimitive(Graphics::Primitives::QUAD);
-            glBindVertexArray(vaoID);
+            //glBindVertexArray(vaoID);
             
             gameShader = Graphics::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
             postShader = Graphics::initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
 
-            enableVertexAttribs(*currentRData);
+            //enableVertexAttribs(*currentRData);
         }
         
         void render()
         {
             setRData(quadPool);
+            
+            glBindBuffer(GL_ARRAY_BUFFER, vboID);
+            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRData) * currentRData->vertCount, currentRData->data, GL_DYNAMIC_DRAW);
 
             int numObjects = window.scene->objs.size();
 
@@ -175,13 +172,13 @@ namespace Pontilus
         void postRender()
         {
             setRData(fullWindowQuad);
-
-            //setPrimitive(Graphics::Primitives::QUAD);
-
+            glBindBuffer(GL_ARRAY_BUFFER, postvboID);
+            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(fullWindowQuad) * fullWindowQuad.vertCount, fullWindowQuad.data, GL_DYNAMIC_DRAW);
+            
             Graphics::attachShader(postShader);
             Graphics::uploadFloatArr(postShader, "uLights", (float *) pointLightPool.data, 8 * 4);
 
-            glBindVertexArray(vaoID);
+            glBindVertexArray(postvaoID);
             enableVertexAttribs(*currentRData);
             
             glDrawElements(GL_TRIANGLES, 1 * 6, GL_UNSIGNED_INT, 0);

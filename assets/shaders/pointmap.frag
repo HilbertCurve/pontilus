@@ -3,7 +3,7 @@
  precision mediump float;
 #endif
 
-in vec2 fPos;
+in vec3 fPos;
 in vec4 fColor;
 
 struct pointLight
@@ -16,30 +16,30 @@ struct pointLight
 // pos pos pos color color color color intensity
 
 uniform float uLight[16][8];
+uniform mat4 uProjection;
+uniform mat4 uView;
 
 out vec4 color;
 
 void main()
 {
-    vec2 st = fPos;
-
+    if (fPos.x > 16)
+    {
+        color = vec4(1.0, 0.0, 1.0, 0.0);
+        return;
+    }
+    vec2 st = fPos.xy;
     float pct = 0.0;
 
-    // a. The DISTANCE from the pixel to the center
-    pct = distance(st,vec2(0.5));
+    for (int i = 0; i < 4; i++)
+    {
+        vec4 lightPos = uProjection * uView * vec4(uLight[i][0], uLight[i][1], uLight[i][2], 1.0);
 
-    // b. The LENGTH of the vector
-    //    from the pixel to the center
-    // vec2 toCenter = vec2(0.5)-st;
-    // pct = length(toCenter);
+        pct += distance(st, lightPos.xy);
+    }
 
-    // c. The SQUARE ROOT of the vector
-    //    from the pixel to the center
-    // vec2 tC = vec2(0.5)-st;
-    // pct = sqrt(tC.x*tC.x+tC.y*tC.y);
+    vec3 bColor = vec3(1.0) - vec3(pct);
 
-    vec3 sColor = vec3(pct);
-
-	color = vec4( 1.0, 1.0, 1.0, 1.0 );
+	color = vec4( bColor/3.0, 0.1 );
     
 }

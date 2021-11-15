@@ -15,9 +15,10 @@ namespace Pontilus
             pm.zIndex = z++;
         }
 
-        void updatePointMap(PointMap &pm)
+        void updatePointMap(double dt)
         {
-            
+            ((float *)(pointLightPool.data))[0] += 5;
+            ((float *)(pointLightPool.data))[1] += 5;
         }
     }
 }

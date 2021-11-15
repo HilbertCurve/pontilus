@@ -41,10 +41,10 @@ namespace Pontilus
         {
             switch (i)
             {
-                case 0: orientation = {1.0f, 1.0f, 0.0f}; break;
-                case 1: orientation = {0.0f, 1.0f, 0.0f}; break;
-                case 2: orientation = {0.0f, 0.0f, 0.0f}; break;
-                case 3: orientation = {1.0f, 0.0f, 0.0f}; break;
+                case 0: orientation = { 1.0f,  1.0f, 0.0f}; break;
+                case 1: orientation = {-1.0f,  1.0f, 0.0f}; break;
+                case 2: orientation = {-1.0f, -1.0f, 0.0f}; break;
+                case 3: orientation = { 1.0f, -1.0f, 0.0f}; break;
             }
             for (int j = 0; j < 3; j++)
             {
@@ -53,7 +53,7 @@ namespace Pontilus
 
             for (int j = 0; j < 4; j++)
             {
-                ((float *)fullWindowQuad.data)[i * 7 + j + 3] = 1.00f;
+                ((float *)fullWindowQuad.data)[i * 7 + j + 3] = 0.00f;
             }
         }
     }
@@ -261,7 +261,7 @@ namespace Pontilus
                 keyIsPressed0 = true;
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
-                    Graphics::printRData(fullWindowQuad, 4);
+                    Graphics::printRData(pointLightPool, 4);
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
             }
@@ -270,7 +270,7 @@ namespace Pontilus
                 keyIsPressed1 = keyIsPressed1 = false;
             }
 
-            Graphics::updatePointMap(pm);
+            Graphics::updatePointMap(dt);
            
             // render
             Renderer::render();

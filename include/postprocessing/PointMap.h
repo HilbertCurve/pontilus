@@ -14,6 +14,6 @@ namespace Pontilus
             rData *dataPtr;
         };
         void initPointMap(PointMap &pm);
-        void updatePointMap(PointMap &pm);
+        void updatePointMap(double dt);
     }
 }
