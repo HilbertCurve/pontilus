@@ -6,16 +6,12 @@
 in vec3 fPos;
 in vec4 fColor;
 
-struct pointLight
-{
-    vec3 pos;
-    vec4 color;
-    float intensity;
-};
+#define MAX_LIGHTS 4
 
-// pos pos pos color color color color intensity
+uniform vec3 uLightPos[MAX_LIGHTS];
+uniform vec4 uLightColor[MAX_LIGHTS];
+uniform float uLightIntensity[MAX_LIGHTS];
 
-uniform float uLight[16][8];
 uniform mat4 uProjection;
 uniform mat4 uView;
 
@@ -25,21 +21,21 @@ void main()
 {
     if (fPos.x > 16)
     {
-        color = vec4(1.0, 0.0, 1.0, 0.0);
+        color = vec4(0.0, 0.0, 0.0, 0.0);
         return;
     }
+
     vec2 st = fPos.xy;
-    float pct = 0.0;
+    vec4 bColor = vec4(0.0);
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < MAX_LIGHTS; i++)
     {
-        vec4 lightPos = uProjection * uView * vec4(uLight[i][0], uLight[i][1], uLight[i][2], 1.0);
+        vec4 lightPos = uProjection * uView * vec4(uLightPos[i], 1.0);
 
-        pct += distance(st, lightPos.xy);
+
+        bColor += (uLightColor[i] - vec4(vec3(distance(st, lightPos.xy)), 0.0)) * uLightIntensity[i];
     }
 
-    vec3 bColor = vec3(1.0) - vec3(pct);
-
-	color = vec4( bColor/3.0, 0.1 );
+	color = bColor;
     
 }

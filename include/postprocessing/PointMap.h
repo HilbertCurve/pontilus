@@ -13,7 +13,7 @@ namespace Pontilus
             int zIndex;
             rData *dataPtr;
         };
-        void initPointMap(PointMap &pm);
+        void initPointMap();
         void updatePointMap(double dt);
     }
 }

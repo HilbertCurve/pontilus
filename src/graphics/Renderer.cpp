@@ -176,7 +176,34 @@ namespace Pontilus
             glBufferData(GL_ARRAY_BUFFER, getLayoutLen(fullWindowQuad) * fullWindowQuad.vertCount, fullWindowQuad.data, GL_DYNAMIC_DRAW);
             
             Graphics::attachShader(postShader);
-            Graphics::uploadFloatArr(postShader, "uLights", (float *) pointLightPool.data, 8 * 4);
+            
+            float lightPos[4 * 3];
+            float lightColor[4 * 4];
+            float lightIntensity[4 * 1];
+
+            for (int i = 0; i < 4; i++)
+            {
+                // position
+                for (int j = 0; j < 3; j++)
+                {
+                    lightPos[i * 3 + j] = ((float *)pointLightPool.data)[i * 8 + j];
+                }
+
+                // color
+                for (int j = 0; j < 4; j++)
+                {
+                    lightColor[i * 4 + j] = ((float *)pointLightPool.data)[i * 8 + j + 3];
+                }
+
+                // intensity
+                lightIntensity[i] = ((float *)pointLightPool.data)[i * 8 + 7];
+            }
+
+            printf("%f\n", lightIntensity[0]);
+
+            Graphics::uploadVec3Arr(postShader, "uLightPos", lightPos, 3 * 4);
+            Graphics::uploadVec4Arr(postShader, "uLightColor", lightColor, 4 * 4);
+            Graphics::uploadFloatArr(postShader, "uLightIntensity", lightIntensity, 4);
 
             glBindVertexArray(postvaoID);
             enableVertexAttribs(*currentRData);

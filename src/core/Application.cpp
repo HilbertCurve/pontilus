@@ -76,7 +76,7 @@ namespace Pontilus
 
     static void initPointLights()
     {
-        Graphics::initRData(pointLightPool, 16, pointLightAttributes, 2);
+        Graphics::initRData(pointLightPool, 16, pointLightAttributes, 3);
     }
 
     static void cleanPointLights()
@@ -195,12 +195,11 @@ namespace Pontilus
         
         window.scene->init();
 
+        Graphics::initPointMap();
         Renderer::start();
-        Graphics::initPointMap(pm);
         
         // say hi
         printf("Hello: %s\n", glGetString(GL_VERSION));
-
     }
     
     void loop()
@@ -301,6 +300,5 @@ namespace Pontilus
         glLinkProgram(0);
         glfwDestroyWindow(window.ptr);
         glfwTerminate();
-        //TODO(HilbertCurve): other garbage collection things
     }
 }

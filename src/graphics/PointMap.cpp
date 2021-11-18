@@ -1,6 +1,7 @@
 #include "postprocessing/PointMap.h"
 
 #include <glm/glm.hpp>
+#include <random>
 
 #include "Application.h"
 
@@ -8,17 +9,36 @@ namespace Pontilus
 {
     namespace Graphics
     {
-        void initPointMap(PointMap &pm)
+        void initPointMap()
         {
-            static int z;
-            pm.dataPtr = &pointLightPool;
-            pm.zIndex = z++;
+            for (int i = 0; i < 4; i++)
+            {
+                // position
+                for (int j = 0; j < 3; j++)
+                {
+                    ((float *)pointLightPool.data)[i * 8 + j] = 100.0f;
+                }
+
+                // color
+                for (int j = 0; j < 4; j++)
+                {
+                    ((float *)pointLightPool.data)[i * 8 + j + 3] = 1.0f;
+                }
+
+                // intensity
+                ((float *)pointLightPool.data)[i * 8 + 7] = 0.2f;
+            }
         }
 
         void updatePointMap(double dt)
         {
-            ((float *)(pointLightPool.data))[0] += 5;
-            ((float *)(pointLightPool.data))[1] += 5;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    ((float *)pointLightPool.data)[i * 8 + j] += 1.0f;
+                }
+            }
         }
     }
 }

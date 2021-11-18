@@ -195,5 +195,32 @@ namespace Pontilus
             
             glUniform1fv(varLocation, count, arr);
         }
+
+        void uploadVec2Arr(Shader &s, const char *name, float *arr, int count)
+        {
+            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
+            if (!s.beingUsed)
+                attachShader(s);
+            
+            glUniform2fv(varLocation, count, arr);
+        }
+
+        void uploadVec3Arr(Shader &s, const char *name, float *arr, int count)
+        {
+            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
+            if (!s.beingUsed)
+                attachShader(s);
+            
+            glUniform3fv(varLocation, count, arr);
+        }
+
+        void uploadVec4Arr(Shader &s, const char *name, float *arr, int count)
+        {
+            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
+            if (!s.beingUsed)
+                attachShader(s);
+            
+            glUniform4fv(varLocation, count, arr);
+        }
     }
 }
