@@ -4,6 +4,8 @@
 #include <random>
 
 #include "Application.h"
+#include "InputListener.h"
+#include "Utils.h"
 
 namespace Pontilus
 {
@@ -16,7 +18,7 @@ namespace Pontilus
                 // position
                 for (int j = 0; j < 3; j++)
                 {
-                    ((float *)pointLightPool.data)[i * 8 + j] = 100.0f;
+                    ((float *)pointLightPool.data)[i * 8 + j] = 0.0f;
                 }
 
                 // color
@@ -26,19 +28,20 @@ namespace Pontilus
                 }
 
                 // intensity
-                ((float *)pointLightPool.data)[i * 8 + 7] = 0.2f;
+                ((float *)pointLightPool.data)[i * 8 + 7] = 0.1f;
             }
         }
 
         void updatePointMap(double dt)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
-                for (int j = 0; j < 3; j++)
-                {
-                    ((float *)pointLightPool.data)[i * 8 + j] += 1.0f;
-                }
+                ((float *)pointLightPool.data)[i * 8] = cos(glfwGetTime());
+                ((float *)pointLightPool.data)[i * 8 + 1] = sin(glfwGetTime());
             }
+
+            ((float *)pointLightPool.data)[3 * 8] = screenToWorldCoords(IO::mousePos()).x;
+            ((float *)pointLightPool.data)[3 * 8 + 1] = screenToWorldCoords(IO::mousePos()).y;
         }
     }
 }

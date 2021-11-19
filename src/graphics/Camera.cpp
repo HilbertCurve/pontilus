@@ -11,13 +11,22 @@ namespace Pontilus
         namespace Camera
         {
             static _Camera camera = _Camera();
+            static bool projectionMatrixIsDirty = true;
+
+            float projectionWidth = 20.0f;
+            float projectionHeight = 20.0f;
 
             glm::mat4 &getProjection()
             {
-                static bool hasInit = false;
-                if (!hasInit)
+                if (projectionMatrixIsDirty)
                 {
-                    camera.projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10000.0f);
+                    float left = -projectionWidth / 2;
+                    float right = -left;
+
+                    float down = -projectionHeight / 2;
+                    float up = -down;
+
+                    camera.projection = glm::ortho(left, right, down, up, -10.0f, 100.0f);
                 }
 
                 return camera.projection;
@@ -32,6 +41,11 @@ namespace Pontilus
                 camera.view = glm::inverse(transform);
 
                 return camera.view;
+            }
+
+            glm::vec3 &getPosition()
+            {
+                return camera.position;
             }
 
             void move(float dx, float dy, float dz)

@@ -199,7 +199,11 @@ namespace Pontilus
                 lightIntensity[i] = ((float *)pointLightPool.data)[i * 8 + 7];
             }
 
-            printf("%f\n", lightIntensity[0]);
+            //printf("%f\n", lightIntensity[0]);
+
+            Graphics::uploadMat4(postShader, "uProjection", Camera::getProjection());
+            Graphics::uploadMat4(postShader, "uView", Camera::getView());
+            Graphics::uploadVec2Arr(postShader, "uCameraPos", (float *)&Camera::getPosition(), 2);
 
             Graphics::uploadVec3Arr(postShader, "uLightPos", lightPos, 3 * 4);
             Graphics::uploadVec4Arr(postShader, "uLightColor", lightColor, 4 * 4);

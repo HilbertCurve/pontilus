@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <glm/glm.hpp>
 
 #define __pError(message, ...) \
 {\
@@ -47,6 +48,8 @@ namespace Pontilus
     };
 
     void loadFile(const char *filepath, char *data);
+
+    glm::vec2 screenToWorldCoords(glm::vec2 screenPos);
 }
 
 #endif // _PONTILUS_UTILS_H

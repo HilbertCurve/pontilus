@@ -9,6 +9,7 @@
 
 #include "Application.h"
 #include "Renderer.h"
+#include "Camera.h"
 #include "InputListener.h"
 #include "Scene.h"
 #include "rData.h"
@@ -39,12 +40,14 @@ namespace Pontilus
 
         for (int i = 0; i < 4; i++)
         {
+            float w = Renderer::Camera::projectionWidth;
+            float h = Renderer::Camera::projectionHeight;
             switch (i)
             {
-                case 0: orientation = { 1.0f,  1.0f, 0.0f}; break;
-                case 1: orientation = {-1.0f,  1.0f, 0.0f}; break;
-                case 2: orientation = {-1.0f, -1.0f, 0.0f}; break;
-                case 3: orientation = { 1.0f, -1.0f, 0.0f}; break;
+                case 0: orientation = { w,  h, 0.0f}; break;
+                case 1: orientation = {-w,  h, 0.0f}; break;
+                case 2: orientation = {-w, -h, 0.0f}; break;
+                case 3: orientation = { w, -h, 0.0f}; break;
             }
             for (int j = 0; j < 3; j++)
             {
