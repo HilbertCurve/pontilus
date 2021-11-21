@@ -22,26 +22,56 @@ namespace Pontilus
                 }
 
                 // color
-                for (int j = 0; j < 4; j++)
+                switch (i)
                 {
-                    ((float *)pointLightPool.data)[i * 8 + j + 3] = 1.0f;
+                    case 0: 
+                    {
+
+                        ((float *)pointLightPool.data)[i * 8 + 3] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 4] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 5] = 1.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 6] = 0.5f;
+                    } break;
+                    case 1:
+                    {
+                        ((float *)pointLightPool.data)[i * 8 + 3] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 4] = 1.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 5] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 6] = 0.5f;
+                    } break;
+                    case 2:
+                    {
+                        ((float *)pointLightPool.data)[i * 8 + 3] = 1.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 4] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 5] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 6] = 0.5f;
+                    }
+                    case 3:
+                    {
+                        ((float *)pointLightPool.data)[i * 8 + 3] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 4] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 5] = 0.0f;
+                        ((float *)pointLightPool.data)[i * 8 + 6] = 0.0f;
+                    }
+                    
                 }
+                    ((float *)pointLightPool.data)[i * 8] = i * 2;
 
                 // intensity
-                ((float *)pointLightPool.data)[i * 8 + 7] = 0.1f;
+                ((float *)pointLightPool.data)[i * 8 + 7] = 0.5f;
             }
         }
 
         void updatePointMap(double dt)
         {
-            for (int i = 0; i < 3; i++)
+            static float f = 0.0f;
+            for (int i = 0; i < 4; i++)
             {
-                ((float *)pointLightPool.data)[i * 8] = cos(glfwGetTime());
-                ((float *)pointLightPool.data)[i * 8 + 1] = sin(glfwGetTime());
+                ((float *)pointLightPool.data)[i * 8] += 0.01f;
+                // shoddy color setting
+                // TODO: RData-specific value setting
+                
             }
-
-            ((float *)pointLightPool.data)[3 * 8] = screenToWorldCoords(IO::mousePos()).x;
-            ((float *)pointLightPool.data)[3 * 8 + 1] = screenToWorldCoords(IO::mousePos()).y;
         }
     }
 }

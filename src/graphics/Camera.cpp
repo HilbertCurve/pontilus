@@ -51,6 +51,14 @@ namespace Pontilus
             void move(float dx, float dy, float dz)
             {
                 camera.position += glm::vec3(dx, dy, dz);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        ((float *)fullWindowQuad.data)[i * 7 + j] += glm::vec3(dx, dy, dz)[j];
+                    }
+                }
             }
             void rotate(float dpitch, float dyaw)
             {

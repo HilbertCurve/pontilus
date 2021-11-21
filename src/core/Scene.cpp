@@ -1,9 +1,12 @@
 #include "Scene.h"
+
+#include <glm/glm.hpp>
+
 #include "Application.h"
 #include "GameObject.h"
 #include "rData.h"
 #include "InputListener.h"
-#include "glm/glm.hpp"
+#include "Camera.h"
 
 namespace Pontilus
 {
@@ -36,6 +39,9 @@ namespace Pontilus
                 static glm::vec3 acceleration = { 0.0f, 0.0f, 0.0f };
                 static const float floorY = -7.0f;
                 static const float dragConst = 1.75f;
+
+                static float camToPlayer;
+                static float camVelocity;
 
                 drag = velocity * dragConst;
                 
@@ -91,6 +97,31 @@ namespace Pontilus
                     g1.pos.y = floorY;
                     atRestY = true;
                 }
+
+                if (IO::isKeyPressed(GLFW_KEY_RIGHT))
+                {
+                    Renderer::Camera::move(0.1f, 0.0f, 0.0f);
+                }
+                if (IO::isKeyPressed(GLFW_KEY_LEFT))
+                {
+                    Renderer::Camera::move(-0.1f, 0.0f, 0.0f);
+                }
+
+                /*
+                // update camera pos and move it accordingly
+                camToPlayer = abs(Renderer::Camera::getPosition().x - g1.pos.x);
+                if (camToPlayer > 8.5f)
+                {
+                    camVelocity += 0.1f;
+                    Renderer::Camera::move(camVelocity / dt, 0, 0);
+                }
+                else
+                {
+                    if (camVelocity - 0.3f !)
+                    camVelocity -= 0.3f;
+                    Renderer::Camera::move(camVelocity / dt, 0, 0);
+                }
+                */
 
                 gameStateToRData(g1, quadPool, 0, Graphics::PONT_POS);
             }

@@ -204,10 +204,14 @@ namespace Pontilus
             Graphics::uploadMat4(postShader, "uProjection", Camera::getProjection());
             Graphics::uploadMat4(postShader, "uView", Camera::getView());
             Graphics::uploadVec2Arr(postShader, "uCameraPos", (float *)&Camera::getPosition(), 2);
+            //printf("%f\n", Renderer::Camera::getPosition().x);
 
             Graphics::uploadVec3Arr(postShader, "uLightPos", lightPos, 3 * 4);
             Graphics::uploadVec4Arr(postShader, "uLightColor", lightColor, 4 * 4);
             Graphics::uploadFloatArr(postShader, "uLightIntensity", lightIntensity, 4);
+
+            // there's probably an alternative here that I could use involving matrices, but oh well
+            Graphics::uploadVec2Arr(postShader, "uResolution", &resolution, 1);
 
             glBindVertexArray(postvaoID);
             enableVertexAttribs(*currentRData);

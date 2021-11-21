@@ -20,6 +20,8 @@ namespace Pontilus
 {
     static _PONTILUS_SETTINGS args = 0x0000;
 
+    float resolution = 512;
+
     // quad pool:
     Graphics::rData quadPool = {};
 
@@ -40,14 +42,14 @@ namespace Pontilus
 
         for (int i = 0; i < 4; i++)
         {
-            float w = Renderer::Camera::projectionWidth;
-            float h = Renderer::Camera::projectionHeight;
+            float r = Renderer::Camera::projectionWidth/2;
+            float u = Renderer::Camera::projectionHeight/2;
             switch (i)
             {
-                case 0: orientation = { w,  h, 0.0f}; break;
-                case 1: orientation = {-w,  h, 0.0f}; break;
-                case 2: orientation = {-w, -h, 0.0f}; break;
-                case 3: orientation = { w, -h, 0.0f}; break;
+                case 0: orientation = { r,  u, 0.0f}; break;
+                case 1: orientation = {-r,  u, 0.0f}; break;
+                case 2: orientation = {-r, -u, 0.0f}; break;
+                case 3: orientation = { r, -u, 0.0f}; break;
             }
             for (int j = 0; j < 3; j++)
             {
@@ -167,15 +169,15 @@ namespace Pontilus
         glfwSwapInterval(1);
         
         // setup callbacks
-        glfwSetWindowSizeCallback(window.ptr, [](GLFWwindow *w, int newWidth, int newHeight)
+        glfwSetWindowSizeCallback(window.ptr, [](GLFWwindow *r, int newWidth, int newHeight)
                                   {
                                       window.width = newWidth;
                                       window.height = newHeight;
                                       glViewport(
-                                          (window.width  - 512) / 2, 
-                                          (window.height - 512) / 2, 
-                                          512, 
-                                          512);
+                                          (window.width  - resolution) / 2, 
+                                          (window.height - resolution) / 2, 
+                                          resolution, 
+                                          resolution);
                                   });
         
         glfwSetCursorPosCallback(window.ptr, IO::mousePosCallback);
@@ -188,10 +190,10 @@ namespace Pontilus
         glfwShowWindow(window.ptr);
         
         glViewport(
-            (window.width  - 512) / 2, 
-            (window.height - 512) / 2, 
-            512, 
-            512);
+            (window.width  - resolution) / 2, 
+            (window.height - resolution) / 2, 
+            resolution, 
+            resolution);
         // transparency stuff
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

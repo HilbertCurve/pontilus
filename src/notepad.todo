@@ -17,8 +17,8 @@ Misc:
     [+] rData.cpp - renderable data
 
 Postprocessing:
-    [ ] PointMap.cpp - a way to update/process points
-    [ ] Point light demo - a demonstration of how to use point maps for lighting effects
+    [+] PointMap.cpp - a way to update/process points
+    [+] Point light demo - a demonstration of how to use point maps for lighting effects
 
 Events:
     An event has an array of function pointers which are all called 

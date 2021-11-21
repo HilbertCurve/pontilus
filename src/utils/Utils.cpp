@@ -6,6 +6,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "Camera.h"
+#include "Application.h"
 
 namespace Pontilus
 {
@@ -29,12 +30,16 @@ namespace Pontilus
         fread((void *)data, filesize, 1, ptr);
     }
 
-    // important, this only works for 2D functions.
+    // important, this only works for 2D positions.
     glm::vec2 screenToWorldCoords(glm::vec2 screenPos)
     {
+        // get window information
+        float w = window.width;
+        float h = window.height;
+
         // screen to gl_Position coords
-        screenPos += glm::vec2(-256, -256);
-        screenPos /= 256;
+        screenPos -= glm::vec2(w / 2, h / 2);
+        screenPos /= glm::vec2(w / 2, -h / 2);
 
         // gl_Position coords to world coords
         screenPos.x *= Renderer::Camera::projectionWidth / 2;

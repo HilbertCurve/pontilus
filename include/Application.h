@@ -17,6 +17,8 @@ namespace Pontilus
     extern Graphics::rData pointLightPool;
     extern Graphics::Texture *texPool[8];
 
+    extern float resolution;
+
     struct Window
     {
         int width;

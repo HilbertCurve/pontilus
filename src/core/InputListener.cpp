@@ -78,7 +78,7 @@ namespace Pontilus
         {
             if (button >= NUM_MOUSE_BUTTONS || button < 0)
             {
-                fprintf(stderr, "ERROR: tried to access illegal mouse button: %d", button);
+                fprintf(stderr, "ERROR: tried to access illegal mouse button: %d\n", button);
                 return false;
             }
             return instance.core._m.buttonsPressed[button];
