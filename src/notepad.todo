@@ -30,7 +30,15 @@ Physics:
     [ ] Math utils
 
     2D:
+        Every collision is resolved in 3 steps. First the collision
+        is detected. Next the collision point is calculated and 
+        velocity/angular velocity data is collected. Finally the collision
+        is resolved. The three steps will be separated into 3 functions.
+
         [+] Body declarations
+
+        Point-Triangle will help with polygon and box2d collisions.
+        [ ] Point-Triangle collision
 
         [ ] Circle-circle collision
         [ ] Circle-AABB collision

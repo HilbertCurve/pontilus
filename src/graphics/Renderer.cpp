@@ -28,7 +28,6 @@ namespace Pontilus
             {}, {}, {}, {}, {}, {}, {}, {}
         };
         
-        // TODO: make this swappable
         Graphics::Shader gameShader;
         Graphics::Shader postShader;
 

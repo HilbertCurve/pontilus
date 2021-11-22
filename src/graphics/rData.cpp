@@ -9,8 +9,6 @@
 #include "Application.h"
 #include "Renderer.h"
 
-// TODO: change the name Rend, it sucks.
-
 namespace Pontilus
 {
     namespace Graphics

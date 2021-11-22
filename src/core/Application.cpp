@@ -26,7 +26,6 @@ namespace Pontilus
     Graphics::rData quadPool = {};
 
     // fullScreenQuad
-    // TODO: combine this with quad pool
     Graphics::rData fullWindowQuad = {};
     Graphics::vAttrib fullWindowQuadAttribs[2] = 
     {

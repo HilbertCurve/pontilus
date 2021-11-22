@@ -1,0 +1,14 @@
+#include "physics2d/Body2D.h"
+
+namespace Pontilus
+{
+    namespace Physics2D
+    {
+        Circle::Circle(glm::vec2 c, float r) : center(c), radius(r) {}
+
+        AABB::AABB(glm::vec2 min, glm::vec2 max) : min(min), max(max) {}
+
+        Box2D::Box2D(glm::vec2 c, float w, float h, float r) : 
+                     center(c), width(w), height(h), rotation(r) {}
+    }
+}

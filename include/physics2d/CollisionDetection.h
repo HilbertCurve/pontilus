@@ -18,6 +18,11 @@ namespace Pontilus
         };
 
         pData detectCollision(Body2D &body1, Body2D &body2);
+        bool isInside(glm::vec2 p, Body2D &body);
+
+        bool detectPointCircle(glm::vec2 p, Circle &c);
+        bool detectPointAABB(glm::vec2 p, AABB &a);
+        bool detectPointBox(glm::vec2 p, Box2D &b);
 
         pData detectCircleCircle(Circle &c1, Circle &c2);
         pData detectCircleAABB(Circle &c, AABB &a);

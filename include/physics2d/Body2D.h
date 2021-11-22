@@ -20,6 +20,7 @@ namespace Pontilus
         class AABB : public Body2D
         {
             public:
+            AABB(glm::vec2 min, glm::vec2 max);
             glm::vec2 min;
             glm::vec2 max;
         };
@@ -27,6 +28,7 @@ namespace Pontilus
         class Circle : public Body2D
         {
             public:
+            Circle(glm::vec2 center, float radius);
             glm::vec2 center;
             float radius;
         };
@@ -34,17 +36,18 @@ namespace Pontilus
         class Box2D : public Body2D
         {
             public:
-            glm::vec2 min;
-            glm::vec2 max;
+            Box2D(glm::vec2 center, float width, float height, float rotation);
+            glm::vec2 center;
+            float width, height;
             float rotation;
         };
 
-        template<unsigned int n>
         class Polygon : public Body2D
         {
             public:
-            static const int numVerts = n;
-            glm::vec2 vertices[n];
+            Polygon(unsigned int numVerts);
+            const int numVerts;
+            glm::vec2 vertices[];
         };
     }
 }
