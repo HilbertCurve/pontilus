@@ -11,6 +11,7 @@ namespace Pontilus
         class Body2D
         {
             public:
+            Body2D() = default;
             float mass;
             glm::vec2 velocity;
             float angularVelocity;
@@ -42,12 +43,20 @@ namespace Pontilus
             float rotation;
         };
 
+        template<unsigned int N>
         class Polygon : public Body2D
         {
             public:
+            Polygon() = default;
             Polygon(unsigned int numVerts);
-            const int numVerts;
-            glm::vec2 vertices[];
+            static const int numVerts = N;
+            glm::vec2 vertices[N];
+        };
+
+        class Triangle : public Polygon<3>
+        {
+            public:
+            Triangle(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3);
         };
     }
 }

@@ -10,5 +10,12 @@ namespace Pontilus
 
         Box2D::Box2D(glm::vec2 c, float w, float h, float r) : 
                      center(c), width(w), height(h), rotation(r) {}
+
+        Triangle::Triangle(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3)
+        {
+            vertices[0] = p1;
+            vertices[1] = p2;
+            vertices[2] = p3;
+        }
     }
 }

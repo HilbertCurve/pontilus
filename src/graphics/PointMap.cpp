@@ -67,7 +67,9 @@ namespace Pontilus
             static float f = 0.0f;
             for (int i = 0; i < 4; i++)
             {
-                ((float *)pointLightPool.data)[i * 8] += 0.01f;
+                ((float *)pointLightPool.data)[i * 8 + 0] = cos(glfwGetTime()) * ((i % 2) - 0.5f) * 2;
+                ((float *)pointLightPool.data)[i * 8 + 1] = sin(glfwGetTime()) * ((i % 2) - 0.5f) * 2;
+
                 // shoddy color setting
                 // TODO: RData-specific value setting
                 

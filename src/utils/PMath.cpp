@@ -5,6 +5,12 @@ namespace Pontilus
 {
     namespace Math
     {
+        Line::Line(vec2 p1, vec2 p2)
+        {
+            a = (p1.y - p2.y) / (p1.x - p2.x);
+            b = p1.y - a * p1.x;
+        }
+
         int signOrZero(float f)
         {
             return f > 0 ? 1 : (f == 0 ? 0 : -1);
@@ -48,6 +54,11 @@ namespace Pontilus
             float dy = v1.y - v2.y;
 
             return dx*dx + dy*dy;
+        }
+
+        bool pointAboveLine(vec2 p, Line &l)
+        {
+            return p.y > l.a * p.x + l.b;
         }
     }
 }

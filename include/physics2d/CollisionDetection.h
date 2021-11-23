@@ -23,6 +23,7 @@ namespace Pontilus
         bool detectPointCircle(glm::vec2 p, Circle &c);
         bool detectPointAABB(glm::vec2 p, AABB &a);
         bool detectPointBox(glm::vec2 p, Box2D &b);
+        bool detectPointTriangle(glm::vec2 p, Triangle &t);
 
         pData detectCircleCircle(Circle &c1, Circle &c2);
         pData detectCircleAABB(Circle &c, AABB &a);

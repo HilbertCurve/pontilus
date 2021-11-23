@@ -40,6 +40,30 @@ namespace Pontilus
             return insideX && insideY;
         }
 
+        bool detectPointTriangle(glm::vec2 p, Triangle &t)
+        {
+            // for all three lines of the triangle, find out
+            // if we should check for the point above the line
+            // or below it. XNOR the result with whether or not
+            // the point is above the line for each side of the 
+            // triangle, and return all the XNORs &&'d together.
+            
+            Line line0 = Line(t.vertices[1], t.vertices[2]);
+            Line line1 = Line(t.vertices[2], t.vertices[0]);
+            Line line2 = Line(t.vertices[0], t.vertices[1]);
+
+            bool line0Up = pointAboveLine(t.vertices[0], line0);
+            bool line1Up = pointAboveLine(t.vertices[1], line1);
+            bool line2Up = pointAboveLine(t.vertices[2], line2);
+
+            if (line0Up == pointAboveLine(p, line0) && 
+                line1Up == pointAboveLine(p, line1) &&
+                line2Up == pointAboveLine(p, line2))
+                return true;
+            
+            return false;
+        }
+
         pData detectCircleCircle(Circle &c1, Circle &c2)
         {
             // if the distance between the centers is greater than 
@@ -60,19 +84,9 @@ namespace Pontilus
 
         pData detectCircleAABB(Circle &c, AABB &a)
         {
-            // if the center of the circle is inside the AABB aTranspose,
-            // where aTranspose's minimum is a's minimum minus the circle's
-            // radius & aTranspose's maximum is a's maximum plus the circle's 
-            // radius, return true
+            // 
 
-            pData ret;
-            ret.colliders = BodyPair{c, a};
-
-            AABB aTranspose = AABB(a.min - glm::vec2(c.radius), a.max + glm::vec2(c.radius));
-
-            ret.colliding = detectPointAABB(c.center, aTranspose);
-
-            return ret;
+            return {};
         }
 
         pData detectAABBAABB(AABB &a1, AABB &a2)
