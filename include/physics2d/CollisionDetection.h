@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "physics2d/Body2D.h"
 #include "Utils.h"
 
@@ -14,7 +16,7 @@ namespace Pontilus
         {
             bool colliding;
             BodyPair colliders;
-            glm::vec2 collisionPoint;
+            std::vector<glm::vec2> collisionPoints;
         };
 
         pData detectCollision(Body2D &body1, Body2D &body2);

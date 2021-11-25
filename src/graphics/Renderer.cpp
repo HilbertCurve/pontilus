@@ -10,17 +10,19 @@
 #include "GameObject.h"
 #include "rData.h"
 #include "Primitive.h"
+#include "physics2d/Physics2DController.h"
 
 namespace Pontilus
 {
     namespace Renderer
     {
-        GLuint vaoID, postvaoID;
-        GLuint vboID, postvboID;
-        GLuint eboID, posteboID;
+        // TODO: abstract this away
+        GLuint vaoID, postvaoID, debugvaoID;
+        GLuint vboID, postvboID, debugvboID;
+        GLuint eboID, posteboID, debugeboID;
 
         static Graphics::rData *currentRData;
-        static Graphics::Primitive mode = Graphics::Primitives::QUAD;
+        static Graphics::Primitive currentMode = Graphics::Primitives::QUAD;
           
         static const GLint texSlots[] = {1, 2, 3, 4, 5, 6, 7, 8};
         static Graphics::Texture *textures[8] = 
@@ -30,6 +32,7 @@ namespace Pontilus
         
         Graphics::Shader gameShader;
         Graphics::Shader postShader;
+        Graphics::Shader debugShader;
 
         static void setRData(Graphics::rData &r)
         {
@@ -38,7 +41,7 @@ namespace Pontilus
 
         static void setPrimitive(Graphics::Primitive p)
         {
-            mode = p;
+            currentMode = p;
 
             int numElements = 10;
 
@@ -54,10 +57,10 @@ namespace Pontilus
                 } break;
             }
 
-            GLint elementIndices[mode.elementSize * numElements];
+            GLint elementIndices[currentMode.elementSize * numElements];
             for (int i = 0; i < numElements; i++)
             {
-                mode.generateIndices(elementIndices, i);
+                currentMode.generateIndices(elementIndices, i);
             }
 
             GLuint eboID;
@@ -108,6 +111,7 @@ namespace Pontilus
             
             gameShader = Graphics::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
             postShader = Graphics::initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
+            debugShader = Graphics::initShader("./assets/shaders/debug.vert", "./assets/shaders/debug.frag");
 
             //enableVertexAttribs(*currentRData);
         }
@@ -223,13 +227,33 @@ namespace Pontilus
             Graphics::detachShader(postShader);
         }
 
-        void renderRData(Graphics::rData &r, Graphics::Primitive mode, unsigned int numObjects)
+        void debugRender()
         {
-            setRData(r);
+            // physics-body rendering
+            setRData(linePool);
+            glBindBuffer(GL_ARRAY_BUFFER, debugvboID);
+            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(linePool) * linePool.vertCount, linePool.data, GL_DYNAMIC_DRAW);
 
-            //setPrimitive(mode, gameeboID);
+            Graphics::attachShader(debugShader);
 
+            Graphics::uploadMat4(gameShader, "uProjection", Camera::getProjection());
+            Graphics::uploadMat4(gameShader, "uView", Camera::getView());
 
+            long numLines = 0;
+            for (Physics2D::Body2D b : Physics2D::bodies)
+            {
+                numLines += b.lineCount();
+            }
+
+            glBindVertexArray(debugvaoID);
+            enableVertexAttribs(*currentRData);
+
+            glDrawArrays(GL_LINES, 0, numLines * 2);
+
+            disableVertexAttribs(*currentRData);
+            glBindVertexArray(0);
+
+            Graphics::detachShader(debugShader);
         }
     }
 }

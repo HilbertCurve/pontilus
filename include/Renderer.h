@@ -13,11 +13,13 @@ namespace Pontilus
         enum rMode
         {
             PONT_GAME,
+            PONT_POST,
             PONT_DEBUG
         };
         void start();
         void render();
         void postRender();
+        void debugRender();
 
         //void renderRData(Graphics::rData &r, Graphics::Primitive mode, unsigned int numObjects);
         void clean();

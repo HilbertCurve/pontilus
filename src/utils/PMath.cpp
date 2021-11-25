@@ -7,8 +7,8 @@ namespace Pontilus
     {
         Line::Line(vec2 p1, vec2 p2)
         {
-            a = (p1.y - p2.y) / (p1.x - p2.x);
-            b = p1.y - a * p1.x;
+            m = (p1.y - p2.y) / (p1.x - p2.x);
+            b = p1.y - m * p1.x;
         }
 
         int signOrZero(float f)
@@ -18,6 +18,11 @@ namespace Pontilus
         int sign(float f)
         {
             return f >= 0 ? 1 : -1;
+        }
+
+        bool between(float left, float f, float right)
+        {
+            return f > left && f < right;
         }
 
         vec2 rotate(vec2 v, vec2 pivot, float theta)
@@ -56,9 +61,45 @@ namespace Pontilus
             return dx*dx + dy*dy;
         }
 
+        float lerp(float start, float end, float amt)
+        {
+            return end * amt + start * (1.0f - amt);
+        }
+
+        vec2 lerp(vec2 start, vec2 end, float amt)
+        {
+            vec2 ret;
+            ret.x = lerp(start.x, end.x, amt);
+            ret.y = lerp(start.y, end.y, amt);
+            return ret;
+        }
+
+        float closest(float left, float right, float f)
+        {
+            if (between(left, f, right)) return f;
+            else if (f < left) return left;
+            else return right;
+        }
+
         bool pointAboveLine(vec2 p, Line &l)
         {
-            return p.y > l.a * p.x + l.b;
+            return p.y > l.b * p.x + l.b;
+        }
+
+        vec2 intersection(Line &l1, Line &l2)
+        {
+            float b, c, e, f;
+            b = -l1.m;
+            c = l1.b;
+            e = -l2.m;
+            f = l2.b;
+            mat2 m = 
+            {
+                b, 1,
+                e, 1
+            };
+
+            return inverse(m) * glm::vec2(c, f);
         }
     }
 }

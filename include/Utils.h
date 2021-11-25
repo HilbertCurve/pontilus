@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 #include <glm/glm.hpp>
 
 #define __pError(message, ...) \

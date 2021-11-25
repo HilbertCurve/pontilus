@@ -16,6 +16,10 @@ namespace Pontilus
             glm::vec2 velocity;
             float angularVelocity;
             float friction;
+
+            // renderer information
+            glm::vec4 color;
+            virtual float lineCount();
         };
         
         class AABB : public Body2D
@@ -24,6 +28,8 @@ namespace Pontilus
             AABB(glm::vec2 min, glm::vec2 max);
             glm::vec2 min;
             glm::vec2 max;
+
+            float lineCount();
         };
 
         class Circle : public Body2D
@@ -32,6 +38,8 @@ namespace Pontilus
             Circle(glm::vec2 center, float radius);
             glm::vec2 center;
             float radius;
+
+            float lineCount();
         };
 
         class Box2D : public Body2D
@@ -41,6 +49,8 @@ namespace Pontilus
             glm::vec2 center;
             float width, height;
             float rotation;
+
+            float lineCount();
         };
 
         template<unsigned int N>
@@ -51,6 +61,8 @@ namespace Pontilus
             Polygon(unsigned int numVerts);
             static const int numVerts = N;
             glm::vec2 vertices[N];
+
+            float lineCount();
         };
 
         class Triangle : public Polygon<3>

@@ -33,7 +33,8 @@ Physics:
         Every collision is resolved in 3 steps. First the collision
         is detected. Next the collision point is calculated and 
         velocity/angular velocity data is collected. Finally the collision
-        is resolved. The three steps will be separated into 3 functions.
+        is resolved. The three steps will be separated into 2 functions, one
+        for collision detection and data collection and one for resolution.
 
         [+] Body declarations
 
@@ -44,16 +45,16 @@ Physics:
         [ ] Circle-AABB collision
         Accelerated Box-AABB collision, in case rotation is not permitted.
         [ ] AABB-AABB collision
-        [ ] Box-AABB collision
+        [ ] Box2D-AABB collision
         If we have Box-AABB, we have Box-box; we just need to rotate both boxes around
-        one box's center and treat it as an AABB.
-        [ ] Polygon-circle collision
+        one box's center and treat it as an AABB temporarily.
+        [ ] Polygon-Circle collision
         [ ] Polygon-AABB collision
-        [ ] Polygon-polygon collision
+        [ ] Polygon-Polygon collision
 
         [ ] Collision resolution
 
-        [ ] Go back and optimize (try to remove sqrts & trig when possible)
+        [ ] Go back and optimize (try to remove sqrts & trig if possible)
     3D:
         [ ] Sphere-sphere collision
         [ ] Sphere-AABB collision

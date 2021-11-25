@@ -25,6 +25,14 @@ namespace Pontilus
     // quad pool:
     Graphics::rData quadPool = {};
 
+    // debug line pool:
+    Graphics::rData linePool = {};
+    Graphics::vAttrib linePoolAttribs[2] = 
+    {
+        { Graphics::PONT_POS, Graphics::PONT_FLOAT, 3 },
+        { Graphics::PONT_COLOR, Graphics::PONT_FLOAT, 4 }
+    };
+
     // fullScreenQuad
     Graphics::rData fullWindowQuad = {};
     Graphics::vAttrib fullWindowQuadAttribs[2] = 
@@ -36,6 +44,7 @@ namespace Pontilus
     static void initQuads()
     {
         Graphics::initRData(quadPool, 1000);
+
         Graphics::initRData(fullWindowQuad, 4, fullWindowQuadAttribs, 2);
         glm::vec3 orientation;
 
@@ -62,12 +71,22 @@ namespace Pontilus
         }
     }
 
+    static void initLines()
+    {
+        Graphics::initRData(linePool, 1000, linePoolAttribs, 2);
+    }
+
     static void cleanQuads()
     {
         free(quadPool.data);
         free(quadPool.layout);
     }
 
+    static void cleanLines()
+    {
+        free(linePool.data);
+        free(linePool.layout);
+    }
 
     // pointLight pool
     Graphics::rData pointLightPool = {};

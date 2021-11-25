@@ -25,6 +25,9 @@ namespace Pontilus
         {
             extern Primitive QUAD;
             extern Primitive LINE;
+            extern Primitive TRIANGLE;
+            extern Primitive RECTANGLE;
+            extern Primitive CIRCLE;
             extern Primitive POINT;
         }
     }
