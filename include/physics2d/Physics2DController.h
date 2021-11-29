@@ -12,7 +12,7 @@ namespace Pontilus
     {
         std::vector<Body2D> bodies;
         
-        void addBody();
-        void update();
+        void update(double dt);
+        void fixedUpdate();
     }
 }

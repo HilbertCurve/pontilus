@@ -70,7 +70,7 @@ namespace Pontilus
             // the radius of the circles, return false.
 
             pData ret;
-            ret.colliders = BodyPair{c1, c2};
+            ret.colliders = BodyPair{&c1, &c2};
 
             float sumRadius = c1.radius + c2.radius;
 
@@ -107,7 +107,7 @@ namespace Pontilus
             // inside the circle, return true
 
             pData ret;
-            ret.colliders = BodyPair{c, a};
+            ret.colliders = BodyPair{&c, &a};
 
             // if center is inside AABB, return true
             if (detectPointAABB(c.center, a)) 
@@ -172,7 +172,7 @@ namespace Pontilus
             // maximum plus a2's width and height, return true
 
             pData ret;
-            ret.colliders = BodyPair{a1, a2};
+            ret.colliders = BodyPair{&a1, &a2};
             
             // a2's width and height
             glm::vec2 a2wh = a2.max - a2.min;

@@ -11,7 +11,7 @@ namespace Pontilus
 {
     namespace Physics2D
     {
-        typedef Pair<Body2D, Body2D> BodyPair;
+        typedef Pair<Body2D *, Body2D *> BodyPair;
         struct pData
         {
             bool colliding;
