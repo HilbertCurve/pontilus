@@ -1,8 +1,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Camera.h"
-#include "Application.h"
+#include "graphics/Camera.h"
+#include "core/Application.h"
 
 namespace Pontilus
 {
@@ -13,8 +13,8 @@ namespace Pontilus
             static _Camera camera = _Camera();
             static bool projectionMatrixIsDirty = true;
 
-            float projectionWidth = 20.0f;
-            float projectionHeight = 20.0f;
+            float projectionWidth = window.width / 10;
+            float projectionHeight = window.height / 10;
 
             glm::mat4 &getProjection()
             {
@@ -46,6 +46,19 @@ namespace Pontilus
             glm::vec3 &getPosition()
             {
                 return camera.position;
+            }
+
+            float getZoom()
+            {
+                return camera.zoom;
+            }
+
+            void updateProjection()
+            {
+                projectionWidth = window.width / 10;
+                projectionHeight = window.height / 10;
+
+                projectionMatrixIsDirty = true;
             }
 
             void move(float dx, float dy, float dz)

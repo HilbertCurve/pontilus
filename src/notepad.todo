@@ -19,6 +19,17 @@ Misc:
 Postprocessing:
     [+] PointMap.cpp - a way to update/process points
     [+] Point light demo - a demonstration of how to use point maps for lighting effects
+    [ ] More to come
+
+ECS:
+    [ ] Component.h - these can be attached to GameObjects to give various engines control over the go's fields
+    [ ] SpriteRenderer.h - migrate toRData() calls here
+    [ ] Body2D.cpp - convert physics body into a component
+
+UI:
+    [ ] Text.cpp - basic text; a game object with an added std::string field
+    [ ] TextField.cpp - a Text, but submits a key callback when focused on that updates the text inside
+    [ ] Icon.cpp - a game object with a texture handle
 
 Events:
     An event has an array of function pointers which are all called 
@@ -80,6 +91,9 @@ Main Checklist:
     Batches aren't needed, we'll just use one large rData pool (which is basically a render batch)
     [ ] Automatic rData allocation
 
+    [ ] UI
+    [ ] Basic ECS
+
     [ ] Physics
 
     [ ] Debug Camera.cpp
@@ -95,5 +109,4 @@ Backburner:
  
 
 Future Plans:
-    [ ] GUI
     [ ] Custom language?

@@ -4,8 +4,8 @@
 
 #include "vector"
 
-#include "CollisionDetection.h"
-#include "Constraint.h"
+#include "physics2d/CollisionDetection.h"
+#include "physics2d/Constraint.h"
 
 namespace Pontilus
 {

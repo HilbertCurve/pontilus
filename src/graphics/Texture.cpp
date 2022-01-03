@@ -1,20 +1,24 @@
-#include "Texture.h"
+#include "graphics/Texture.h"
 
-#include "Application.h"
-#include "stb/stb_image.h"
+#include <math.h>
+#include <glm/glm.hpp>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
+
+#include "core/Application.h"
 
 namespace Pontilus
 {
     namespace Graphics
     {
-
-        void initTexture(const char *filepath, Texture &tex)
+        void initIconMap(const char *filepath, IconMap &im, int textureWidth, int textureHeight, int padding)
         {
-            static int id = 0;
-            tex.filepath = filepath;
+            im.filepath = filepath;
+            im.texID = iconPoolStackPointer;
 
-            glGenTextures(1, &(tex.texID));
-            glBindTexture(GL_TEXTURE_2D, tex.texID);
+            glGenTextures(1, &(im.texID));
+            glBindTexture(GL_TEXTURE_2D, im.texID);
 
             // Set texture parameters
             // Repeat image in both directions
@@ -34,8 +38,8 @@ namespace Pontilus
 
             if (image != nullptr)
             {
-                tex.width = *width;
-                tex.height = *height;
+                im.width = *width;
+                im.height = *height;
 
                 if (*channels == 3)
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
@@ -54,34 +58,74 @@ namespace Pontilus
             }
 
             stbi_image_free(image);
-            tex.width = *width;
-            tex.height = *height;
+            im.width = *width;
+            im.height = *height;
 
             if (debugMode())
             {
                 printf("Rendering Image: %s\nWidth: %d\nHeight: %d\nNumber of Channels: %d\n", filepath, *width, *height, *channels);
-                printf("texID: %d\n\n", tex.texID);
+                printf("texID: %d\n\n", im.texID);
             }
 
-            texPool[id] = &tex;
-            id++;
+            iconPool[iconPoolStackPointer] = &im;
+            iconPoolStackPointer++;
+
+            im.textureWidth = textureWidth;
+            im.textureHeight = textureHeight;
+            im.padding = padding;
 
             delete width;
             delete height;
             delete channels;
         }
 
-        void bindTexture(Texture &t)
+        void bindIconMap(IconMap &t)
         {
             glBindTexture(GL_TEXTURE_2D, t.texID);
             t.beingUsed = true;
         }
 
-        void unbindTexture(Texture &t)
+        void unbindIconMap(IconMap &t)
         {
             glBindTexture(GL_TEXTURE_2D, 0);
             t.beingUsed = false;
         }
 
+        Texture getTexture(IconMap &im, int index)
+        {
+            // NOTE: TEXCOORDS GO FROM 0.0 TO 1.0!!!
+            Texture tex = {};
+            tex.source = &im;
+            // get offset from top
+            int pixelsFromTop = std::floor(index * im.textureWidth / im.width) * (im.textureHeight + im.padding);
+            // get offset from left
+            int pixelsFromLeft = (index * im.textureWidth + im.padding) % im.width;
+            
+            glm::vec2 pos1 = {pixelsFromLeft, pixelsFromTop};
+            glm::vec2 pos2 = {pixelsFromLeft + im.textureWidth, pixelsFromTop + im.textureHeight};
+
+            // get relative position based on center of iconmap
+            pos1.y = im.width - pos1.y;
+            pos1 /= glm::vec2{im.width, im.height};
+
+            pos2.y = im.height - pos2.y;
+            pos2 /= glm::vec2{im.width, im.height};
+
+            // insert texcoords for easy use in RData structs and OpenGL
+            float coords[] = 
+            {
+                pos2.x, pos1.y,
+                pos1.x, pos1.y,
+                pos1.x, pos2.y,
+                pos2.x, pos2.y
+            };
+
+            for (int i = 0; i < 8; i++) 
+            {
+                tex.texCoords[i] = coords[i];
+            }
+
+            return tex;
+        }
     }
 }

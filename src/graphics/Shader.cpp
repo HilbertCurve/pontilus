@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "graphics/Shader.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,8 +10,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Application.h"
-#include "Utils.h"
+#include "core/Application.h"
+#include "utils/Utils.h"
 // TODO: safety functions: Application::init() must've been called before we do ANYTHING with shaders.
 
 namespace Pontilus

@@ -1,50 +1,68 @@
-#include "Utils.h"
+#include "utils/Utils.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/glm.hpp>
-#include <glm/ext/matrix_transform.hpp>
 
-#include "Camera.h"
-#include "Application.h"
+#include "graphics/Camera.h"
+#include "core/Application.h"
 
 namespace Pontilus
 {
-    void loadFile(const char *filepath, char *data)
+    void loadFile(const char *filepath, File &f, bool isBinary)
     {
-        FILE *ptr = fopen(filepath, "rb");
-        long filesize = 0;
+        f.isBinary = isBinary;
 
-        if (ptr == nullptr)
+        FILE *file;
+
+        if (isBinary)
         {
-            fprintf(stderr, "Could not open \"%s\".\n", filepath);
-            exit(-1);
+            file = fopen(filepath, "rb");
+        }
+        else
+        {
+            file = fopen(filepath, "r");
         }
 
-        fseek(ptr, 0L, SEEK_END);
-        filesize = ftell(ptr);
-        rewind(ptr);
+        fseek(file, 0, SEEK_END);
+        f.size = ftell(file);
+        fseek(file, 0, SEEK_SET);
 
-        data = new char[filesize];
+        f.buffer = malloc(f.size);
 
-        fread((void *)data, filesize, 1, ptr);
+        fread(f.buffer, f.size, (size_t)(sizeof(char)), file);
+
+        fclose(file);
     }
 
-    // important, this only works for 2D positions.
-    glm::vec2 screenToWorldCoords(glm::vec2 screenPos)
+    void freeFile(File &f)
     {
-        // get window information
-        float w = window.width;
-        float h = window.height;
+        free(f.buffer);
+        f.size = 0;
+    }
 
-        // screen to gl_Position coords
-        screenPos -= glm::vec2(w / 2, h / 2);
-        screenPos /= glm::vec2(w / 2, -h / 2);
+    using namespace glm;
+    vec3 screenToWorldCoords(const vec2 screenPos)
+    {
+        vec4 v = {screenPos, 0.0f, 1.0f};
 
-        // gl_Position coords to world coords
-        screenPos.x *= Renderer::Camera::projectionWidth / 2;
-        screenPos.y *= Renderer::Camera::projectionHeight / 2;
+        v -= vec4{window.width / 2, window.height / 2, 0.0f, 0.0f};
+        v /= vec4{window.width / 2, -window.height / 2, 1.0f, 1.0f};
+        
+        v = inverse(Renderer::Camera::getView()) * inverse(Renderer::Camera::getProjection()) * v;
 
-        return screenPos;
+        return {v.x, v.y, v.z};
+    }
+
+    vec3 screenToWorldSize(const vec2 screenSize)
+    {
+        vec4 v = {screenSize, 0.0f, 1.0f};
+        // pretend that 0, 0 in screen space is 0, 0 in world space
+
+        v /= vec4{window.width / 2, -window.height / 2, 1.0f, 1.0f};
+
+        v = inverse(Renderer::Camera::getView()) * inverse(Renderer::Camera::getProjection()) * v;
+
+        return {v.x, v.y, 0.0f};
     }
 }

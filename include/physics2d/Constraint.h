@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CollisionDetection.h"
+#include "physics2d/CollisionDetection.h"
 
 namespace Pontilus
 {

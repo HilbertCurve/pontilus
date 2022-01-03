@@ -1,13 +1,13 @@
-#include "rData.h"
+#include "graphics/rData.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
 
-#include "Shader.h"
-#include "Utils.h"
-#include "Application.h"
-#include "Renderer.h"
+#include "core/Application.h"
+#include "graphics/Shader.h"
+#include "graphics/Renderer.h"
+#include "utils/Utils.h"
 
 namespace Pontilus
 {

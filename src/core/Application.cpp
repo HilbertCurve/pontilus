@@ -4,17 +4,15 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
 
-#include "Application.h"
-#include "Renderer.h"
-#include "Camera.h"
-#include "InputListener.h"
-#include "Scene.h"
-#include "rData.h"
-#include "Texture.h"
-#include "postprocessing/PointMap.h"
+#include "core/Application.h"
+#include "core/InputListener.h"
+#include "graphics/Renderer.h"
+#include "graphics/Camera.h"
+#include "graphics/rData.h"
+#include "graphics/Font.h"
+#include "graphics/Texture.h"
+#include "ui/Scene.h"
 
 namespace Pontilus
 {
@@ -43,7 +41,7 @@ namespace Pontilus
 
     static void initQuads()
     {
-        Graphics::initRData(quadPool, 1000);
+        Graphics::initRData(quadPool, 2000);
 
         Graphics::initRData(fullWindowQuad, 4, fullWindowQuadAttribs, 2);
         glm::vec3 orientation;
@@ -108,15 +106,15 @@ namespace Pontilus
         free(pointLightPool.layout);
     }
 
-    static Graphics::PointMap pm;
-
     // Texture pool:
-    Graphics::Texture *texPool[8];
+    Graphics::IconMap *iconPool[8];
+    int iconPoolStackPointer = 0;
+
     static void initTexPool()
     {
         for (int i = 0; i < 8; i++)
         {
-            texPool[i] = nullptr;
+            iconPool[i] = nullptr;
         }
     }
 
@@ -124,11 +122,39 @@ namespace Pontilus
     {
         for (int i = 0; i < 8; i++)
         {
-            texPool[i] = nullptr;
+            iconPool[i] = nullptr;
         }
     }
 
-    Window window{800, 600, "Test", nullptr, Engine::getScene()};
+    Graphics::Font *fontPool[8];
+    int fontPoolStackPointer = 0;
+
+    static void initFontPool()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            fontPool[i] = nullptr;
+        }
+    }
+
+    // i'd prefer to keep this private; there are some quirks with getting and setting this variable i'd rather automate
+    static UI::Scene *currentScene;
+
+    UI::Scene *getCurrentScene()
+    {
+        return currentScene;
+    }
+
+    void setCurrentScene(UI::Scene &s)
+    {
+        if (currentScene != nullptr)
+            currentScene->clean();
+        
+        currentScene = &s;
+        currentScene->init();
+    }
+
+    Window window{800, 600, "Test", nullptr};
     GLuint glProgramID;
     
     static void printError(int error, const char *description)
@@ -191,11 +217,8 @@ namespace Pontilus
                                   {
                                       window.width = newWidth;
                                       window.height = newHeight;
-                                      glViewport(
-                                          (window.width  - resolution) / 2, 
-                                          (window.height - resolution) / 2, 
-                                          resolution, 
-                                          resolution);
+                                      glViewport(0, 0, window.width, window.height);
+                                      Renderer::Camera::updateProjection();
                                   });
         
         glfwSetCursorPosCallback(window.ptr, IO::mousePosCallback);
@@ -207,18 +230,13 @@ namespace Pontilus
         // make the window visible
         glfwShowWindow(window.ptr);
         
-        glViewport(
-            (window.width  - resolution) / 2, 
-            (window.height - resolution) / 2, 
-            resolution, 
-            resolution);
+        glViewport(0, 0, window.width, window.height);
         // transparency stuff
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         
-        window.scene->init();
+        setCurrentScene(UI::Scenes::debug);
 
-        Graphics::initPointMap();
         Renderer::start();
         
         // say hi
@@ -237,7 +255,7 @@ namespace Pontilus
         {
             t1 = glfwGetTime();
             
-            glClearColor(0.01f, 0.01f, 0.01f, 0.01f);
+            glClearColor(0.0f, 0.1f, 0.5f, 1.0f);
             
             // set default background
             glClear(GL_COLOR_BUFFER_BIT);
@@ -247,7 +265,6 @@ namespace Pontilus
 
             if (timeAccum >= 0.016f)
             {
-                window.scene->update(0.016f);
                 timeAccum = 0;
             }
             /*
@@ -278,21 +295,22 @@ namespace Pontilus
             */
             static bool keyIsPressed0 = false;
             static bool keyIsPressed1 = false;
-            if (IO::isKeyPressed(GLFW_KEY_R))
+            if (IO::isKeyPressed(GLFW_KEY_LEFT_SHIFT) && IO::isKeyPressed(GLFW_KEY_LEFT_CONTROL) && IO::isKeyPressed(GLFW_KEY_R))
             {
                 keyIsPressed0 = true;
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
-                    Graphics::printRData(pointLightPool, 4);
+                    Graphics::printRData(quadPool, getCurrentScene()->numQuads * 4);
+                    // don't do this; prints and whatnot should be handled in the scene, not in this loop
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
             }
             else
             {
-                keyIsPressed1 = keyIsPressed1 = false;
+                keyIsPressed1 = false;
             }
 
-            Graphics::updatePointMap(dt);
+            getCurrentScene()->update(dt);
            
             // render
             Renderer::render();
@@ -320,8 +338,8 @@ namespace Pontilus
         cleanPointLights();
         cleanTexPool();
         
-        glLinkProgram(0);
         glfwDestroyWindow(window.ptr);
+        glLinkProgram(0);
         glfwTerminate();
     }
 }
