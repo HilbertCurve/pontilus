@@ -11,21 +11,25 @@
 
 namespace Pontilus
 {
-    namespace ECS
+    namespace Engine 
     {
-        class GameObject
+        namespace ECS
         {
-            public:
-            glm::vec3 pos;
-            glm::vec4 color;
-            float width, height;
-            
-            // should I overload contructor?? it's basically the same as {} contruction
-            void init(glm::vec3 pos, glm::vec4 color, float width, float height);
-            virtual int toRData(Graphics::rData &r, unsigned int rOffset) = 0;
-            virtual void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property) = 0;
-
-            void addComponent(Component &c);
-        };
+            class GameObject
+            {
+                public:
+                glm::vec3 pos;
+                glm::vec4 color;
+                float width, height;
+                std::vector<Component> components;
+                
+                // should I overload contructor?? it's basically the same as {} contruction
+                void init(glm::vec3 pos, glm::vec4 color, float width, float height);
+                
+                void addComponent(Component &c);
+                Component &getComponent(const std::type_info &ti) __THROW;
+                void removeComponent(const std::type_info &ti);
+            };
+        }
     }
 }

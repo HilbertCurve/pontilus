@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "Application.h"
+#include "core/Application.h"
 
 int main(int argc, char *args[])
 {

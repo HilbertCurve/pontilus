@@ -6,13 +6,13 @@
 #include <glm/glm.hpp>
 
 #include "core/Application.h"
+#include "core/Scene.h"
 #include "core/InputListener.h"
 #include "graphics/Renderer.h"
 #include "graphics/Camera.h"
 #include "graphics/rData.h"
 #include "graphics/Font.h"
 #include "graphics/Texture.h"
-#include "ui/Scene.h"
 
 namespace Pontilus
 {
@@ -138,14 +138,14 @@ namespace Pontilus
     }
 
     // i'd prefer to keep this private; there are some quirks with getting and setting this variable i'd rather automate
-    static UI::Scene *currentScene;
+    static Engine::Scene *currentScene;
 
-    UI::Scene *getCurrentScene()
+    Engine::Scene *getCurrentScene()
     {
         return currentScene;
     }
 
-    void setCurrentScene(UI::Scene &s)
+    void setCurrentScene(Engine::Scene &s)
     {
         if (currentScene != nullptr)
             currentScene->clean();
@@ -235,7 +235,7 @@ namespace Pontilus
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         
-        setCurrentScene(UI::Scenes::debug);
+        setCurrentScene(Engine::Scenes::debug);
 
         Renderer::start();
         

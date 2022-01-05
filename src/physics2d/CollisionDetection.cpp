@@ -1,5 +1,5 @@
 #include "physics2d/CollisionDetection.h"
-#include "PMath.h"
+#include "utils/PMath.h"
 
 namespace Pontilus
 {

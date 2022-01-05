@@ -2,13 +2,22 @@
 
 #pragma once
 
+#include "ecs/GameObject.h"
+
 namespace Pontilus
 {
     namespace Engine
     {
-        struct Component
+        namespace ECS
         {
-            
-        };
+            class GameObject;
+
+            struct Component
+            {
+                GameObject *parent;
+
+                virtual bool operator==(Component &c);
+            };
+        }
     }
 }

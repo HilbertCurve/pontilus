@@ -8,6 +8,7 @@ OpenGL:
     [+] Renderer.cpp - renders stuff
     [+] Shader.cpp - handles getting shader data
     [+] Texture.cpp - textures, when that becomes necessary
+    [+] IconMap.cpp - collections of textures / spritesheets
     [+] InputListener.cpp - mouse and keyboard callbacks/data
     [-] RenderBatch.cpp - a way to contain a lot of a single primitive type
 
@@ -89,19 +90,19 @@ Main Checklist:
     [+] Rename Rend to rData
     [+] Render batches
     Batches aren't needed, we'll just use one large rData pool (which is basically a render batch)
-    [ ] Automatic rData allocation
+    [+] Automatic rData allocation
 
     [ ] UI
     [ ] Basic ECS
 
     [ ] Physics
 
-    [ ] Debug Camera.cpp
+    [+] Debug Camera.cpp
     [ ] Documentation
     
 
 Issues:
-    [ ] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
+    [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
 
 
 Backburner:

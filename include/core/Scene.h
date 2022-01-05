@@ -3,11 +3,12 @@
 #pragma once
 
 #include <vector>
+#include "ecs/GameObject.h"
 #include "graphics/rData.h"
 
 namespace Pontilus
 {
-    namespace UI
+    namespace Engine
     {
         typedef void (* _init)();
         typedef void (* _update)(double dt);
@@ -21,7 +22,7 @@ namespace Pontilus
 
             void toRData(Graphics::rData &r, unsigned int rOffset);
 
-            std::vector<UIElement *> objs = std::vector<UIElement *>(0);
+            std::vector<ECS::GameObject> objs = std::vector<ECS::GameObject>(0);
 
             int numQuads = 0;
         };

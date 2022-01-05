@@ -4,9 +4,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include "core/Scene.h"
 #include "graphics/rData.h"
 #include "graphics/Font.h"
-#include "ui/Scene.h"
 
 namespace Pontilus
 {
@@ -33,8 +33,8 @@ namespace Pontilus
 
     extern Window window;
     
-    UI::Scene *getCurrentScene();
-    void setCurrentScene(UI::Scene &s);
+    Engine::Scene *getCurrentScene();
+    void setCurrentScene(Engine::Scene &s);
 
     void init();
     void loop();
