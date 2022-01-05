@@ -15,6 +15,8 @@ namespace Pontilus
     {
         namespace ECS
         {
+            struct Component;
+
             class GameObject
             {
                 public:

@@ -7,6 +7,14 @@ namespace Pontilus
     {
         namespace ECS
         {
+            void GameObject::init(glm::vec3 pos, glm::vec4 color, float width, float height)
+            {
+                this->pos = pos;
+                this->color = color;
+                this->width = width;
+                this->height = height;
+            }
+
             void GameObject::addComponent(Component &c)
             {
                 for (auto &c : this->components)
@@ -31,7 +39,7 @@ namespace Pontilus
                     }
                 }
 
-                __pWarning("Component of type %s not found in GameObject %p.", typeid(c).name(), this);
+                __pWarning("Component of type %s not found in GameObject %p.", ti.name(), this);
                 throw std::exception();
             }
 
@@ -48,7 +56,7 @@ namespace Pontilus
                     i++;
                 }
 
-                __pWarning("Component of type %s not found in GameObject %p.", typeid(c).name(), this);
+                __pWarning("Component of type %s not found in GameObject %p.", ti.name(), this);
             }
         }
     }

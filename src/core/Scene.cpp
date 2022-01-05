@@ -18,18 +18,20 @@ namespace Pontilus
         static ECS::GameObject *g2 = new ECS::GameObject();
         static ECS::GameObject *g3 = new ECS::GameObject();
         static ECS::GameObject *g4 = new ECS::GameObject();
+        static ECS::SpriteRenderer s;
         static Graphics::IconMap im1;
         static Graphics::IconMap im2;
         static Graphics::IconMap blueberry;
         static Graphics::IconMap burger;
         static Graphics::IconMap pizzaMonster;
         static Graphics::Font jetBrainsMono;
-        static Scene s = {};
 
-        void init()
+        Scene Scenes::debug = 
         {
-            s.init = []()
+            []() 
             {
+
+                
                 g1->init({-7.5f, 0.0f, 0.0f }, { 0.0f, 0.1f, 0.5f, 1.0f }, 3.0f, 3.0f);
 
                 g2->init({-2.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
@@ -38,37 +40,40 @@ namespace Pontilus
 
                 g4->init({ 7.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
 
-                Graphics::initIconMap("./assets/images/test.png", im1, 8, 8, 0);
-                Graphics::initIconMap("./assets/images/test2.png", im2, 8, 8, 0);
-                Graphics::initIconMap("./assets/images/blueberry.png", blueberry, 32, 32, 0);
-                Graphics::initIconMap("./assets/images/burger.png", burger, 32, 32, 0);
-                Graphics::initIconMap("./assets/images/pizzaMonster.png", pizzaMonster, 32, 32, 0);
+                Graphics::initIconMap("./assets/textures/test.png", im1, 8, 8, 0);
+                Graphics::initIconMap("./assets/textures/test2.png", im2, 8, 8, 0);
+                Graphics::initIconMap("./assets/textures/blueberry.png", blueberry, 32, 32, 0);
+                Graphics::initIconMap("./assets/textures/burger.png", burger, 32, 32, 0);
+                Graphics::initIconMap("./assets/textures/pizzaMonster.png", pizzaMonster, 32, 32, 0);
 
                 Graphics::initFont(jetBrainsMono, "./assets/fonts/JetBrainsMono-Medium.ttf", 32);
 
-                //s.objs.push_back(g1);
+                s.tex = Graphics::getTexture(im1, 0);
+
+                g1->addComponent(s);
+
+                debug.objs.push_back(*g1);
                 //s.objs.push_back(g2);
                 //s.objs.push_back(g3);
                 //s.objs.push_back(g4);
                 //s.objs.push_back(t1);
 
-                for (int i = 0; i < s.objs.size(); i++)
+                for (int i = 0; i < debug.objs.size(); i++)
                 {
                     try
                     {
-                        ECS::Component &csr = s.objs.at(i).getComponent(typeid(ECS::SpriteRenderer()));
+                        ECS::Component &csr = debug.objs.at(i).getComponent(typeid(ECS::SpriteRenderer()));
                         ECS::SpriteRenderer sr = dynamic_cast<ECS::SpriteRenderer &>(csr);
 
-                        // todo
+                        Scenes::debug.numQuads = sr.toRData(quadPool, Scenes::debug.numQuads);
                     }
                     catch (std::exception)
                     {
                         continue;
                     }
                 }
-            };
-
-            s.update = [](double dt)
+            },
+            [](double dt)
             {
                 /*
                 static bool keyIsPressed0 = false;
@@ -167,19 +172,14 @@ namespace Pontilus
                 */
 
                 //g1.toRData(quadPool, 0, Graphics::PONT_POS);
-            };
-
-            s.init();
-        }
-
-        void update(double dt)
-        {
-            s.update(dt);
-        }
-
-        Scene *getScene()
-        {
-            return &s;
-        }
+            },
+            []()
+            {
+                delete g1;
+                delete g2;
+                delete g3;
+                delete g4;
+            }
+        };
     }
 }

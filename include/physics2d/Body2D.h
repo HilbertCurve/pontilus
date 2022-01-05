@@ -19,7 +19,7 @@ namespace Pontilus
 
             // renderer information
             glm::vec4 color;
-            virtual float lineCount();
+            virtual float lineCount() = 0;
         };
         
         class AABB : public Body2D

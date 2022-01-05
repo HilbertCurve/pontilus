@@ -13,14 +13,6 @@ namespace Pontilus
 {
     namespace Graphics
     {
-        // classes that implement this interface must 
-        // specify how they put vertex data into an rData
-        class Renderable
-        {
-            virtual int toRData(Graphics::rData &r, unsigned int rOffset) = 0;
-            virtual void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property) = 0;
-        };
-
         enum vProp
         {
             PONT_POS,
@@ -58,6 +50,14 @@ namespace Pontilus
             unsigned int vertCount;
 
             bool isDirty = false;
+        };
+
+        // classes that implement this interface must 
+        // specify how they put vertex data into an rData
+        class Renderable
+        {
+            virtual int toRData(Graphics::rData &r, unsigned int rOffset) = 0;
+            virtual void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property) = 0;
         };
 
         void initRData(rData &r, unsigned int numVerts);
