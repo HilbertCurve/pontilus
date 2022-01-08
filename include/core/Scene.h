@@ -29,6 +29,7 @@ namespace Pontilus
 
         namespace Scenes
         {
+            extern Scene pog;
             extern Scene debug;
         }
     }

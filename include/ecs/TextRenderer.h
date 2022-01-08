@@ -17,8 +17,9 @@ namespace Pontilus
             class TextRenderer : public Component, public Graphics::Renderable
             {
                 public:
-                TextRenderer(const char *text);
-                Graphics::Font *f;
+                TextRenderer() = default;
+                TextRenderer(const char *text, Graphics::Font &f) : text(text), font(&f) {}
+                Graphics::Font *font;
                 std::string text;
 
                 int toRData(Graphics::rData &r, unsigned int rOffset);

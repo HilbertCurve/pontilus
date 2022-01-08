@@ -20,15 +20,15 @@ Misc:
 Postprocessing:
     [+] PointMap.cpp - a way to update/process points
     [+] Point light demo - a demonstration of how to use point maps for lighting effects
-    [ ] More to come
+    [ ] More to come...
 
 ECS:
-    [ ] Component.h - these can be attached to GameObjects to give various engines control over the go's fields
-    [ ] SpriteRenderer.h - migrate toRData() calls here
+    [+] Component.h - these can be attached to GameObjects to give various engines control over the go's fields
+    [+] SpriteRenderer.h - migrate toRData() calls here
     [ ] Body2D.cpp - convert physics body into a component
 
 UI:
-    [ ] Text.cpp - basic text; a game object with an added std::string field
+    [ ] TextRenderer.cpp - basic text component with a std::string field
     [ ] TextField.cpp - a Text, but submits a key callback when focused on that updates the text inside
     [ ] Icon.cpp - a game object with a texture handle
 
@@ -78,6 +78,7 @@ Pontilus Language:
     I probably have a terrible idea, but what if scene functions are transpiled from 
     a custom language into C, JIT-compiled, then ran??? This would separate the engine
     from the game code, and making a custom language looks good on my portfolio...
+    However, that's not necessary... If I ever take a compiler course I might consider it.
 
 Main Checklist:
     [+] Get renderer chugging out things
@@ -93,7 +94,9 @@ Main Checklist:
     [+] Automatic rData allocation
 
     [ ] UI
-    [ ] Basic ECS
+    [+] Basic ECS
+
+    [ ] Pong demo
 
     [ ] Physics
 
@@ -107,7 +110,7 @@ Issues:
 
 Backburner:
     [ ] Windows build
+    [ ] More debug messages
  
 
 Future Plans:
-    [ ] Custom language?

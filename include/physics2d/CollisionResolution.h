@@ -12,6 +12,6 @@ namespace Pontilus
     namespace Physics2D
     {
         void freeResolve(pData data);
-        void constraintResolve(Constraint cst);
+        void constraintResolve(Constraint &cst);
     }
 }

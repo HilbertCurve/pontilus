@@ -235,7 +235,7 @@ namespace Pontilus
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         
-        setCurrentScene(Engine::Scenes::debug);
+        setCurrentScene(Engine::Scenes::pog);
 
         Renderer::start();
         
@@ -255,7 +255,7 @@ namespace Pontilus
         {
             t1 = glfwGetTime();
             
-            glClearColor(0.0f, 0.1f, 0.5f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             
             // set default background
             glClear(GL_COLOR_BUFFER_BIT);

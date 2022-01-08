@@ -1,4 +1,6 @@
 #include "ecs/SpriteRenderer.h"
+#include "graphics/rData.h"
+#include <typeinfo>
 
 namespace Pontilus
 {
@@ -6,6 +8,11 @@ namespace Pontilus
     {
         namespace ECS
         {
+            SpriteRenderer::SpriteRenderer()
+            {
+                this->tex = {nullptr};
+            }
+
             using namespace Graphics; // fight me
             int SpriteRenderer::toRData(rData &r, unsigned int rOffset)
             {
@@ -54,7 +61,7 @@ namespace Pontilus
                         orientation.y /= parent->height;
                         for (int j = 0; j < 2; j++)
                         {
-                            ((float *)((char *)r.data + result.first + stride))[j] = this->tex.texCoords[j + i * 2];
+                            ((float *)((char *)r.data + result.first + stride))[j] = this->tex.source == nullptr ? 0.0 : this->tex.texCoords[j + i * 2];
                         }
                     }
 
@@ -67,7 +74,7 @@ namespace Pontilus
                         }
                         else
                         {
-                            *(float *)((char *)r.data + result.first + stride) = this->tex.source->texID;
+                            *(float *)((char *)r.data + result.first + stride) = this->tex.source == nullptr ? 0.0 : this->tex.source->texID;
                         }
                     }
                     stride += getLayoutLen(r);

@@ -16,8 +16,8 @@
 #include "core/Application.h"
 #include "utils/Utils.h"
 
-#define _MIDIFI_FONT_TEX_WIDTH 512
-#define _MIDIFI_FONT_TEX_HEIGHT 512
+#define _PONTILUS_FONT_TEX_WIDTH 512
+#define _PONTILUS_FONT_TEX_HEIGHT 512
 
 namespace Pontilus
 {
@@ -41,8 +41,8 @@ namespace Pontilus
 
             f.info = info;
 
-            const int bitmap_w = _MIDIFI_FONT_TEX_WIDTH;
-            const int bitmap_h = _MIDIFI_FONT_TEX_HEIGHT;
+            const int bitmap_w = _PONTILUS_FONT_TEX_WIDTH;
+            const int bitmap_h = _PONTILUS_FONT_TEX_HEIGHT;
             unsigned char *bitmap = (unsigned char *)malloc(bitmap_w * bitmap_h);
             // clean bitmap
             for (int i = 0; i < 512 * 512; i++)
@@ -110,8 +110,8 @@ namespace Pontilus
                 float texcoords[8] = 
                 {
                     (float) x + (advanceWidth + leftSideBearing) * scale, (float) h - c_y1 + c_y2,
-                    (float) x + leftSideBearing * scale,                        (float) h - c_y1 + c_y2,
-                    (float) x + leftSideBearing * scale,                        (float) h,
+                    (float) x + leftSideBearing * scale,                  (float) h - c_y1 + c_y2,
+                    (float) x + leftSideBearing * scale,                  (float) h,
                     (float) x + (advanceWidth + leftSideBearing) * scale, (float) h,
                 };
 

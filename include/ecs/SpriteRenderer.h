@@ -14,9 +14,9 @@ namespace Pontilus
             class SpriteRenderer : public Component, public Graphics::Renderable
             {
                 public:
-                SpriteRenderer() = default;
+                SpriteRenderer();
 
-                Graphics::Texture &tex;
+                Graphics::Texture tex = {nullptr};
                 int toRData(Graphics::rData &r, unsigned int rOffset);
                 void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property);
             };

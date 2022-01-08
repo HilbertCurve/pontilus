@@ -13,7 +13,7 @@ namespace Pontilus
             public:
             BodyPair bodies;
             int priority;
-            virtual void resolve();
+            virtual void resolve() = 0;
         };
 
         // two points based on an object's local coordinates must stay equal to
