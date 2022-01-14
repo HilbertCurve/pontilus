@@ -23,17 +23,16 @@ float dist(vec3 a, vec3 b)
 
 void main()
 {
+    vec3 point = vec3(0.0, 0.0, 0.0);
+    float vignetteConst = dist(point, fPos.xyz) + (sin(2*uTime) * sin(2*uTime) / 10.0);
+        
     if (fTexID > 0.0) 
     {
-        vec3 point = vec3(0.0, 0.0, 0.0);
         int id = int(fTexID);
-        float vignetteConst = dist(point, fPos.xyz) + (sin(2*uTime) * sin(2*uTime) / 10.0) + 0.2;
-        
-        color = fColor * texture(uTextures[id - 1], fTexCoords);// - vignetteConst;
-        
+        color = fColor * texture(uTextures[id - 1], fTexCoords) - vignetteConst;
     } 
     else
     {
-        color = fColor;
+        color = fColor - vignetteConst;
     }
 }

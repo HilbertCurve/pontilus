@@ -18,7 +18,7 @@ namespace Pontilus
             {
                 public:
                 TextRenderer() = default;
-                TextRenderer(const char *text, Graphics::Font &f) : text(text), font(&f) {}
+                void init(const char *text, Graphics::Font &f);
                 Graphics::Font *font;
                 std::string text;
 

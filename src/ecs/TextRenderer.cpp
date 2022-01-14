@@ -6,6 +6,12 @@ namespace Pontilus
     {
         namespace ECS
         {
+            void TextRenderer::init(const char *text, Graphics::Font &f)
+            {
+                this->text = text;
+                this->font = &f;
+            }
+
             int TextRenderer::toRData(Graphics::rData &r, unsigned int rOffset)
             {
                 using namespace Pontilus::Graphics;

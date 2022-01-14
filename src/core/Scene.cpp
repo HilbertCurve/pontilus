@@ -8,6 +8,7 @@
 #include "ecs/GameObject.h"
 #include "ecs/TextRenderer.h"
 #include "ecs/SpriteRenderer.h"
+#include "ecs/Animation.h"
 #include "graphics/rData.h"
 #include "graphics/Font.h"
 #include "graphics/Camera.h"
@@ -34,6 +35,11 @@ namespace Pontilus
         static ECS::TextRenderer lScoreText, rScoreText;
         static Graphics::IconMap pogFace;
 
+        static ECS::GameObject toBeAnimated;
+        static ECS::SpriteRenderer toBeAnimatedSpr;
+        static ECS::Animation animator;
+        static Graphics::IconMap toBeAnimatedFrames;
+
         static void updateSceneGraphics(Scene &s)
         {
             s.numQuads = 0; // reset for tallying purposes
@@ -55,6 +61,50 @@ namespace Pontilus
             }
         }
 
+        Scene Scenes::animation =
+        {
+            []()
+            {
+                Graphics::initIconMap("./assets/textures/test2.png", toBeAnimatedFrames, 8, 8, 0);
+
+                toBeAnimated = ECS::GameObject();
+                toBeAnimatedSpr = ECS::SpriteRenderer();
+                animator = ECS::Animation();
+
+                toBeAnimated.init({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 10, 10);
+                
+                animator.init(toBeAnimatedFrames, 0, 3, true);
+                animator.setAnimationBounds(0, 3);
+
+                toBeAnimatedSpr.tex = animator.textures.at(0);
+
+                toBeAnimated.addComponent(toBeAnimatedSpr);
+                toBeAnimated.addComponent(animator);
+
+                animation.objs.push_back(toBeAnimated);
+
+                updateSceneGraphics(animation);
+            },
+            [](double dt)
+            {
+                static double time = 0.0;
+                time += dt;
+
+                if (time > 0.5)
+                {
+                    animator.next();
+                    updateSceneGraphics(animation);
+
+                    time = 0.0;
+                }
+            },
+            []()
+            {
+
+            }
+        };
+
+
         Scene Scenes::pog = 
         {
             []()
@@ -66,7 +116,7 @@ namespace Pontilus
                 leftPaddle = rightPaddle = ball = ECS::GameObject();
                 lScore = rScore = ECS::GameObject();
                 lPaddleRenderer = rPaddleRenderer = ballRenderer = ECS::SpriteRenderer();
-                lScoreText = rScoreText = ECS::TextRenderer("0", jetBrainsMono);
+                lScoreText = rScoreText = ECS::TextRenderer();
 
                 leftPaddle.init({-30.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 1.0, 8.0);
                 rightPaddle.init({30.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 1.0, 8.0);
@@ -75,6 +125,9 @@ namespace Pontilus
                 rScore.init({30.0, -17.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 3.0, 3.0);
                 
                 ballRenderer.tex = Graphics::getTexture(pogFace, 0);
+
+                lScoreText.init("0", jetBrainsMono);
+                rScoreText.init("0", jetBrainsMono);
 
                 leftPaddle.addComponent(lPaddleRenderer);
                 rightPaddle.addComponent(rPaddleRenderer);
@@ -93,7 +146,7 @@ namespace Pontilus
             [](double dt)
             {
                 static const float gameHeight = 30.0;
-                static float speed = 17.0;
+                static float speed = 27.0;
 
                 static glm::vec2 pogVelocity = glm::vec2{(float) cos(50), (float) sin(50)} * speed;
                 static int lScoreNum = 0, rScoreNum = 0;
