@@ -16,6 +16,7 @@ namespace Pontilus
             glm::vec2 velocity;
             float angularVelocity;
             float friction;
+            glm::vec2 pos;
 
             // renderer information
             glm::vec4 color;
