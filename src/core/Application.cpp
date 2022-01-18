@@ -235,7 +235,7 @@ namespace Pontilus
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         
-        setCurrentScene(Engine::Scenes::pog);
+        setCurrentScene(Engine::Scenes::animation);
 
         Renderer::start();
         

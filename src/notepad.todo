@@ -25,6 +25,9 @@ Postprocessing:
 ECS:
     [+] Component.h - these can be attached to GameObjects to give various engines control over the go's fields
     [+] SpriteRenderer.h - migrate toRData() calls here
+    Animations:
+        [ ] Move GameObject.color into Texture
+        [+] Animation.h - a component that updates a SpriteRenderer's texture; requires the GameObject to have a SpriteRenderer
     [ ] Body2D.cpp - convert physics body into a component
 
 UI:
@@ -79,6 +82,7 @@ Pontilus Language:
     a custom language into C, JIT-compiled, then ran??? This would separate the engine
     from the game code, and making a custom language looks good on my portfolio...
     However, that's not necessary... If I ever take a compiler course I might consider it.
+    Maybe I could use Rift...
 
 Main Checklist:
     [+] Get renderer chugging out things
@@ -92,17 +96,14 @@ Main Checklist:
     [+] Render batches
     Batches aren't needed, we'll just use one large rData pool (which is basically a render batch)
     [+] Automatic rData allocation
-
-    [ ] UI
     [+] Basic ECS
-
-    [ ] Pong demo
-
-    [ ] Physics
-
-    [+] Debug Camera.cpp
+    [+] Pong demo
     [ ] Documentation
+    [ ] Animations
+    [ ] Audio
     
+    [ ] UI
+    [ ] Physics
 
 Issues:
     [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
@@ -114,3 +115,4 @@ Backburner:
  
 
 Future Plans:
+    [ ] Actually make a cool game
