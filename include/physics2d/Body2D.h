@@ -3,12 +3,14 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "ecs/Component.h"
+#include "graphics/Renderer.h"
 
 namespace Pontilus
 {
     namespace Physics2D
     {
-        class Body2D
+        class Body2D : public Engine::ECS::Component//, public Graphics::Renderable
         {
             public:
             Body2D() = default;
@@ -16,11 +18,11 @@ namespace Pontilus
             glm::vec2 velocity;
             float angularVelocity;
             float friction;
-            glm::vec2 pos;
+            glm::vec2 center;
 
             // renderer information
             glm::vec4 color;
-            virtual float lineCount() = 0;
+            //virtual int toRData(Graphics::rData &r, unsigned int rOffset) = 0;
         };
         
         class AABB : public Body2D
@@ -30,28 +32,26 @@ namespace Pontilus
             glm::vec2 min;
             glm::vec2 max;
 
-            float lineCount();
+            //int toRData(Graphics::rData &r, unsigned int rOffset);
         };
 
         class Circle : public Body2D
         {
             public:
             Circle(glm::vec2 center, float radius);
-            glm::vec2 center;
             float radius;
 
-            float lineCount();
+            //int toRData(Graphics::rData &r, unsigned int rOffset);
         };
 
         class Box2D : public Body2D
         {
             public:
             Box2D(glm::vec2 center, float width, float height, float rotation);
-            glm::vec2 center;
             float width, height;
             float rotation;
 
-            float lineCount();
+            //int toRData(Graphics::rData &r, unsigned int rOffset);
         };
 
         template<unsigned int N>
@@ -63,7 +63,7 @@ namespace Pontilus
             static const int numVerts = N;
             glm::vec2 vertices[N];
 
-            float lineCount();
+            //int toRData(Graphics::rData &r, unsigned int rOffset);
         };
 
         class Triangle : public Polygon<3>

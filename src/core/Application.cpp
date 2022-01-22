@@ -8,6 +8,7 @@
 #include "core/Application.h"
 #include "core/Scene.h"
 #include "core/InputListener.h"
+#include "audio/AudioMaster.h"
 #include "graphics/Renderer.h"
 #include "graphics/Camera.h"
 #include "graphics/rData.h"
@@ -238,6 +239,7 @@ namespace Pontilus
         setCurrentScene(Engine::Scenes::animation);
 
         Renderer::start();
+        Audio::initAudio();
         
         // say hi
         printf("Hello: %s\n", glGetString(GL_VERSION));
@@ -311,6 +313,8 @@ namespace Pontilus
             }
 
             getCurrentScene()->update(dt);
+            Audio::updateListener();
+            Audio::updateSources();
            
             // render
             Renderer::render();
@@ -338,6 +342,8 @@ namespace Pontilus
         cleanPointLights();
         cleanTexPool();
         
+        Audio::closeAudio();
+
         glfwDestroyWindow(window.ptr);
         glLinkProgram(0);
         glfwTerminate();

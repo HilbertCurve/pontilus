@@ -25,15 +25,15 @@ namespace Pontilus
             vec2 vNorm = data.colliders.first->velocity - data.colliders.second->velocity;
 
             // determine angular-velocity-based normals
-            float sDistToA = Math::distSquared(avgCollisionPoint, data.colliders.first->pos);
-            float sDistToB = Math::distSquared(avgCollisionPoint, data.colliders.second->pos);
+            float sDistToA = Math::distSquared(avgCollisionPoint, data.colliders.first->center);
+            float sDistToB = Math::distSquared(avgCollisionPoint, data.colliders.second->center);
 
-            vec2 dVa = avgCollisionPoint - data.colliders.first->pos;
+            vec2 dVa = avgCollisionPoint - data.colliders.first->center;
             // this is sketch; i worked out the formula for it like 3 months ago and can't guarantee this works (if it is it's a steal compared to sin() and cos() stuff)
             float iNormA_y = sDistToA * data.colliders.first->angularVelocity * dVa.x; 
             float iNormA_x = sDistToA * data.colliders.first->angularVelocity * -dVa.y;
 
-            vec2 dVb = avgCollisionPoint - data.colliders.second->pos;
+            vec2 dVb = avgCollisionPoint - data.colliders.second->center;
             float iNormB_y = sDistToB * data.colliders.second->angularVelocity * dVb.x;
             float iNormB_x = sDistToB * data.colliders.second->angularVelocity * -dVb.y;
 

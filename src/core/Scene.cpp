@@ -5,10 +5,13 @@
 
 #include "core/Application.h"
 #include "core/InputListener.h"
+#include "audio/AudioMaster.h"
 #include "ecs/GameObject.h"
 #include "ecs/TextRenderer.h"
 #include "ecs/SpriteRenderer.h"
 #include "ecs/Animation.h"
+#include "ecs/AudioListener.h"
+#include "ecs/AudioSource.h"
 #include "graphics/rData.h"
 #include "graphics/Font.h"
 #include "graphics/Camera.h"
@@ -40,6 +43,11 @@ namespace Pontilus
         static ECS::Animation animator;
         static Graphics::IconMap toBeAnimatedFrames;
 
+        static ECS::GameObject theListener;
+        static ECS::GameObject theNoiseGenerator;
+        static ECS::AudioSource theSource;
+        static Audio::WAVFile theNoise;
+
         static void updateSceneGraphics(Scene &s)
         {
             s.numQuads = 0; // reset for tallying purposes
@@ -60,6 +68,20 @@ namespace Pontilus
                 }
             }
         }
+
+        Scene Scenes::audioTest =
+        {
+            []()
+            {
+                Audio::initWAVFile(theNoise, "./assets/sounds/test2.wav");
+
+                IO::submitKeyCallback([](int key, int action)
+                {
+                    if (key == GLFW_KEY_SPACE && action == GLFW_REPEAT)
+                        theSource.play(theNoise, false);
+                });
+            }
+        };
 
         Scene Scenes::animation =
         {

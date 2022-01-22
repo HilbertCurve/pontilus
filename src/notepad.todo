@@ -42,7 +42,7 @@ Events:
     [ ] Properly use Events.cpp throughout the project
 
 Physics:
-    [ ] Math utils
+    [+] Math utils
 
     2D:
         Every collision is resolved in 3 steps. First the collision
@@ -56,10 +56,10 @@ Physics:
         Point-Triangle will help with polygon and box2d collisions.
         [ ] Point-Triangle collision
 
-        [ ] Circle-circle collision
-        [ ] Circle-AABB collision
+        [+] Circle-circle collision
+        [+] Circle-AABB collision
         Accelerated Box-AABB collision, in case rotation is not permitted.
-        [ ] AABB-AABB collision
+        [+] AABB-AABB collision
         [ ] Box2D-AABB collision
         If we have Box-AABB, we have Box-box; we just need to rotate both boxes around
         one box's center and treat it as an AABB temporarily.
@@ -83,6 +83,7 @@ Pontilus Language:
     from the game code, and making a custom language looks good on my portfolio...
     However, that's not necessary... If I ever take a compiler course I might consider it.
     Maybe I could use Rift...
+    It'd be better if I used Python with CPython, to be honest
 
 Main Checklist:
     [+] Get renderer chugging out things
@@ -99,8 +100,10 @@ Main Checklist:
     [+] Basic ECS
     [+] Pong demo
     [ ] Documentation
-    [ ] Animations
+    [+] Animations
     [ ] Audio
+
+    [ ] Make a small game
     
     [ ] UI
     [ ] Physics
