@@ -46,7 +46,7 @@ namespace Pontilus
         static ECS::GameObject theListener;
         static ECS::GameObject theNoiseGenerator;
         static ECS::AudioSource theSource;
-        static Audio::WAVFile theNoise;
+        static Audio::WAVFile *theNoise = new Audio::WAVFile();
 
         static void updateSceneGraphics(Scene &s)
         {
@@ -73,13 +73,44 @@ namespace Pontilus
         {
             []()
             {
-                Audio::initWAVFile(theNoise, "./assets/sounds/test2.wav");
+                Audio::initWAVFile(*theNoise, "./assets/sounds/test2.wav");
 
+                theSource.init();
+
+                theNoiseGenerator.init({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, 0.0f, 0.0f);
+                theNoiseGenerator.addComponent(theSource);
+                /*
                 IO::submitKeyCallback([](int key, int action)
                 {
-                    if (key == GLFW_KEY_SPACE && action == GLFW_REPEAT)
+                    if (key == GLFW_KEY_SPACE && action != GLFW_RELEASE)
+                    {
+                        printf("bar");
                         theSource.play(theNoise, false);
+                    }
                 });
+                 */
+            },
+            [](double dt)
+            {
+                static bool keyIsPressed0 = false;
+                static bool keyIsPressed1 = false;
+                if (IO::isKeyPressed(GLFW_KEY_SPACE))
+                {
+                    keyIsPressed0 = true;
+                    if (!(keyIsPressed0 == keyIsPressed1))
+                    {
+                        theSource.play(*theNoise, false);
+                        keyIsPressed1 = keyIsPressed0 = true;
+                    }
+                }
+                else
+                {
+                    keyIsPressed1 = false;
+                }
+            },
+            []()
+            {
+
             }
         };
 

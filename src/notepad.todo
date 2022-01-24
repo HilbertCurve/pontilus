@@ -35,6 +35,14 @@ UI:
     [ ] TextField.cpp - a Text, but submits a key callback when focused on that updates the text inside
     [ ] Icon.cpp - a game object with a texture handle
 
+Audio:
+    [+] AudioListener.cpp - the component wrapper over the OpenAL audio listener
+    [+] AudioSource.cpp - the component wrapper over OpenAL audio sources
+    [+] AudioMaster.cpp - .wav files and an audio system
+    [+] Audio buffering
+    [+] Audio playing and stopping
+    [ ] Audio file buffering - stream directly from the audio file
+
 Events:
     An event has an array of function pointers which are all called 
     in a "triggerEvent()" call
@@ -101,7 +109,7 @@ Main Checklist:
     [+] Pong demo
     [ ] Documentation
     [+] Animations
-    [ ] Audio
+    [+] Audio
 
     [ ] Make a small game
     

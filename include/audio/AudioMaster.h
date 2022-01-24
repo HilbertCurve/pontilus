@@ -22,14 +22,15 @@ namespace Pontilus
         struct AudioFile
         {
             const char *filepath;
-            void *audioData;
+            char *audioData;
             ALuint buffers[NUM_BUFFERS_PER_FILE];
+            //ALuint buffer;
         };
 
         struct WAVFile : public AudioFile
         {
-            uint8_t channels, bitsPerSample;
-            int32_t sampleRate, dataSize;
+            unsigned short int channels = 0, bitsPerSample = 0;
+            int32_t sampleRate = 0, dataSize = 0;
             ALenum format;
         };
 

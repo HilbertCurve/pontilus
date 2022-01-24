@@ -15,23 +15,25 @@ namespace Pontilus
     {
         namespace ECS
         {
-            
-            
             class AudioSource : public Component
             {
                 public:
-                AudioSource();
+                void init();
                 void play(Audio::WAVFile &f, bool looping);
                 void updateStream();
                 void stop();
                 ALuint alSource();
-                ALint getState();
+                ALint &getState();
                 void clear();
 
                 private:
                 ALuint source;
                 ALint state = AL_STOPPED;
                 long cursor = BUFFER_SIZE * NUM_BUFFERS_PER_FILE;
+                bool looping;
+                // internal use only.
+                bool atEnd = false;
+                int buffPtr = 0;
                 Audio::WAVFile *currentFile;
             };
         }

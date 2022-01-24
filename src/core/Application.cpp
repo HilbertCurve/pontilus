@@ -235,11 +235,11 @@ namespace Pontilus
         // transparency stuff
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        
-        setCurrentScene(Engine::Scenes::animation);
 
         Renderer::start();
         Audio::initAudio();
+        
+        setCurrentScene(Engine::Scenes::audioTest);
         
         // say hi
         printf("Hello: %s\n", glGetString(GL_VERSION));
@@ -303,7 +303,7 @@ namespace Pontilus
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
                     Graphics::printRData(quadPool, getCurrentScene()->numQuads * 4);
-                    // don't do this; prints and whatnot should be handled in the scene, not in this loop
+                    // don't do this; inputs and game logic should be handled in the scene, not in this loop
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
             }
@@ -312,9 +312,9 @@ namespace Pontilus
                 keyIsPressed1 = false;
             }
 
-            getCurrentScene()->update(dt);
             Audio::updateListener();
             Audio::updateSources();
+            getCurrentScene()->update(dt);
            
             // render
             Renderer::render();

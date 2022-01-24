@@ -9,6 +9,15 @@
 #include <glm/glm.hpp>
 #include <GL/gl.h>
 
+#define __alCall(fun, ...) \
+{\
+    fun(__VA_ARGS__);\
+    if (int err = alGetError())\
+    {\
+        __pError("OpenAL error code 0x%04X recieved.", err);\
+    }\
+}
+
 #define __pError(message, ...) \
 {\
     fprintf(stderr, "\x1B[01m\x1B[31mERROR: Error at file %s, line %d:\x1B[0m ",\
