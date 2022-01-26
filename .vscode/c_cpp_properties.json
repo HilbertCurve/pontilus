@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/src"
             ],
             "defines": ["GL_GLEXT_PROTOTYPES"],
             "compilerPath": "/usr/bin/gcc",

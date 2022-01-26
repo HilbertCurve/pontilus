@@ -26,6 +26,13 @@ RUN cmake .
 RUN make install
 WORKDIR "/usr/work"
 
+# openal-soft
+RUN git clone https://github.com/kcat/openal-soft
+WORKDIR "/usr/work/openal-soft/build"
+RUN cmake ..
+RUN make install
+WORKDIR "/usr/work"
+
 RUN git clone https://github.com/HilbertCurve/pontilus
 WORKDIR "/usr/work/pontilus"
 RUN ./build.sh
