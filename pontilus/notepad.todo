@@ -17,7 +17,7 @@ Misc:
     [+] Primitive.cpp - basic renderable primitives
     [+] rData.cpp - renderable data
     [+] Add https://github.com/kcat/openal-soft pull and install to Dockerfile
-    [ ] Zip together include and src directory
+    [+] Zip together include and src directory
 
 Postprocessing:
     [+] PointMap.cpp - a way to update/process points
@@ -33,7 +33,7 @@ ECS:
     [ ] Body2D.cpp - convert physics body into a component
 
 UI:
-    [ ] TextRenderer.cpp - basic text component with a std::string field
+    [ ] TextRenderer.cpp - basic renderable component with a std::string field
     [ ] TextField.cpp - a Text, but submits a key callback when focused on that updates the text inside
     [ ] Icon.cpp - a game object with a texture handle
 
@@ -44,6 +44,10 @@ Audio:
     [+] Audio buffering
     [+] Audio playing and stopping
     [ ] Audio file buffering - stream directly from the audio file
+
+AssetPool:
+
+    [ ] AssetPool.cpp - a way to generate audio, image, shader, font, etc. structs in one place (needed for Python)
 
 Events:
     An event has an array of function pointers which are all called 
@@ -97,6 +101,9 @@ Pontilus Language
     I have come to the conclusion of using Python.
 
 Python:
+    First, you initialize the library by calling Pontilus::init()
+    Then you specify your scene objects.
+    Then you call Pontilus::loop()
     [ ] Figure out how to use CPython
     Exposition:
         [ ] Expose ECS datatypes & funcs
@@ -124,6 +131,7 @@ Roadmap:
     [ ] Documentation
     [+] Animations
     [+] Audio
+    [ ] Asset pooling
     [ ] Python
     [ ] UI
     [ ] Physics
@@ -138,4 +146,4 @@ Backburner:
     [ ] More debug messages
 
 Future Plans:
-    [ ] Actually make a cool game
+    [ ] Make a cool game

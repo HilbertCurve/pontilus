@@ -1,2 +1,4 @@
-./bin
-./project.4coder
+bin
+project.4coder
+bin/game
+bin/test

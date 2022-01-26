@@ -3,7 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/src"
+                "${workspaceFolder}/pontilus",
+                "/usr/local/include/python3.11"
             ],
             "defines": ["GL_GLEXT_PROTOTYPES"],
             "compilerPath": "/usr/bin/gcc",
