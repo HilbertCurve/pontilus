@@ -46,7 +46,6 @@ Audio:
     [ ] Audio file buffering - stream directly from the audio file
 
 AssetPool:
-
     [ ] AssetPool.cpp - a way to generate audio, image, shader, font, etc. structs in one place (needed for Python)
 
 Events:
@@ -105,6 +104,10 @@ Python:
     Then you specify your scene objects.
     Then you call Pontilus::loop()
     [ ] Figure out how to use CPython
+    [ ] Add argument parsing
+    My thinking is that we have a bunch of functions return ints whenever they could throw
+    [ ] Add exception throwing so python doesn't just crash whenever it tries to open a file
+
     Exposition:
         [ ] Expose ECS datatypes & funcs
         [ ] Expose Graphics datatypes & funcs

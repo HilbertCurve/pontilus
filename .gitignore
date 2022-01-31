@@ -2,3 +2,7 @@ bin
 project.4coder
 bin/game
 bin/test
+python/build
+python/dist
+python/pontilus.egg-info
+__pycache__
