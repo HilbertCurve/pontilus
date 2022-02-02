@@ -95,7 +95,7 @@ namespace Pontilus
             if (!f)
             {
                 __pWarning(".wav file %s doesn't exist.", filepath);
-                return 0;
+                return -1;
             }
 
             char buffer[4];
@@ -105,7 +105,7 @@ namespace Pontilus
             if (strncmp(buffer, "RIFF", 4) != 0)
             {
                 __pWarning("File %s isn't a valid .wav file.", filepath);
-                return 0;
+                return -2;
             }
 
             wf.filepath = filepath;
@@ -116,7 +116,7 @@ namespace Pontilus
             if (strncmp(buffer, "WAVE", 4) != 0)
             {
                 __pWarning("File %s isn't a valid .wav file.", filepath);
-                return 0;
+                return -2;
             }
 
             fseek(f, 10, SEEK_CUR);
@@ -135,7 +135,7 @@ namespace Pontilus
             if (strncmp(buffer, "data", 4) != 0)
             {
                 __pWarning("File %s isn't a valid .wav file.", filepath);
-                return 0;
+                return -2;
             }
 
             fread(&wf.dataSize, 1, sizeof(int), f);

@@ -40,5 +40,4 @@ namespace Pontilus
     void loop();
 
     _PONTILUS_SETTINGS *getArgs();
-    bool debugMode();
 }

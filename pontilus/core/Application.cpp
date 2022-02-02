@@ -168,12 +168,6 @@ namespace Pontilus
     {
         return &args;
     }
-
-    bool debugMode()
-    {
-        if ((*getArgs() & 0x0001) == 1) return true;
-        else return false;
-    }
     
     void init()
     {

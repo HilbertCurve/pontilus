@@ -28,7 +28,7 @@
 }
 
 #define __pWarning(message, ...) \
-{\
+if (echoOn()) {\
     fprintf(stdout, "\x1B[01m\x1B[31mWARNING: Warning at file %s, line %d:\x1B[0m ",\
             __FILE__, __LINE__);\
     fprintf(stdout, message __VA_OPT__(,) __VA_ARGS__);\
@@ -36,7 +36,7 @@
 }
 
 #define __pMessage(message, ...) \
-{\
+if (echoOn()) {\
     printf("\x1B[01m\x1B[32mINFO: Message at file %s, line %d:\x1B[0m ",\
             __FILE__, __LINE__);\
     printf(message __VA_OPT__(,) __VA_ARGS__);\
@@ -55,6 +55,10 @@ if (!(x))\
 
 namespace Pontilus
 {
+    bool debugMode();
+    bool echoOn();
+    void setEcho(bool on);
+    
     typedef int8_t byte;
 
     /**

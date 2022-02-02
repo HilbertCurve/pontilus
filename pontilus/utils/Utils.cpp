@@ -65,4 +65,19 @@ namespace Pontilus
 
         return {v.x, v.y, 0.0f};
     }
+
+    bool debugMode()
+    {
+        return (*getArgs() & 0x0001) == 1;
+    }
+
+    bool echoOn()
+    {
+        return (*getArgs() & 0x0002) == 1;
+    }
+
+    void setEcho(bool on)
+    {
+        *getArgs() ^= on << 1;
+    }
 }
