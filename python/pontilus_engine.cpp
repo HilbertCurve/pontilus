@@ -121,7 +121,7 @@ static p_Scene *_p_Scene_hoisted;
 PONT_PY_CONVERTER
 p_Scene_make_init(PyObject *pyfun, void (** _init)())
 {
-    if (!PyFunction_Check(pyfun)) return -1;
+    if (!PyCallable_Check(pyfun)) return -1;
 
     _p_Scene_hoisted->_init = pyfun;
     Py_INCREF(pyfun);
@@ -138,7 +138,7 @@ p_Scene_make_init(PyObject *pyfun, void (** _init)())
 PONT_PY_CONVERTER
 p_Scene_make_update(PyObject *pyfun, void (** _update)(double dt))
 {
-    if (!PyFunction_Check(pyfun)) return -1;
+    if (!PyCallable_Check(pyfun)) return -1;
 
     _p_Scene_hoisted->_update = pyfun;
     Py_INCREF(pyfun);
@@ -155,7 +155,7 @@ p_Scene_make_update(PyObject *pyfun, void (** _update)(double dt))
 PONT_PY_CONVERTER
 p_Scene_make_clean(PyObject *pyfun, void (** _clean)())
 {
-    if (!PyFunction_Check(pyfun)) return -1;
+    if (!PyCallable_Check(pyfun)) return -1;
 
     _p_Scene_hoisted->_clean = pyfun;
     Py_INCREF(pyfun);
@@ -265,13 +265,48 @@ p_init(PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static PyObject *p_CurrentScene = NULL;
 
+PONT_PY_FUNC_DECL
+p_set_scene(PyObject *dummy, PyObject *args)
+{
+    PyObject *result = NULL;
+    PyObject *temp;
+
+    if (!PyArg_ParseTuple(args, "O!:set_scene", &p_Scene_t, &temp))
+    {
+        return NULL;
+    }
+
+    Py_XINCREF(temp);
+    Py_XDECREF(p_CurrentScene);
+    p_CurrentScene = temp;
+
+    Pontilus::setCurrentScene(*((p_Scene *) p_CurrentScene)->val);
+    
+    Py_INCREF(Py_None);
+    result = Py_None;
+
+    return result;
+}
+
+PONT_PY_FUNC_DECL
+p_get_scene(PyObject *dummy, PyObject *args)
+{
+    if (!PyArg_ParseTuple(args, "")) return NULL;
+
+    return p_CurrentScene;
+}
 
 // module
 
 static PyMethodDef Pont_Methods[] = {
     {"init", p_init, METH_VARARGS,
     "Initialize Pontilus engine. Call this function before using Pontilus and after pre-game initalization."}, 
+    {"set_scene", p_set_scene, METH_VARARGS, 
+    "Set the current running scene."},
+    {"get_scene", p_get_scene, METH_NOARGS,
+    "Obtain a reference to the current running scene."},
     {NULL, NULL, 0, NULL}
 };
 
