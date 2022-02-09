@@ -312,7 +312,7 @@ namespace Pontilus
            
             // render
             Renderer::render();
-            Renderer::postRender();
+            //Renderer::postRender();
             
             // swap buffers (makes things smoother)
             glfwSwapBuffers(window.ptr);
@@ -336,7 +336,7 @@ namespace Pontilus
         cleanPointLights();
         cleanTexPool();
         
-        Audio::closeAudio();
+        //Audio::closeAudio();
 
         glfwDestroyWindow(window.ptr);
         glLinkProgram(0);

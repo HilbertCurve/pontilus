@@ -103,9 +103,11 @@ Deployment (handling of...):
     [ ] Non-existent audio drivers
     [ ] Different OpenGL versions
     [ ] Configurable assets folder
-    [ ] Default scene if one isn't set
+    [+] Default scene if one isn't set
 
 Python:
+    I'm putting this on hold for now.
+
     First, you initialize the library by calling Pontilus::init()
     Then you specify your scene objects.
     Then you call Pontilus::loop()
@@ -139,10 +141,9 @@ Roadmap:
     [ ] Documentation
     [+] Animations
     [+] Audio
+    [ ] State Machines
     [ ] Asset pooling
-    [ ] Python
     [ ] UI
-    [ ] Physics
     [ ] Make a small game
 
 
@@ -152,3 +153,5 @@ Issues:
 Backburner:
     [ ] Windows build
     [ ] More debug messages
+    [ ] Python
+    [ ] Physics

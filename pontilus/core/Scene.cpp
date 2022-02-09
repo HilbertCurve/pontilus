@@ -80,7 +80,7 @@ namespace Pontilus
             []()
             {
                 defaultMessage.init({-30.0, 10.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 40, 50);
-                defaultLogo.init({0.0, -20.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 20, 20);
+                defaultLogo.init({0.0, -20.0, 0.0}, {1.0, 1.0, 1.0, 0.7}, 20, 16);
                 
                 Graphics::initFont(jetBrainsMono, "assets/fonts/JetBrainsMono-Medium.ttf", 26);
                 Graphics::initIconMap("assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
