@@ -20,3 +20,5 @@ To play around with it, change directory out of the python dir and enjoy:<br>
 `Type "help", "copyright", "credits" or "license" for more information.`<br>
 `>>> import pontilus`<br>
 `>>> # enjoy`
+
+## Note: this extension is not complete

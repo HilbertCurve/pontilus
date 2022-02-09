@@ -8,7 +8,7 @@ import pontilus
 pontilus.init()
 
 def bar():
-    print("e")
+    
 
 foo = pontilus.Scene(bar)
 

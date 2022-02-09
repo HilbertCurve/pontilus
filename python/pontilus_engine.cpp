@@ -310,17 +310,17 @@ typedef struct {
     PyObject_HEAD
     p_GameObject *parent;
     Engine::ECS::Component *val;
-};
+} p_Component;
 
 typedef struct {
     PyObject_HEAD
     PyObject *pos;
     PyObject *color;
-    // TODO: Figure out arrays
+    p_Component
     Engine::ECS::GameObject *val;
 } p_GameObject;
-
 // graphics
+
 
 // module
 
