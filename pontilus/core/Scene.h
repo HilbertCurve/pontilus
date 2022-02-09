@@ -29,6 +29,8 @@ namespace Pontilus
 
         namespace Scenes
         {
+            extern Scene defaultScene;
+            // tests
             extern Scene audioTest;
             extern Scene animation;
             extern Scene pog;

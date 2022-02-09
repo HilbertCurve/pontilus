@@ -298,6 +298,30 @@ p_get_scene(PyObject *dummy, PyObject *args)
     return p_CurrentScene;
 }
 
+// ecs
+// 
+
+#include "ecs/GameObject.h"
+#include "ecs/Component.h"
+
+typedef struct p_GameObject;
+
+typedef struct {
+    PyObject_HEAD
+    p_GameObject *parent;
+    Engine::ECS::Component *val;
+};
+
+typedef struct {
+    PyObject_HEAD
+    PyObject *pos;
+    PyObject *color;
+    // TODO: Figure out arrays
+    Engine::ECS::GameObject *val;
+} p_GameObject;
+
+// graphics
+
 // module
 
 static PyMethodDef Pont_Methods[] = {

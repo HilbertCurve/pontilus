@@ -12,6 +12,7 @@ namespace Pontilus
 {
     namespace Graphics
     {
+        // If width or height is zero, texture widths or heights are the full dimension of the texture
         void initIconMap(const char *filepath, IconMap &im, int textureWidth, int textureHeight, int padding)
         {
             im.filepath = filepath;
@@ -70,8 +71,8 @@ namespace Pontilus
             iconPool[iconPoolStackPointer] = &im;
             iconPoolStackPointer++;
 
-            im.textureWidth = textureWidth;
-            im.textureHeight = textureHeight;
+            im.textureWidth = textureWidth == 0 ? textureWidth : im.width;
+            im.textureHeight = textureHeight == 0 ? textureHeight : im.height;
             im.padding = padding;
 
             delete width;
@@ -104,14 +105,13 @@ namespace Pontilus
             glm::vec2 pos1 = {pixelsFromLeft, pixelsFromTop};
             glm::vec2 pos2 = {pixelsFromLeft + im.textureWidth, pixelsFromTop + im.textureHeight};
 
-            // get relative position based on center of iconmap
-            pos1.y = im.width - pos1.y;
+            pos1.y = im.height - pos1.y;
             pos1 /= glm::vec2{im.width, im.height};
 
             pos2.y = im.height - pos2.y;
             pos2 /= glm::vec2{im.width, im.height};
 
-            // insert texcoords for easy use in RData structs and OpenGL
+            // insert texcoords
             float coords[] = 
             {
                 pos2.x, pos1.y,

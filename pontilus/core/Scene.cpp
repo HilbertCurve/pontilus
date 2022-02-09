@@ -48,6 +48,12 @@ namespace Pontilus
         static ECS::AudioSource theSource;
         static Audio::WAVFile *theNoise = new Audio::WAVFile();
 
+        static ECS::GameObject defaultMessage = ECS::GameObject();
+        static ECS::GameObject defaultLogo = ECS::GameObject();
+        static ECS::TextRenderer defaultText = ECS::TextRenderer();
+        static ECS::SpriteRenderer defaultIcon = ECS::SpriteRenderer();
+        static Graphics::IconMap defaultMap = Graphics::IconMap();
+
         static void updateSceneGraphics(Scene &s)
         {
             s.numQuads = 0; // reset for tallying purposes
@@ -68,6 +74,42 @@ namespace Pontilus
                 }
             }
         }
+
+        Scene Scenes::defaultScene = 
+        {
+            []()
+            {
+                defaultMessage.init({-30.0, 10.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 40, 50);
+                defaultLogo.init({0.0, -20.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 20, 20);
+                
+                Graphics::initFont(jetBrainsMono, "assets/fonts/JetBrainsMono-Medium.ttf", 26);
+                Graphics::initIconMap("assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
+
+                defaultText.init("Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().", jetBrainsMono);
+
+                Graphics::Texture t = Graphics::getTexture(defaultMap, 0);
+
+                defaultIcon.init(t);
+
+                defaultMessage.addComponent(defaultText);
+                defaultLogo.addComponent(defaultIcon);
+
+                defaultScene.objs.push_back(defaultLogo);
+                defaultScene.objs.push_back(defaultMessage);
+
+                updateSceneGraphics(defaultScene);
+            },
+            [](double dt)
+            {
+
+            },
+            []()
+            {
+
+            }
+        };
+
+        // tests
 
         Scene Scenes::audioTest =
         {
@@ -110,7 +152,7 @@ namespace Pontilus
             },
             []()
             {
-
+                delete theNoise;
             }
         };
 

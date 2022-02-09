@@ -8,9 +8,10 @@ namespace Pontilus
     {
         namespace ECS
         {
-            SpriteRenderer::SpriteRenderer()
+            
+            void SpriteRenderer::init(Graphics::Texture t)
             {
-                this->tex = {nullptr};
+                this->tex = t;
             }
 
             using namespace Graphics; // fight me

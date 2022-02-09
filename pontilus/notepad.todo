@@ -97,25 +97,30 @@ Pontilus Language
     However, that's not necessary... If I ever take a compiler course I might consider it.
     Maybe I could use Rift...
     It'd be better if I used Python with CPython, to be honest
-    I have come to the conclusion of using Python.
+    I have come to the conclusion of using Python. Ports to other languages will come next...?
+
+Deployment (handling of...):
+    [ ] Non-existent audio drivers
+    [ ] Different OpenGL versions
+    [ ] Configurable assets folder
+    [ ] Default scene if one isn't set
 
 Python:
     First, you initialize the library by calling Pontilus::init()
     Then you specify your scene objects.
     Then you call Pontilus::loop()
-    [ ] Figure out how to use CPython
-    [ ] Add argument parsing
+    [+] Figure out how to use CPython
+    [-] Add argument parsing
     My thinking is that we have a bunch of functions return ints whenever they could throw
-    [ ] Add exception throwing so python doesn't just crash whenever it tries to open a file
+    [ ] Add exception throwing (so python doesn't just crash whenever it tries to open a file)
 
-    Exposition:
+    Exposing Library:
         [ ] Expose ECS datatypes & funcs
         [ ] Expose Graphics datatypes & funcs
-        [ ] Expose Audio datatypes & funcs
+        [+] Expose Audio datatypes & funcs
         [ ] Expose Core datatypes & funcs
         [-] Exposing physics will have to wait
-    [ ] Link stuff as module
-    [ ] Integrate module in python
+    
 
 Roadmap:
     [+] Get renderer chugging out things
@@ -147,6 +152,3 @@ Issues:
 Backburner:
     [ ] Windows build
     [ ] More debug messages
-
-Future Plans:
-    [ ] Make a cool game

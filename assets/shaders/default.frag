@@ -29,7 +29,7 @@ void main()
     if (fTexID > 0.0) 
     {
         int id = int(fTexID);
-        color = fColor * texture(uTextures[id - 1], fTexCoords) - vignetteConst;
+        color = fColor * texture(uTextures[id - 1], fTexCoords); // - vignetteConst;
     } 
     else
     {

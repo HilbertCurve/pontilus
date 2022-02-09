@@ -233,7 +233,7 @@ namespace Pontilus
         Renderer::start();
         Audio::initAudio();
         
-        setCurrentScene(Engine::Scenes::audioTest);
+        setCurrentScene(Engine::Scenes::defaultScene);
         
         // say hi
         printf("Hello: %s\n", glGetString(GL_VERSION));
