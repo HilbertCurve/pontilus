@@ -77,7 +77,7 @@ static Engine::Scene mainScene = {
     }
 };
 
-int main()
+int main() 
 {
     Pontilus::init();
     Pontilus::setCurrentScene(mainScene);

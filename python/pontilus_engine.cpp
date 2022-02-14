@@ -316,7 +316,7 @@ typedef struct {
     PyObject_HEAD
     PyObject *pos;
     PyObject *color;
-    p_Component
+    ;
     Engine::ECS::GameObject *val;
 } p_GameObject;
 // graphics

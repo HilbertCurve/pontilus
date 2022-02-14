@@ -33,6 +33,6 @@ void main()
     } 
     else
     {
-        color = fColor - vignetteConst;
+        color = fColor; // - vignetteConst;
     }
 }
