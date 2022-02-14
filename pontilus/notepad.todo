@@ -18,6 +18,7 @@ Misc:
     [+] rData.cpp - renderable data
     [+] Add https://github.com/kcat/openal-soft pull and install to Dockerfile
     [+] Zip together include and src directory
+    [+] Update dockerfile after refactoring
 
 Postprocessing:
     [+] PointMap.cpp - a way to update/process points
@@ -103,7 +104,7 @@ Deployment (handling of...):
     [ ] Non-existent audio drivers
     [ ] Different OpenGL versions
     [ ] Configurable assets folder
-    [ ] Default scene if one isn't set
+    [+] Default scene if one isn't set
 
 Python:
     First, you initialize the library by calling Pontilus::init()
@@ -120,7 +121,11 @@ Python:
         [+] Expose Audio datatypes & funcs
         [ ] Expose Core datatypes & funcs
         [-] Exposing physics will have to wait
-    
+
+State Machines:
+    [+] StateMachine.cpp - Design a state machine component
+    [+] Indivitual states
+    [+] Example state machine
 
 Roadmap:
     [+] Get renderer chugging out things
@@ -139,16 +144,16 @@ Roadmap:
     [ ] Documentation
     [+] Animations
     [+] Audio
-    [ ] Asset pooling
-    [ ] Python
+    [+] State machines
     [ ] UI
     [ ] Physics
     [ ] Make a small game
-
-
+    
 Issues:
     [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
+    It's because of it being orthographic instead of perspective
 
 Backburner:
+    [ ] Python
     [ ] Windows build
     [ ] More debug messages

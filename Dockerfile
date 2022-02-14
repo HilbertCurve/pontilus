@@ -36,7 +36,8 @@ WORKDIR "/usr/work"
 RUN git clone https://github.com/HilbertCurve/pontilus
 WORKDIR "/usr/work/pontilus"
 RUN ./build.sh
-CMD ["./build/game"]
+WORKDIR "/usr/work/pontilus/examples"
+CMD ["./build_test.sh"]
 
 # to run in directory {D} of this file:
 #

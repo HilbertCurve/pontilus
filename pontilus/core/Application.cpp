@@ -14,6 +14,7 @@
 #include "graphics/rData.h"
 #include "graphics/Font.h"
 #include "graphics/Texture.h"
+#include "ecs/StateMachine.h"
 
 namespace Pontilus
 {
@@ -308,6 +309,7 @@ namespace Pontilus
 
             Audio::updateListener();
             Audio::updateSources();
+            Engine::ECS::StateMachine::updateAll(dt);
             getCurrentScene()->update(dt);
            
             // render

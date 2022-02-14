@@ -54,7 +54,7 @@ namespace Pontilus
         static ECS::SpriteRenderer defaultIcon = ECS::SpriteRenderer();
         static Graphics::IconMap defaultMap = Graphics::IconMap();
 
-        static void updateSceneGraphics(Scene &s)
+        void updateSceneGraphics(Scene &s)
         {
             s.numQuads = 0; // reset for tallying purposes
             for (int i = 0; i < s.objs.size(); i++)

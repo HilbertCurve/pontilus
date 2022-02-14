@@ -211,7 +211,7 @@ namespace Pontilus
         {
             if (button >= NUM_MOUSE_BUTTONS || button < 0)
             {
-                fprintf(stderr, "ERROR: tried to access illegal mouse button: %d\n", button);
+                __pWarning("Tried to access illegal mouse button %d.", button);
                 return false;
             }
             return instance.core._m.buttonsPressed[button];
@@ -234,7 +234,7 @@ namespace Pontilus
         {
             if (key >= NUM_KEYS || key < 0)
             {
-                fprintf(stderr, "ERROR: tried to access illegal key: %d", key);
+                __pWarning("Tried to access illegal key %d.", key);
                 return false;
             }
             return instance.core._k.keysPressed[key];

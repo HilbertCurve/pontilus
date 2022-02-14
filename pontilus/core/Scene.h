@@ -27,6 +27,8 @@ namespace Pontilus
             int numQuads = 0;
         };
 
+        void updateSceneGraphics(Scene &s);
+
         namespace Scenes
         {
             extern Scene defaultScene;
