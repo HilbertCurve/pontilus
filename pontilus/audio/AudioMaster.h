@@ -5,8 +5,7 @@
 #include <AL/al.h>
 #include "ecs/AudioSource.h"
 
-#define NUM_BUFFERS_PER_FILE 4
-#define BUFFER_SIZE 65536
+#define __pAudioCheck (Pontilus::Audio::hasAudioDevice)
 
 namespace Pontilus
 {
@@ -18,6 +17,8 @@ namespace Pontilus
         void addSource(Engine::ECS::AudioSource &s);
         void updateSources();
         void closeAudio();
+
+        extern bool hasAudioDevice;
 
         struct AudioFile
         {

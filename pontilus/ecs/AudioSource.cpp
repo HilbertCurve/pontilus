@@ -12,6 +12,7 @@ namespace Pontilus
         {
             void AudioSource::init()
             {
+                if (!__pAudioCheck) return;
                 __alCall(alGenSources, 1, &this->source);
                 __alCall(alSourcef, this->source, AL_PITCH, 1.0f);
                 __alCall(alSourcef, this->source, AL_GAIN, 1.0f);
@@ -31,6 +32,7 @@ namespace Pontilus
 
             void AudioSource::play(Audio::WAVFile &f, bool looping)
             {
+                if (!__pAudioCheck) return;
                 if (!this->parent)
                 {
                     __pError("AudioSource at %p has no parent.", this);
@@ -83,6 +85,7 @@ namespace Pontilus
             // this function needs more comments
             void AudioSource::updateStream()
             {
+                if (!__pAudioCheck) return;
                 ALint buffersProcessed = 0;
                 __alCall(alGetSourcei, this->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
                 
@@ -141,6 +144,7 @@ namespace Pontilus
 
             void AudioSource::stop()
             {
+                if (!__pAudioCheck) return;
                 __alCall(alSourceStop, this->source);
                 __alCall(alSourceUnqueueBuffers, this->source, 4, &this->currentFile->buffers[0]);
 
@@ -150,6 +154,7 @@ namespace Pontilus
 
             void AudioSource::clear()
             {
+                if (!__pAudioCheck) return;
                 if (state == AL_PLAYING) this->stop();
                 __alCall(alDeleteSources, 1, &this->source);
             }

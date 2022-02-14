@@ -101,7 +101,7 @@ Pontilus Language
     I have come to the conclusion of using Python. Ports to other languages will come next...?
 
 Deployment (handling of...):
-    [ ] Non-existent audio drivers
+    [+] Non-existent audio drivers
     [ ] Different OpenGL versions
     [ ] Configurable assets folder
     [+] Default scene if one isn't set

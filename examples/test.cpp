@@ -24,7 +24,7 @@ static Engine::ECS::State sControllers[] = {
         player.color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
         if (Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE)) {
             playerController.setState("jumped");
-            player.velocity = glm::vec2{0.0f, 6.0f};
+            player.velocity = glm::vec2{0.0f, 9.0f};
             printf("hello\n");
         }
     }},
@@ -32,10 +32,10 @@ static Engine::ECS::State sControllers[] = {
         player.color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
         if (Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE) && Pontilus::IO::isKeyPressed(GLFW_KEY_R)) {
             playerController.setState("double-jumped");
-            player.velocity = glm::vec2{0.0f, 6.0f};
+            player.velocity = glm::vec2{0.0f, 9.0f};
             printf("hello\n");
         } else {
-            player.velocity -= glm::vec2{0.0f, 9.8f} * (float) dt;
+            player.velocity -= glm::vec2{0.0f, 19.6f} * (float) dt;
             if (player.pos.y < 0.0f) {
                 player.pos.y = 0.0f;
                 player.velocity.y = 0.0f;
@@ -45,7 +45,7 @@ static Engine::ECS::State sControllers[] = {
     }},
     {"double-jumped", &playerController, [](double dt) {
         player.color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
-        player.velocity -= glm::vec2{0.0f, 9.8f} * (float) dt;
+        player.velocity -= glm::vec2{0.0f, 19.6f} * (float) dt;
         if (player.pos.y < 0.0f) {
             player.pos.y = 0.0f;
             player.velocity.y = 0.0f;
@@ -60,7 +60,7 @@ static Engine::Scene mainScene = {
         playerRenderer.init(Pontilus::Graphics::getTexture(playerTextures, 0));
         playerController.init(&sControllers[0], 3);
 
-        player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 20.0f, 18.5f);
+        player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 8.0f, 18.5f/2.5f);
         player.addComponent(playerRenderer);
         player.addComponent(playerController);
 

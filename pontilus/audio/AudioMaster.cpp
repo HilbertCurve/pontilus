@@ -18,10 +18,17 @@ namespace Pontilus
         static std::vector<WAVFile *> audioFiles;
         static std::vector<Engine::ECS::AudioSource *> audioSources;
 
+        bool hasAudioDevice = true;
+
         void initAudio()
         {
             currentDevice = alcOpenDevice(nullptr);
-            __pAssert(currentDevice, "OpenAL could not default find audio device.");
+            if (!currentDevice)
+            {
+                __pWarning("OpenAL could not find default audio device");
+                hasAudioDevice = false;
+                return;
+            }
 
             currentContext = alcCreateContext(currentDevice, nullptr); // TODO: audio attributes
             __pAssert(currentContext, "OpenAL could not initialize audio context.");
@@ -32,6 +39,7 @@ namespace Pontilus
 
         void updateListener()
         {
+            if (!__pAudioCheck) return;
             static auto &l = Engine::ECS::AudioListener::get();
             if (l.parent)
             {
@@ -51,6 +59,7 @@ namespace Pontilus
 
         void updateSources()
         {
+            if (!__pAudioCheck) return;
             for (Engine::ECS::AudioSource *s : audioSources)
             {
                 if (!s->parent)
@@ -71,6 +80,7 @@ namespace Pontilus
 
         void closeAudio()
         {
+            if (!__pAudioCheck) return;
             for (Engine::ECS::AudioSource *s : audioSources)
             {
                 s->clear();
@@ -90,6 +100,7 @@ namespace Pontilus
 
         int initWAVFile(WAVFile &wf, const char *filepath)
         {
+            if (!__pAudioCheck) return -3;
             FILE *f = fopen(filepath, "r");
 
             if (!f)
@@ -172,6 +183,7 @@ namespace Pontilus
 
         void clearWAVFile(WAVFile &wf)
         {
+            if (!__pAudioCheck) return;
             if (!wf.filepath)
             {
                 __pWarning("Attempted to free uninitialized WAVFile at %p.", &wf);
