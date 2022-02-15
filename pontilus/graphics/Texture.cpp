@@ -71,8 +71,8 @@ namespace Pontilus
             iconPool[iconPoolStackPointer] = &im;
             iconPoolStackPointer++;
 
-            im.textureWidth = textureWidth == 0 ? textureWidth : im.width;
-            im.textureHeight = textureHeight == 0 ? textureHeight : im.height;
+            im.textureWidth = textureWidth == 0 ? im.width : textureWidth;
+            im.textureHeight = textureHeight == 0 ? im.height : textureHeight;
             im.padding = padding;
 
             delete width;
