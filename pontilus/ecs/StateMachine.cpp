@@ -24,37 +24,51 @@ namespace Pontilus
                 for (int i = 0; i < count; i++)
                 {
                     this->states.push_back(&states[i]);
+                    this->currentStates.push_back(false);
                     states[i].parent = this;
                 }
 
-                this->setState(&states[0]);
+                this->addState(&states[0]);
 
                 stateMachines.push_back(this);
             }
 
             void StateMachine::update(double dt)
             {
-                if (this->currentState) this->currentState->callback(dt);
+                for (int i = 0; i < states.size(); i++)
+                {
+                    if (currentStates[i]) states[i]->callback(dt);
+                }
             }
 
-            int StateMachine::setState(State *state)
+            int StateMachine::addState(State *state)
             {
+                if (!state)
+                {
+                    __pWarning("Cannot add null state to a StateMachine.");
+                    return 0;
+                }
+
                 bool isIn = false;
+                int loc;
                 for (int i = 0; i < this->count; i++)
                 {
-                    if (this->states.at(i) == state) {
+                    State *s = this->states.at(i);
+                    if (s == state) {
                         isIn = true;
+                        loc = i;
                         break;
                     }
                 }
+                
                 if (isIn)
-                    this->currentState = state;
+                    this->currentStates[loc] = true;
                 else
                 {
                     if (state->name) {
-                        __pWarning("Attempt at setting StateMachine %p's state to state %s.", this, state->name);
+                        __pWarning("Attempt at adding illegal state %s to StateMachine %p.", state->name, this);
                     } else {
-                        __pWarning("Attempt at setting StateMachine %p's state to anonymous state.", this);
+                        __pWarning("Attempt at adding illegal anonymous state %p to StateMachine %p.", state, this);
                     }
                     return 0;
                 }
@@ -62,27 +76,88 @@ namespace Pontilus
                 return 1;
             }
 
-            int StateMachine::setState(const char *state)
+            int StateMachine::addState(const char *state)
             {
                 bool isIn = false;
+                int loc;
                 State *s;
                 for (int i = 0; i < this->count; i++)
                 {
-                    if (strcmp(this->states.at(i)->name, state) == 0)
+                    s = this->states.at(i);
+                    if (s->name && strcmp(this->states.at(i)->name, state) == 0)
                     {
                         isIn = true;
-                        s = this->states.at(i);
+                        loc = i;
                         break;
                     }
                 }
                 if (isIn)
                 {
-                    this->currentState = s;
+                    this->currentStates[loc] = true;
                     return 1;
                 }
                 else
                 {
-                    __pWarning("Attempt at setting StateMachine %p's state to state %s.", this, state);
+                    __pWarning("Attempt at adding illegal state %s to StateMachine %p.", state, this);
+                    return 0;
+                }
+            }
+
+            int StateMachine::removeState(State *state)
+            {
+                bool isIn = false;
+                int loc = 0;
+                for (int i = 0; i < this->count; i++)
+                {
+                    State *s = this->states.at(i);
+                    if (s == state) {
+                        isIn = true;
+                        loc = i;
+                        break;
+                    }
+                }
+                if (isIn)
+                {
+                    this->currentStates[loc] = false;
+                    return 1;
+                }
+                else
+                {
+                    if (state->name)
+                    {
+                        __pWarning("Attempt at removing state %s from StateMachine %p.", state->name, this);
+                        return 0;
+                    }
+                    else
+                    {
+                        __pWarning("Attempt at removing anonymous state %p from StateMachine %p.", state, this);
+                        return 0;
+                    }
+                }
+            }
+
+            int StateMachine::removeState(const char *state)
+            {
+                bool isIn = false;
+                int loc = 0;
+                State *s;
+                for (int i = 0; i < this->count; i++)
+                {
+                    s = this->states.at(i);
+                    if (s->name && strcmp(this->states.at(i)->name, state) == 0) {
+                        isIn = true;
+                        loc = i;
+                        break;
+                    }
+                }
+                if (isIn)
+                {
+                    this->currentStates[loc] = false;
+                    return 1;
+                }
+                else
+                {
+                    __pWarning("Attempt at removing illegal state %s from StateMachine %p.", state, this);
                     return 0;
                 }
             }

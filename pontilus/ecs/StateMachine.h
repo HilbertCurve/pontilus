@@ -30,15 +30,17 @@ namespace Pontilus
                 public:
                 std::vector<State *> states;
                 int count;
-                State *currentState;
+                std::vector<bool> currentStates;
 
                 void init(State *states, int count);
 
                 static void updateAll(double dt);
 
                 void update(double dt);
-                int setState(State *state);
-                int setState(const char *state);
+                int addState(State *state);
+                int addState(const char *state);
+                int removeState(State *state);
+                int removeState(const char *state);
 
                 bool operator==(StateMachine other);
             };

@@ -29,14 +29,14 @@ static Engine::ECS::StateMachine playerController;
 static Pontilus::Graphics::IconMap playerTextures;
 static Pontilus::Graphics::IconMap tileTextures;
 
-static bool collidingWithTile() {
+static int collidingWithTile() {
     for (int i = 0; i < NUM_TILES; i++) {
         if (player.pos.y - player.height / 2.0f <= tilemap[i].pos.y + tilemap[i].height / 2.0f &&
             player.pos.y + player.height / 2.0f >= tilemap[i].pos.y - tilemap[i].height / 2.0f &&
             player.pos.x - player.width  / 2.0f <= tilemap[i].pos.x + tilemap[i].width  / 2.0f &&
-            player.pos.x + player.width  / 2.0f >= tilemap[i].pos.x - tilemap[i].width  / 2.0f) return true;
+            player.pos.x + player.width  / 2.0f >= tilemap[i].pos.x - tilemap[i].width  / 2.0f) return i;
     }
-    return false;
+    return -1;
 }
 
 static bool curr = false, prev = false;
@@ -46,7 +46,8 @@ static Engine::ECS::State sControllers[] = {
         player.color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
         if (curr != prev && curr) {
-            playerController.setState("jumped");
+            playerController.addState("jumped");
+            playerController.removeState("grounded");
             player.velocity.y = 20.0f;
         }
         prev = curr;
@@ -62,21 +63,29 @@ static Engine::ECS::State sControllers[] = {
             else if (player.velocity.x > 1.0f) player.velocity.x -= 100.0f * dt;
             else player.velocity.x = 0.0f;
         }
-        if (collidingWithTile() && player.velocity.x != 0.0f) player.velocity.x = 0.0f;
-        if (collidingWithTile() && player.velocity.y != 0.0f) player.velocity.y = 0.0f;
+        /*
+        if (int tile = collidingWithTile() == -1) {
+            if (player.velocity.y < 0.0f) {
+                player.pos.y = tilemap[tile].pos.y + tilemap[tile].height / 2;
+                playerController.setState("grounded");
+            }
+        }
+        */
     }},
     {"jumped", &playerController, [](double dt) {
         player.color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
         if (curr != prev && curr) {
-            playerController.setState("double-jumped");
+            playerController.addState("double-jumped");
+            playerController.removeState("jumped");
             player.velocity.y = 15.0f;
         } else {
             player.velocity -= glm::vec2{0.0f, 19.6f} * (float) dt;
             if (player.pos.y < 0.0f) {
                 player.pos.y = 0.0f;
                 player.velocity.y = 0.0f;
-                playerController.setState("grounded");
+                playerController.addState("grounded");
+                playerController.removeState("jumped");
             }
         }
         prev = curr;
@@ -101,7 +110,8 @@ static Engine::ECS::State sControllers[] = {
         if (player.pos.y < 0.0f) {
             player.pos.y = 0.0f;
             player.velocity.y = 0.0f;
-            playerController.setState("grounded");
+            playerController.addState("grounded");
+            playerController.removeState("double-jumped");
         }
         // move
         if (Pontilus::IO::isKeyPressed(GLFW_KEY_A)) {
@@ -156,6 +166,7 @@ static Engine::Scene mainScene = {
 
 int main() 
 {
+    Pontilus::setEcho(true);
     Pontilus::init();
     Pontilus::setCurrentScene(mainScene);
     Pontilus::loop();
