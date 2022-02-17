@@ -101,8 +101,8 @@ static Engine::ECS::State sControllers[] = {
             else if (player.velocity.x > 1.0f) player.velocity.x -= 100.0f * dt;
             else player.velocity.x = 0.0f;
         }
-        if (collidingWithTile() && player.velocity.x != 0.0f) player.velocity.x = 0.0f;
-        if (collidingWithTile() && player.velocity.y != 0.0f) player.velocity.y = 0.0f;
+        //if (collidingWithTile() && player.velocity.x != 0.0f) player.velocity.x = 0.0f;
+        //if (collidingWithTile() && player.velocity.y != 0.0f) player.velocity.y = 0.0f;
     }},
     {"double-jumped", &playerController, [](double dt) {
         player.color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
@@ -125,8 +125,8 @@ static Engine::ECS::State sControllers[] = {
             else if (player.velocity.x > 1.0f) player.velocity.x -= 100.0f * dt;
             else player.velocity.x = 0.0f;
         }
-        if (collidingWithTile() && player.velocity.x != 0.0f) player.velocity.x = 0.0f;
-        if (collidingWithTile() && player.velocity.y != 0.0f) player.velocity.y = 0.0f;
+        //if (collidingWithTile() && player.velocity.x != 0.0f) player.velocity.x = 0.0f;
+        //if (collidingWithTile() && player.velocity.y != 0.0f) player.velocity.y = 0.0f;
     }},
 };
 
