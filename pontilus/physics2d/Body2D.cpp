@@ -1,13 +1,23 @@
 #include "physics2d/Body2D.h"
 #include "graphics/rData.h"
+#include "physics2d/Physics2DController.h"
 
 namespace Pontilus
 {
     namespace Physics2D
     {
+        void Body2D::init()
+        {
+            addBody(this);
+        }
         Circle::Circle(glm::vec2 c, float r) : radius(r)
         {
             this->center = c;
+        }
+
+        void Circle::update(double dt)
+        {
+            this->center += this->velocity * (float) dt;
         }
         /*
         int Circle::toRData(Graphics::rData &r, unsigned int rOffset)
@@ -62,10 +72,32 @@ namespace Pontilus
             this->center = (max + min) / 2.0f;
         }
 
+        void AABB::update(double dt)
+        {
+            this->angularVelocity = 0.0f;
+            this->min += this->velocity * (float) dt;
+            this->max += this->velocity * (float) dt;
+
+            this->center = (this->min + this->max) / 2.0f;
+        }
+
         Box2D::Box2D(glm::vec2 c, float w, float h, float r) : 
                      width(w), height(h), rotation(r)
         {
             this->center = c;
+        }
+
+        void Box2D::update(double dt)
+        {
+            this->center += this->velocity * (float) dt;
+            this->rotation += this->angularVelocity * (float) dt;
+        }
+
+        template<unsigned int N>
+        void Polygon<N>::update(double dt)
+        {
+            // not implemented yet
+            return;
         }
 
         Triangle::Triangle(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3)

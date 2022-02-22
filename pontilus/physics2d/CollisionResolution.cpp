@@ -1,5 +1,6 @@
 #include "physics2d/CollisionResolution.h"
 #include "physics2d/CollisionDetection.h"
+#include "physics2d/Body2D.h"
 #include "utils/PMath.h"
 
 #include <glm/glm.hpp>
@@ -8,9 +9,54 @@ namespace Pontilus
 {
     namespace Physics2D
     {
+        static void freeResolveAABBOptimized(pData data)
+        {
+            if (!data.colliding) return;
+            if (data.colliders.first->mass == IMMOVABLE && data.colliders.second->mass == IMMOVABLE) return;
+
+            using namespace glm;
+            vec2 avgCollisionPoint = glm::vec2();
+
+            for (vec2 v : data.collisionPoints)
+            {
+                avgCollisionPoint += v;
+            }
+
+            avgCollisionPoint /= data.collisionPoints.size();
+
+            // find collision normal, 
+            vec2 vNorm = data.colliders.first->velocity - data.colliders.second->velocity;
+
+            vec2 vNorm1 = -vNorm;
+            vec2 vNorm2 = vNorm;
+            
+            float massRatio = data.colliders.first->mass / (data.colliders.first->mass + data.colliders.second->mass);
+
+            vNorm1 *= massRatio;
+            vNorm2 *= (1 - massRatio);
+
+            data.colliders.first->velocity = vNorm1;
+            data.colliders.second->velocity = vNorm2;
+
+            // sanity
+            data.colliders.first->angularVelocity = 0;
+            data.colliders.second->angularVelocity = 0;
+        }
+
         void freeResolve(pData data)
         {
+            if (typeid(*data.colliders.first) == typeid(AABB) && typeid(*data.colliders.second) == typeid(AABB))
+            {
+                freeResolveAABBOptimized(data);
+                return;
+            }
+            
+            // broken, all of it
+            static int i = 0;
             using namespace glm;
+
+            if (!data.colliding) return;
+            if (data.colliders.first->mass == IMMOVABLE && data.colliders.first->mass == IMMOVABLE) return;
 
             vec2 avgCollisionPoint = glm::vec2();
 
@@ -70,8 +116,10 @@ namespace Pontilus
             // we'll see if that violated the law of conservation of momentum :pain:
 
             // resolve changes
-            data.colliders.first->velocity += aImpulse;
-            data.colliders.second->velocity += bImpulse;
+            if (data.colliders.first->mass != IMMOVABLE)
+                data.colliders.first->velocity += aImpulse;
+            if (data.colliders.second->mass != IMMOVABLE)
+                data.colliders.second->velocity += bImpulse;
 
             data.colliders.first->angularVelocity += aMoment;
             data.colliders.second->angularVelocity += bMoment;

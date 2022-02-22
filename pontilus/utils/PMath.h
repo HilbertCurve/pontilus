@@ -3,6 +3,10 @@
 #include "math.h"
 #include <glm/glm.hpp>
 
+#ifndef __pEPSILON
+# define __pEPSILON 0.0001f;
+#endif
+
 namespace Pontilus
 {
     namespace Math
@@ -42,6 +46,11 @@ namespace Pontilus
          */
         float closest(float left, float right, float f);
 
+        inline bool epsilon(float f1, float f2)
+        {
+            return abs(f1 - f2) <= __pEPSILON;
+        }
+        
         bool pointAboveLine(glm::vec2 p, Line &l);
         glm::vec2 intersection(Line &l1, Line &l2);
     }

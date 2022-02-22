@@ -162,6 +162,82 @@ namespace Pontilus
                 }
             }
 
+            int StateMachine::replaceState(State *state1, State *state2)
+            {
+                int a = StateMachine::xRemoveState(state1);
+                int b = StateMachine::addState(state2);
+                if (!a || !b) return 0;
+                else return 1;
+            }
+
+            int StateMachine::replaceState(const char *state1, const char *state2)
+            {
+                int a = StateMachine::xRemoveState(state1);
+                int b = StateMachine::addState(state2);
+                if (!a || !b) return 0;
+                else return 1;
+            }
+
+            bool StateMachine::hasState(State *state)
+            {
+                bool ret = false;
+                for (int i = 0; i < this->states.size(); i++)
+                {
+                    if (currentStates[i])
+                    {
+                        if (states[i] == state)
+                            ret = true;
+                    }
+                }
+                return ret;
+            }
+
+            bool StateMachine::hasState(const char *state)
+            {
+                bool ret = false;
+                for (int i = 0; i < this->states.size(); i++)
+                {
+                    if (currentStates[i])
+                    {
+                        if (states[i]->name && strcmp(states[i]->name, state) == 0)
+                            ret = true;
+                    }
+                }
+                return ret;
+            }
+
+            int StateMachine::xAddState(State *state)
+            {
+                if (!this->hasState(state))
+                    return this->addState(state);
+                
+                return 1;
+            }
+
+            int StateMachine::xAddState(const char *state)
+            {
+                if (!this->hasState(state))
+                    return this->addState(state);
+                
+                return 1;
+            }
+
+            int StateMachine::xRemoveState(State *state)
+            {
+                if (this->hasState(state))
+                    return this->removeState(state);
+                
+                return 1;
+            }
+
+            int StateMachine::xRemoveState(const char *state)
+            {
+                if (this->hasState(state))
+                    return this->removeState(state);
+                
+                return 1;
+            }
+
             void StateMachine::updateAll(double dt)
             {
                 for (StateMachine *sm : stateMachines) {

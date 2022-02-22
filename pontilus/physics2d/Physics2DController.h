@@ -10,9 +10,8 @@ namespace Pontilus
 {
     namespace Physics2D
     {
-        std::vector<Body2D> bodies;
-        
-        void update(double dt);
+        void updateBodies(double dt);
+        void addBody(Body2D *b);
         void fixedUpdate();
     }
 }

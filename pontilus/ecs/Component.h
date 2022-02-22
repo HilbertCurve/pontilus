@@ -14,7 +14,7 @@ namespace Pontilus
 
             struct Component
             {
-                GameObject *parent;
+                GameObject *parent = nullptr;
 
                 virtual bool operator==(Component &c);
             };

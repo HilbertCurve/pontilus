@@ -64,6 +64,44 @@ namespace Pontilus
             return false;
         }
 
+        pData detectCollision(Body2D &a, Body2D &b)
+        {
+            Body2D *p_a = &a;
+            Body2D *p_b = &b;
+            if (typeid(*p_a) == typeid(Circle))
+            {
+                if (typeid(*p_b) == typeid(Circle))
+                    return detectCircleCircle(dynamic_cast<Circle &>(a), dynamic_cast<Circle &>(b));
+                else if (typeid(*p_b) == typeid(AABB))
+                    return detectCircleAABB(dynamic_cast<Circle &>(a), dynamic_cast<AABB &>(b));
+                else if (typeid(*p_b) == typeid(Box2D))
+                    return detectCircleBox(dynamic_cast<Circle &>(a), dynamic_cast<Box2D &>(b));
+            }
+            else if (typeid(*p_a) == typeid(AABB))
+            {
+                if (typeid(*p_b) == typeid(Circle))
+                    return detectCircleAABB(dynamic_cast<Circle &>(b), dynamic_cast<AABB &>(a));
+                else if (typeid(*p_b) == typeid(AABB))
+                    return detectAABBAABB(dynamic_cast<AABB &>(a), dynamic_cast<AABB &>(b));
+                else if (typeid(*p_b) == typeid(Box2D))
+                    return detectAABBBox(dynamic_cast<AABB &>(a), dynamic_cast<Box2D &>(b));
+            }
+            else if (typeid(*p_a) == typeid(Box2D))
+            {
+                if (typeid(*p_b) == typeid(Circle))
+                    return detectCircleBox(dynamic_cast<Circle &>(b), dynamic_cast<Box2D &>(a));
+                else if (typeid(*p_b) == typeid(AABB))
+                    return detectAABBBox(dynamic_cast<AABB &>(b), dynamic_cast<Box2D &>(a));
+                else if (typeid(*p_b) == typeid(Box2D))
+                    return detectBoxBox(dynamic_cast<Box2D &>(a), dynamic_cast<Box2D &>(b));
+            }
+            else
+            {
+                __pError("Casting error for types %s and %s.", typeid(*p_a).name(), typeid(*p_b).name());
+            }
+            return {};
+        }
+
         pData detectCircleCircle(Circle &c1, Circle &c2)
         {
             // if the distance between the centers is greater than 
@@ -164,6 +202,12 @@ namespace Pontilus
             return ret;
         }
 
+        pData detectCircleBox(Circle &c, Box2D &b)
+        {
+            // tbd
+            return {};
+        }
+
         pData detectAABBAABB(AABB &a1, AABB &a2)
         {
             // if the center of a1 is inside the AABB aTranspose,
@@ -175,15 +219,16 @@ namespace Pontilus
             ret.colliders = BodyPair{&a1, &a2};
             
             // a2's width and height
-            glm::vec2 a2wh = a2.max - a2.min;
+            glm::vec2 a1wh = a1.max - a1.min;
 
-            AABB aTranspose = AABB(a1.min - a2wh, a1.max + a2wh);
+            AABB aTranspose = AABB(a2.min - a1wh / 2.0f, a2.max + a1wh / 2.0f);
 
-            ret.colliding = detectPointAABB((a1.max + a1.min) / 2.0f, aTranspose);
+            ret.colliding = detectPointAABB(a1.center, aTranspose);
 
             // find corners inside a2. adjacent sides must be intersecting.
             if (ret.colliding)
             {
+                printf("e\n");
                 // corners of aabb:
                 /*
                  *   1   0
@@ -266,67 +311,63 @@ namespace Pontilus
                         
                         if (between(a2.min.x, insideVerts[0].x, a2.max.x) && between(a2.min.x, insideVerts[1].x, a2.max.x))
                         {
-                            if (insideVerts[0].y == a1.min.y && insideVerts[1].y == a1.min.y)
+                            if (epsilon(insideVerts[0].y, a1.max.y) && epsilon(insideVerts[1].y, a1.min.y))
                             {
                                 collisionPoints[0] = glm::vec2(a1.min.x, a2.max.y);
-                                collisionPoints[0] = glm::vec2(a1.max.x, a2.max.y);
-                            }
-                            else if (insideVerts[0].y == a1.max.y && insideVerts[1].y == a1.max.y)
-                            {
-                                collisionPoints[0] = glm::vec2(a1.min.x, a2.min.y);
-                                collisionPoints[0] = glm::vec2(a1.max.x, a2.min.y);
+                                collisionPoints[1] = glm::vec2(a1.max.x, a2.max.y);
                             }
                             else
                             {
-                                // we should never reach this place; something stinky has happened.
-                                __pError("Impossible condition met.");
+                                collisionPoints[0] = glm::vec2(a1.min.x, a2.min.y);
+                                collisionPoints[1] = glm::vec2(a1.max.x, a2.min.y);
                             }
                         }
                         else if (between(a2.min.y, insideVerts[0].y, a2.max.y) && between(a2.min.y, insideVerts[1].y, a2.max.y))
                         {
-                            if (insideVerts[0].x == a1.min.x && insideVerts[1].x == a1.min.x)
+                            if (epsilon(insideVerts[0].x, a1.min.x) && epsilon(insideVerts[1].x, a1.min.x))
                             {
                                 collisionPoints[0] = glm::vec2(a2.max.x, a1.min.y);
-                                collisionPoints[0] = glm::vec2(a2.max.x, a1.max.y);
-                            }
-                            else if (insideVerts[0].x == a1.max.x && insideVerts[1].x == a1.max.x)
-                            {
-                                collisionPoints[0] = glm::vec2(a2.min.x, a1.min.y);
-                                collisionPoints[0] = glm::vec2(a2.min.x, a1.max.y);
+                                collisionPoints[1] = glm::vec2(a2.max.x, a1.max.y);
                             }
                             else
                             {
-                                // we should never reach this place; something stinky has happened.
-                                __pError("Impossible condition met.");
+                                collisionPoints[0] = glm::vec2(a2.min.x, a1.min.y);
+                                collisionPoints[1] = glm::vec2(a2.min.x, a1.max.y);
                             }
                         }
                         else
                         {
-                            // yet another stinky-impossible condition.
+                            // another impossible condition.
                             __pError("Impossible condition met.");
                         }
+
+                        ret.collisionPoints.push_back(collisionPoints[0]);
+                        ret.collisionPoints.push_back(collisionPoints[1]);
                     } break;
                     case 3:
                     {
-                        // this is mathematically impossible; something stinky has happened.
+                        // this is mathematically impossible; something bad has happened.
                         __pError("Two AABBs cannot intersect each other in 3 places.");
                     } break;
                     case 4:
                     {
                         // one whole aabb is inside another. return the center of the smaller aabb.
-                        glm::vec2 center;
-                        center.x = (a1.max.x + a1.min.x) / 2;
-                        center.y = (a1.max.y + a1.min.y) / 2;
-
-                        ret.collisionPoints.push_back(center);
+                        
+                        ret.collisionPoints.push_back(a1.center);
                     }
                 }
             }
-            
+
             return ret;
         }
 
         pData detectAABBBox(AABB &a, Box2D &b)
+        {
+            // tbd
+            return {};
+        }
+
+        pData detectBoxBox(Box2D &a, Box2D &b)
         {
             // tbd
             return {};

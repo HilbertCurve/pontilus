@@ -15,6 +15,7 @@
 #include "graphics/Font.h"
 #include "graphics/Texture.h"
 #include "ecs/StateMachine.h"
+#include "physics2d/Physics2DController.h"
 
 namespace Pontilus
 {
@@ -311,6 +312,7 @@ namespace Pontilus
             Audio::updateSources();
             Engine::ECS::StateMachine::updateAll(dt);
             getCurrentScene()->update(dt);
+            Physics2D::updateBodies(dt);
            
             // render
             Renderer::render();

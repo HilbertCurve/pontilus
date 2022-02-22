@@ -41,6 +41,14 @@ namespace Pontilus
                 int addState(const char *state);
                 int removeState(State *state);
                 int removeState(const char *state);
+                int replaceState(State *state1, State *state2);
+                int replaceState(const char *state1, const char *state2);
+                int xAddState(State *state);
+                int xAddState(const char *state);
+                int xRemoveState(State *state);
+                int xRemoveState(const char *state);
+                bool hasState(State *state);
+                bool hasState(const char *state);
 
                 bool operator==(StateMachine other);
             };
