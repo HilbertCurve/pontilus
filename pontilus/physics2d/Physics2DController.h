@@ -4,14 +4,14 @@
 
 #include <vector>
 
-#include "physics2d/Body2D.h"
+#include "ecs/Body2D.h"
 
 namespace Pontilus
 {
     namespace Physics2D
     {
-        void updateBodies(double dt);
-        void addBody(Body2D *b);
+        void update(double dt);
+        void addBody(Engine::ECS::Body2D *b);
         void fixedUpdate();
     }
 }

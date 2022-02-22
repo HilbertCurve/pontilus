@@ -1,6 +1,6 @@
 #include "physics2d/CollisionResolution.h"
 #include "physics2d/CollisionDetection.h"
-#include "physics2d/Body2D.h"
+#include "ecs/Body2D.h"
 #include "utils/PMath.h"
 
 #include <glm/glm.hpp>
@@ -9,10 +9,22 @@ namespace Pontilus
 {
     namespace Physics2D
     {
-        static void freeResolveAABBOptimized(pData data)
+        CollisionEvent nonEvent(pData &data)
         {
-            if (!data.colliding) return;
-            if (data.colliders.first->mass == IMMOVABLE && data.colliders.second->mass == IMMOVABLE) return;
+            return {
+                data,
+                {0.0f, 0.0f},
+                {0.0f, 0.0f},
+                0.0f, 0.0f };
+        }
+
+        static CollisionEvent freeResolveAABBOptimized(pData data)
+        {
+            if (!data.colliding) return nonEvent(data);
+            if (data.colliders.first->mass == IMMOVABLE && data.colliders.second->mass == IMMOVABLE) return nonEvent(data);
+
+            Engine::ECS::AABB first = dynamic_cast<Engine::ECS::AABB &>(*data.colliders.first);
+            Engine::ECS::AABB second = dynamic_cast<Engine::ECS::AABB &>(*data.colliders.second);
 
             using namespace glm;
             vec2 avgCollisionPoint = glm::vec2();
@@ -24,16 +36,41 @@ namespace Pontilus
 
             avgCollisionPoint /= data.collisionPoints.size();
 
-            // find collision normal, 
-            vec2 vNorm = data.colliders.first->velocity - data.colliders.second->velocity;
+            // find collision normal
+            vec2 vNorm = first.velocity - second.velocity;
 
-            vec2 vNorm1 = -vNorm;
+            vec2 vNorm1;
+            float slope = (first.center.y - first.lastCenter.y) / (first.center.x - first.lastCenter.x);
+            bool bx = Math::between(second.min.x, first.center.x, second.max.x);
+            bool by = Math::between(second.min.y, first.center.y, second.max.y);
+            if (bx && !by)
+            {
+                vNorm1 = {vNorm.x, -vNorm.y};
+            }
+            else if (by && !bx)
+            {
+                vNorm1 = {-vNorm.x, vNorm.y};
+            }
+            else
+            {
+                if (abs(slope) > 1.0f)
+                {
+                    vNorm1 = {-vNorm.x, vNorm.y};
+                }
+                else
+                {
+                    vNorm1 = {vNorm.x, -vNorm.y};
+                }
+            }
+            
             vec2 vNorm2 = vNorm;
             
-            float massRatio = data.colliders.first->mass / (data.colliders.first->mass + data.colliders.second->mass);
+            // conservation of momentum
 
-            vNorm1 *= massRatio;
-            vNorm2 *= (1 - massRatio);
+            float massRatio = first.mass / (first.mass + second.mass);
+
+            vNorm1 *= (massRatio);
+            vNorm2 *= (1- massRatio);
 
             data.colliders.first->velocity = vNorm1;
             data.colliders.second->velocity = vNorm2;
@@ -41,22 +78,29 @@ namespace Pontilus
             // sanity
             data.colliders.first->angularVelocity = 0;
             data.colliders.second->angularVelocity = 0;
+
+            CollisionEvent ret = {
+                data,
+                vNorm1,
+                vNorm2,
+                0.0f,
+                0.0f
+            };
         }
 
-        void freeResolve(pData data)
+        CollisionEvent freeResolve(pData data)
         {
-            if (typeid(*data.colliders.first) == typeid(AABB) && typeid(*data.colliders.second) == typeid(AABB))
+            if (typeid(*data.colliders.first) == typeid(Engine::ECS::AABB) && typeid(*data.colliders.second) == typeid(Engine::ECS::AABB))
             {
-                freeResolveAABBOptimized(data);
-                return;
+                return freeResolveAABBOptimized(data);
             }
             
             // broken, all of it
             static int i = 0;
             using namespace glm;
 
-            if (!data.colliding) return;
-            if (data.colliders.first->mass == IMMOVABLE && data.colliders.first->mass == IMMOVABLE) return;
+            if (!data.colliding) return nonEvent(data);
+            if (data.colliders.first->mass == IMMOVABLE && data.colliders.first->mass == IMMOVABLE) return nonEvent(data);
 
             vec2 avgCollisionPoint = glm::vec2();
 
@@ -116,13 +160,14 @@ namespace Pontilus
             // we'll see if that violated the law of conservation of momentum :pain:
 
             // resolve changes
-            if (data.colliders.first->mass != IMMOVABLE)
-                data.colliders.first->velocity += aImpulse;
-            if (data.colliders.second->mass != IMMOVABLE)
-                data.colliders.second->velocity += bImpulse;
 
-            data.colliders.first->angularVelocity += aMoment;
-            data.colliders.second->angularVelocity += bMoment;
+            CollisionEvent ret = {
+                data,
+                aImpulse,
+                bImpulse,
+                aMoment,
+                bMoment
+            };
         }
 
         void constraintResolve(Constraint &cst)

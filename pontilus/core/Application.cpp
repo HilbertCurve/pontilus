@@ -312,7 +312,7 @@ namespace Pontilus
             Audio::updateSources();
             Engine::ECS::StateMachine::updateAll(dt);
             getCurrentScene()->update(dt);
-            Physics2D::updateBodies(dt);
+            Physics2D::fixedUpdate();
            
             // render
             Renderer::render();

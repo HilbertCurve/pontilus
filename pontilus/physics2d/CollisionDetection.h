@@ -4,14 +4,14 @@
 
 #include <vector>
 
-#include "physics2d/Body2D.h"
+#include "ecs/Body2D.h"
 #include "utils/Utils.h"
 
 namespace Pontilus
 {
     namespace Physics2D
     {
-        typedef Pair<Body2D *, Body2D *> BodyPair;
+        typedef Pair<Engine::ECS::Body2D *, Engine::ECS::Body2D *> BodyPair;
         struct pData
         {
             bool colliding;
@@ -19,19 +19,19 @@ namespace Pontilus
             std::vector<glm::vec2> collisionPoints;
         };
 
-        pData detectCollision(Body2D &body1, Body2D &body2);
-        bool isInside(glm::vec2 p, Body2D &body);
+        pData detectCollision(Engine::ECS::Body2D &body1, Engine::ECS::Body2D &body2);
+        bool isInside(glm::vec2 p, Engine::ECS::Body2D &body);
 
-        bool detectPointCircle(glm::vec2 p, Circle &c);
-        bool detectPointAABB(glm::vec2 p, AABB &a);
-        bool detectPointBox(glm::vec2 p, Box2D &b);
-        bool detectPointTriangle(glm::vec2 p, Triangle &t);
+        bool detectPointCircle(glm::vec2 p, Engine::ECS::Circle &c);
+        bool detectPointAABB(glm::vec2 p, Engine::ECS::AABB &a);
+        bool detectPointBox(glm::vec2 p, Engine::ECS::Box2D &b);
+        bool detectPointTriangle(glm::vec2 p, Engine::ECS::Triangle &t);
 
-        pData detectCircleCircle(Circle &c1, Circle &c2);
-        pData detectCircleAABB(Circle &c, AABB &a);
-        pData detectCircleBox(Circle &c, Box2D &b);
-        pData detectAABBAABB(AABB &a1, AABB &a2);
-        pData detectAABBBox(AABB &a, Box2D &b);
-        pData detectBoxBox(Box2D &b1, Box2D &b2);
+        pData detectCircleCircle(Engine::ECS::Circle &c1, Engine::ECS::Circle &c2);
+        pData detectCircleAABB(Engine::ECS::Circle &c, Engine::ECS::AABB &a);
+        pData detectCircleBox(Engine::ECS::Circle &c, Engine::ECS::Box2D &b);
+        pData detectAABBAABB(Engine::ECS::AABB &a1, Engine::ECS::AABB &a2);
+        pData detectAABBBox(Engine::ECS::AABB &a, Engine::ECS::Box2D &b);
+        pData detectBoxBox(Engine::ECS::Box2D &b1, Engine::ECS::Box2D &b2);
     }
 }

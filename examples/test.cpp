@@ -6,8 +6,8 @@
 #include <ecs/Component.h>
 #include <ecs/StateMachine.h>
 #include <ecs/SpriteRenderer.h>
+#include <ecs/Body2D.h>
 #include <physics2d/CollisionDetection.h>
-#include <physics2d/Body2D.h>
 
 using namespace Pontilus;
 
@@ -21,15 +21,15 @@ class Tile : public Engine::ECS::GameObject {
     bool collides = true;
 };
 
-#define NUM_TILES 2
+#define NUM_TILES 20
 
 static Player player;
 static Engine::ECS::GameObject obj;
-static Physics2D::AABB playerBody;
-static Physics2D::AABB objBody;
+static Engine::ECS::AABB playerBody;
+static Engine::ECS::AABB objBody;
 static Tile tilemap[NUM_TILES] = {Tile(), Tile()};
 static Engine::ECS::SpriteRenderer tileRenderer[NUM_TILES];
-static Physics2D::AABB tileCollider[NUM_TILES];
+static Engine::ECS::AABB tileCollider[NUM_TILES];
 static Engine::ECS::SpriteRenderer playerRenderer;
 static Engine::ECS::SpriteRenderer objRenderer;
 static Engine::ECS::StateMachine playerController;
@@ -93,9 +93,9 @@ static Engine::ECS::State sControllers[] = {
             playerBody.velocity.x += 100.0f * dt;
             if (playerBody.velocity.x > 16.0f) playerBody.velocity.x = 16.0f;
         } else {
-            if (playerBody.velocity.x < -1.0f) playerBody.velocity.x += 100.0f * dt;
-            else if (playerBody.velocity.x > 1.0f) playerBody.velocity.x -= 100.0f * dt;
-            else playerBody.velocity.x = 0.0f;
+            //if (playerBody.velocity.x < -1.0f) playerBody.velocity.x += 100.0f * dt;
+            //else if (playerBody.velocity.x > 1.0f) playerBody.velocity.x -= 100.0f * dt;
+            //else playerBody.velocity.x = 0.0f;
         }
         //if (collidingWithTile() && playerBody.velocity.x != 0.0f) playerBody.velocity.x = 0.0f;
         //if (collidingWithTile() && playerBody.velocity.y != 0.0f) playerBody.velocity.y = 0.0f;
@@ -130,28 +130,28 @@ static Engine::Scene mainScene = {
         Pontilus::Graphics::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
         Pontilus::Graphics::initIconMap("./assets/textures/test2.png", tileTextures, 8, 8, 0);
         playerRenderer.init({nullptr});
-        playerBody = Physics2D::AABB({0.0f - 4.0f, 1.0f - 18.5f/5.0f}, {0.0f + 4.0f, 1.0f + 18.5f/5.0f});
-        playerBody.init();
-        playerBody.mass = IMMOVABLE;
+        playerBody = Engine::ECS::AABB({0.0f - 4.0f, 1.0f - 18.5f/5.0f}, {0.0f + 4.0f, 1.0f + 18.5f/5.0f});
+        //playerBody.init();
+        //playerBody.mass = 100.0f;
 
         objRenderer.init({nullptr});
-        objBody = Physics2D::AABB({-2.0f, 18.0f}, {2.0f, 22.0f});
+        objBody = Engine::ECS::AABB({-2.0f, 19.0f}, {2.0f, 23.0f});
         objBody.init();
         objBody.mass = 50.0f;
-        /*
-        for (int i = 0; i < 2; i++) {
+        
+        for (int i = 0; i < NUM_TILES; i++) {
             tileRenderer[i] = Engine::ECS::SpriteRenderer();
             tileRenderer[i].init(Pontilus::Graphics::getTexture(tileTextures, i));
-            tileCollider[i] = Physics2D::AABB(glm::vec2{0.0 + 8.0f * i - 1.0f, 10.0f - 1.0f}, glm::vec2{10.0 + 4.0f * i, 10.0f} + 1.0f);
+            tileCollider[i] = Engine::ECS::AABB(glm::vec2{-10.0 + 4.0f * i, -10.0f} - 2.0f, glm::vec2{-10.0 + 4.0f * i, -10.0f} + 2.0f);
             tileCollider[i].init();
-            tileCollider[i].mass = 4.0f;
+            tileCollider[i].mass = IMMOVABLE;
             tilemap[i] = Tile();
-            tilemap[i].init({10.0 + 4.0f * i, 10.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
+            tilemap[i].init({-10.0 + 4.0f * i, -10.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
             tilemap[i].addComponent(tileRenderer[i]);
             tilemap[i].addComponent(tileCollider[i]);
-            //ainScene.objs.push_back(tilemap[i]);
+            mainScene.objs.push_back(tilemap[i]);
         }
-        */
+        
         playerController.init(&sControllers[0], 3);
 
         player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 8.0f, 18.5f/2.5f);
@@ -163,7 +163,7 @@ static Engine::Scene mainScene = {
         obj.addComponent(objRenderer);
         obj.addComponent(objBody);
 
-        mainScene.objs.push_back(player);
+        //mainScene.objs.push_back(player);
         mainScene.objs.push_back(obj);
         
         updateSceneGraphics(mainScene);

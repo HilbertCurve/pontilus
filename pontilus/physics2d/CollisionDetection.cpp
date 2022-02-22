@@ -6,6 +6,7 @@ namespace Pontilus
     namespace Physics2D
     {
         using namespace Pontilus::Math;
+        using namespace Pontilus::Engine::ECS;
 
         bool detectPointCircle(glm::vec2 p, Circle &c)
         {
