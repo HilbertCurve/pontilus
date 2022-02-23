@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 #ifndef __pEPSILON
-# define __pEPSILON 0.0001f;
+# define __pEPSILON 0.0001f
 #endif
 
 namespace Pontilus

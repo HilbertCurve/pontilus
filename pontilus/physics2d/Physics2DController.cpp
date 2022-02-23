@@ -9,7 +9,6 @@ namespace Pontilus
         static std::vector<Engine::ECS::Body2D *> bodies;
         void update(double dt)
         {
-            std::vector<CollisionEvent> events;
             for (int i = 0; i < bodies.size(); i++) 
             {
                 Engine::ECS::Body2D * b = bodies.at(i);
@@ -26,18 +25,9 @@ namespace Pontilus
                     auto b2 = bodies.at(j);
                     auto result = detectCollision(*b1, *b2);
                     if (result.colliding)
-                        events.push_back(freeResolve(result));
+                        freeResolve(result);
                 }
             }
-            
-            for (int i = 0; i < events.size(); i++)
-            {
-                for (int j = i + 1; j < events.size(); j++)
-                {
-                    // todo: how to resolve one body in two collision events
-                }
-            }
-            
         }
 
         void fixedUpdate()
