@@ -8,7 +8,7 @@
 #include <ecs/SpriteRenderer.h>
 #include <ecs/Body2D.h>
 #include <physics2d/CollisionDetection.h>
-#include <math.h>
+#include <utils/PMath.h>
 
 using namespace Pontilus;
 
@@ -20,6 +20,11 @@ class Player : public Engine::ECS::GameObject {
 class Tile : public Engine::ECS::GameObject {
     public:
     bool collides = true;
+};
+
+class rect {
+    public:
+    glm::vec2 min, max;
 };
 
 #define NUM_TILES 20
@@ -34,38 +39,33 @@ static Engine::ECS::StateMachine playerController;
 static Pontilus::Graphics::IconMap playerTextures;
 static Pontilus::Graphics::IconMap tileTextures;
 
-enum direction {
-    NORTH = 0,
-    EAST,
-    SOUTH,
-    WEST
-};
+typedef Pair<Tile, rect> tile_rect;
 
-typedef Pair<Tile, direction> tile_dir;
-
-static bool detectPointTile(glm::vec2 p, Tile t) {
-    bool insideX = p.x >= t.pos.x - t.width/2 && p.x <= t.pos.x + t.width/2;
-    bool insideY = p.y >= t.pos.y - t.height/2 && p.y <= t.pos.y + t.height/2;
-
-    return insideX && insideY;
+static bool detectRectRect(rect a, rect b)
+{
+    return Math::overlap(a.min.x, a.max.x, b.min.x, b.max.x) > 0.0f &&
+           Math::overlap(a.min.y, a.max.y, b.min.y, b.max.y) > 0.0f;
 }
 
-static void getCollisionInfo(Engine::ECS::GameObject &obj, std::vector<tile_dir> &info) {
+static void getCollisionInfo(Engine::ECS::GameObject &obj, std::vector<tile_rect> &info) {
     info.erase(info.begin(), info.end());
 
+    glm::vec2 obj_v[4] = {
+        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.1f,  obj.height + 0.1f} / 2.0f, 
+        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.1f,  obj.height + 0.1f} / 2.0f,
+        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.1f, -obj.height - 0.1f} / 2.0f, 
+        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.1f, -obj.height - 0.1f} / 2.0f,
+    };
     for (int i = 0; i < NUM_TILES; i++) {
         Tile t = tilemap[i]; // selection process can be optimized
-        glm::vec2 pts[4] = { 
-            obj.pos + glm::vec3{0.0f, obj.height / 2 + 0.1f, 0.0f},
-            obj.pos + glm::vec3{obj.width / 2 + 0.1f,  0.0f, 0.0f},
-            obj.pos - glm::vec3{0.0f, obj.height / 2 + 0.1f, 0.0f},
-            obj.pos - glm::vec3{obj.width / 2 + 0.1f,  0.0f, 0.0f}};
+        rect r_obj = {obj_v[3], obj_v[1]};
+        rect r_t = {glm::vec2(t.pos) - glm::vec2{t.width, t.height} / 2.0f, glm::vec2(t.pos) + glm::vec2{t.width, t.height} / 2.0f};
+        if (!detectRectRect(r_obj, r_t)) continue;
+        
+        glm::vec2 min = {fmax(r_obj.min.x, r_t.min.x), fmax(r_obj.min.y, r_t.min.y)};
+        glm::vec2 max = {fmin(r_obj.max.x, r_t.max.x), fmin(r_obj.max.y, r_t.max.y)};
 
-        for (int i = 0; i < 4; i++) {
-            if (detectPointTile(pts[i], t)) {
-                info.push_back(tile_dir{t, (direction) i});
-            }
-        }
+        info.push_back({t, {min, max}}); // TODO: collision resolution
     }
 }
 
@@ -104,8 +104,9 @@ static Engine::ECS::State sControllers[] = {
         if (!hasFloor) playerController.replaceState("grounded", "jumped");
     }},
     {"jumped", &playerController, [](double dt) {
-        // jump
         player.color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
+        // jump
+        player.velocity -= glm::vec2{0.0f, 19.6f} * (float) dt;
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
         if (curr != prev && curr) {
             playerController.addState("double-jumped");
@@ -121,9 +122,9 @@ static Engine::ECS::State sControllers[] = {
             player.velocity.x += 100.0f * dt;
             if (player.velocity.x > 16.0f) player.velocity.x = 16.0f;
         } else {
-            //if (player.velocity.x < -1.0f) player.velocity.x += 100.0f * dt;
-            //else if (player.velocity.x > 1.0f) player.velocity.x -= 100.0f * dt;
-            //else player.velocity.x = 0.0f;
+            if (player.velocity.x < -1.0f) player.velocity.x += 100.0f * dt;
+            else if (player.velocity.x > 1.0f) player.velocity.x -= 100.0f * dt;
+            else player.velocity.x = 0.0f;
         }
         // collision
         bool hasFloor = false;
@@ -133,10 +134,10 @@ static Engine::ECS::State sControllers[] = {
         for (auto i : info) {
             if (i.second == SOUTH) {
                 hasFloor = true;
-                floorY = fmin(floorY, i.first.pos.y - i.first.height / 2);
+                floorY = fmin(floorY, i.first.pos.y + i.first.height / 2);
             }
         }
-        if (hasFloor) {
+        if (hasFloor && player.velocity.y <= 0.0f) {
             playerController.replaceState("jumped", "grounded");
             player.velocity.y = 0.0f;
             player.pos.y = floorY + player.height / 2;
@@ -144,6 +145,7 @@ static Engine::ECS::State sControllers[] = {
     }},
     {"double-jumped", &playerController, [](double dt) {
         player.color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
+        // fall
         player.velocity -= glm::vec2{0.0f, 19.6f} * (float) dt;
         
         // move
@@ -162,14 +164,23 @@ static Engine::ECS::State sControllers[] = {
         //if (collidingWithTile() && player.velocity.y != 0.0f) player.velocity.y = 0.0f;
         // collision
         bool hasFloor = false;
+        float floorY = FLT_MAX;
+        static const float FLOOR_THRESHOLD = 0.2f; 
         std::vector<tile_dir> info;
+        
         getCollisionInfo(player, info);
         for (auto i : info) {
-            if (i.second == SOUTH) hasFloor = true;
+            if (i.second == SOUTH) {
+                hasFloor = true;
+                floorY = fmin(floorY, i.first.pos.y + i.first.height / 2);
+            } else if (i.second == NORTH) {
+
+            }
         }
-        if (hasFloor) {
+        if (hasFloor && player.velocity.y <= 0.0f) {
             playerController.replaceState("double-jumped", "grounded");
             player.velocity.y = 0.0f;
+            player.pos.y = floorY + player.height / 2;
         }
     }},
 };
@@ -186,14 +197,17 @@ static Engine::Scene mainScene = {
             tileRenderer[i] = Engine::ECS::SpriteRenderer();
             tileRenderer[i].init(Pontilus::Graphics::getTexture(tileTextures, i));
             tilemap[i] = Tile();
-            tilemap[i].init({-10.0 + 4.0f * i, -10.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
+            if (i > 10)
+                tilemap[i].init({-50.0 + 4.0f * i, -10.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
+            else
+                tilemap[i].init({-30.0 + 4.0f * i, -20.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
             tilemap[i].addComponent(tileRenderer[i]);
             mainScene.objs.push_back(tilemap[i]);
         }
         
         playerController.init(&sControllers[0], 3);
 
-        player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 8.0f, 18.5f/2.5f);
+        player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 2.0f, 18.5f/2.5f);
         player.addComponent(playerRenderer);
         player.addComponent(playerController);
 

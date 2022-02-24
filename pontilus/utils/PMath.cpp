@@ -37,7 +37,7 @@ namespace Pontilus
         vec2 rotate(vec2 v, float theta)
         {
             float sinTheta = sin(theta);
-            float cosTheta = sqrt(1 - sinTheta*sinTheta);
+            float cosTheta = cos(theta);
 
             mat2 rotMatrix = 
             {
@@ -79,6 +79,12 @@ namespace Pontilus
             if (between(left, f, right)) return f;
             else if (f < left) return left;
             else return right;
+        }
+
+        float overlap(float start1, float end1, float start2, float end2)
+        {
+            if (end2 <= start1 || end1 <= start2) return 0.0f;
+            return fmin(abs(start1 - end2), abs(start2 - end1));
         }
 
         bool pointAboveLine(vec2 p, Line &l)

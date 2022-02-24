@@ -30,6 +30,7 @@ namespace Pontilus
         int signOrZero(float f);
         int sign(float f);
         bool between(float left, float f, float right);
+        float overlap(float start1, float end1, float start2, float end2);
 
         glm::vec2 rotate(glm::vec2 v, glm::vec2 pivot, float theta);
         glm::vec2 rotate(glm::vec2 v, float theta);
