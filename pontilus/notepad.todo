@@ -81,7 +81,8 @@ Physics:
         [ ] Polygon-AABB collision
         [ ] Polygon-Polygon collision
 
-        [ ] Collision resolution
+        Collision resolution:
+            [ ] Test idea where velocities are set based on a pair of points and a reflection of the velocity
 
         [ ] Go back and optimize (try to remove sqrts & trig if possible)
     3D:
@@ -147,6 +148,7 @@ Roadmap:
     [+] Animations
     [+] Audio
     [+] State machines
+    [ ] Physics
     [ ] UI
     [ ] Make a small game
     
@@ -158,5 +160,3 @@ Backburner:
     [ ] Python
     [ ] Windows build
     [ ] More debug messages
-    [ ] Python
-    [ ] Physics
