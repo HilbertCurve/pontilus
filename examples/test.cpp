@@ -22,6 +22,56 @@ class Tile : public Engine::ECS::GameObject {
     bool collides = true;
 };
 
+struct TileMap {
+    Tile **_t;
+    short *_block;
+    int width, height, tilewidth;
+    Tile &operator[](int i) {
+        return _t[i];
+    }
+};
+
+TileMap getTileMap(const short *_block, int width, int height, int tilewidth) {
+    TileMap ret;
+    ret.width = width;
+    ret.height = height;
+    ret.tilewidth = tilewidth;
+    ret._block = (short *) malloc(sizeof(short) * width * height);
+    ret._t = ()
+// fix segfault here
+    for (int i = 0; i < width * height; i++) {
+        ret._t[i] = (Tile *) malloc(sizeof(Tile) * width * height);
+        if (_block[i] >= 0)
+            ret._block[i] = _block[i];
+        else
+            ret._block[i] = -1;
+        
+        int xOffset = (i % width * tilewidth);
+        int yOffset = (floor(i / width) * tilewidth);
+        if (ret._block[i]) {
+            ret._t[i] = {};
+            ret._t[i].init({xOffset, yOffset, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, tilewidth, tilewidth);
+        }
+    }
+    return ret;
+}
+
+void deleteTileMap(TileMap &t) {
+    free(t._block);
+    free(t._t);
+}
+
+void applyIcons(TileMap &t, Graphics::IconMap &im) {
+    for (int i = 0; i < t.width * t.height; i++) {
+        if (t._block[i] >= 0) {
+            Engine::ECS::SpriteRenderer r;
+            Graphics::Texture tex = Graphics::getTexture(im, i);
+            r.init(tex);
+            t[i].addComponent(r);
+        }
+    }
+}
+
 class rect {
     public:
     glm::vec2 min, max;
@@ -34,17 +84,32 @@ rect rectFromObj(Engine::ECS::GameObject obj) {
     };
 }
 
-#define NUM_TILES 20
+#define TILEMAP_WIDTH 10
+#define TILEMAP_HEIGHT 10
+#define NUM_TILES TILEMAP_WIDTH * TILEMAP_HEIGHT
 
 static Player player;
 static Engine::ECS::GameObject obj;
-static Tile tilemap[NUM_TILES] = {Tile(), Tile()};
-static Engine::ECS::SpriteRenderer tileRenderer[NUM_TILES];
 static Engine::ECS::SpriteRenderer playerRenderer;
 static Engine::ECS::SpriteRenderer objRenderer;
 static Engine::ECS::StateMachine playerController;
 static Pontilus::Graphics::IconMap playerTextures;
 static Pontilus::Graphics::IconMap tileTextures;
+
+static const short tiles[TILEMAP_WIDTH][TILEMAP_HEIGHT] = {
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+};
+
+static TileMap tilemap = getTileMap(&tiles[0][0], 10, 10, 4);
 
 typedef Pair<Tile, rect> tile_rect;
 
@@ -200,15 +265,8 @@ static Engine::Scene mainScene = {
 
         objRenderer.init({nullptr});
         
-        for (int i = 0; i < NUM_TILES; i++) {
-            tileRenderer[i] = Engine::ECS::SpriteRenderer();
-            tileRenderer[i].init(Pontilus::Graphics::getTexture(tileTextures, i));
-            tilemap[i] = Tile();
-            if (i > 10)
-                tilemap[i].init({-50.0 + 4.0f * i, -0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
-            else
-                tilemap[i].init({-30.0 + 4.0f * i, -15.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
-            tilemap[i].addComponent(tileRenderer[i]);
+
+        for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
             mainScene.objs.push_back(tilemap[i]);
         }
         
