@@ -14,6 +14,7 @@ namespace Pontilus
                 this->color = color;
                 this->width = width;
                 this->height = height;
+                this->components.erase(components.begin(), components.end());
             }
 
             void GameObject::addComponent(Component &c)

@@ -23,7 +23,7 @@ namespace Pontilus
                 glm::vec3 pos;
                 glm::vec4 color;
                 float width, height;
-                std::vector<Component *> components;
+                std::vector<Component *> components = std::vector<Component *>();
                 
                 // should I overload contructor?? it's basically the same as {} contruction
                 void init(glm::vec3 pos, glm::vec4 color, float width, float height);
