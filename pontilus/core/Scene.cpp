@@ -59,14 +59,14 @@ namespace Pontilus
             s.numQuads = 0; // reset for tallying purposes
             for (int i = 0; i < s.objs.size(); i++)
             {
-                ECS::Component *csr = s.objs.at(i).getComponent(typeid(ECS::SpriteRenderer));
+                ECS::Component *csr = s.objs.at(i)->getComponent(typeid(ECS::SpriteRenderer));
                 if (csr)
                 {
                     ECS::SpriteRenderer &sr = dynamic_cast<ECS::SpriteRenderer &>(*csr);
                     s.numQuads = sr.toRData(quadPool, s.numQuads);
                 }
 
-                ECS::Component *ctr = s.objs.at(i).getComponent(typeid(ECS::TextRenderer));
+                ECS::Component *ctr = s.objs.at(i)->getComponent(typeid(ECS::TextRenderer));
                 if (ctr)
                 {
                     ECS::TextRenderer &tr = dynamic_cast<ECS::TextRenderer &>(*ctr);
@@ -94,8 +94,8 @@ namespace Pontilus
                 defaultMessage.addComponent(defaultText);
                 defaultLogo.addComponent(defaultIcon);
 
-                defaultScene.objs.push_back(defaultLogo);
-                defaultScene.objs.push_back(defaultMessage);
+                defaultScene.objs.push_back(&defaultLogo);
+                defaultScene.objs.push_back(&defaultMessage);
 
                 updateSceneGraphics(defaultScene);
             },
@@ -176,7 +176,7 @@ namespace Pontilus
                 toBeAnimated.addComponent(toBeAnimatedSpr);
                 toBeAnimated.addComponent(animator);
 
-                animation.objs.push_back(toBeAnimated);
+                animation.objs.push_back(&toBeAnimated);
 
                 updateSceneGraphics(animation);
             },
@@ -230,11 +230,11 @@ namespace Pontilus
                 lScore.addComponent(lScoreText);
                 rScore.addComponent(rScoreText);
 
-                pog.objs.push_back(leftPaddle);
-                pog.objs.push_back(rightPaddle);
-                pog.objs.push_back(ball);
-                pog.objs.push_back(lScore);
-                pog.objs.push_back(rScore);
+                pog.objs.push_back(&leftPaddle);
+                pog.objs.push_back(&rightPaddle);
+                pog.objs.push_back(&ball);
+                pog.objs.push_back(&lScore);
+                pog.objs.push_back(&rScore);
 
                 updateSceneGraphics(pog);
             },
@@ -348,21 +348,11 @@ namespace Pontilus
                 g1.addComponent(s1);
                 g2.addComponent(s2);
 
-                debug.objs.push_back(g1);
-                debug.objs.push_back(g2);
+                debug.objs.push_back(&g1);
+                debug.objs.push_back(&g2);
                 //s.objs.push_back(g3);
                 //s.objs.push_back(g4);
                 //s.objs.push_back(t1);
-
-                for (int i = 0; i < debug.objs.size(); i++)
-                {
-                    ECS::Component *csr = debug.objs.at(i).getComponent(typeid(ECS::SpriteRenderer));
-                    if (csr)
-                    {
-                        ECS::SpriteRenderer &sr = dynamic_cast<ECS::SpriteRenderer &>(*csr);
-                        Scenes::debug.numQuads = sr.toRData(quadPool, Scenes::debug.numQuads);
-                    }
-                }
 
                 updateSceneGraphics(debug);
             },

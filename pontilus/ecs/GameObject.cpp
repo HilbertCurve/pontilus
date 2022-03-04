@@ -40,10 +40,10 @@ namespace Pontilus
             {
                 for (int i = 0; i < this->components.size(); i++)
                 {
-                    Component *ca = this->components.at(i);
-                    if (typeid(*ca) == ti)
+                    Component &ca = *this->components.at(i);
+                    if (typeid(ca) == ti)
                     {
-                        return ca;
+                        return &ca;
                     }
                 }
 

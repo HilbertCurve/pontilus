@@ -7,6 +7,7 @@
 #include <ecs/StateMachine.h>
 #include <ecs/SpriteRenderer.h>
 #include <ecs/Body2D.h>
+#include <graphics/Camera.h>
 #include <physics2d/CollisionDetection.h>
 #include <utils/PMath.h>
 
@@ -27,6 +28,23 @@ class rect {
     glm::vec2 min, max;
 };
 
+class TileMap {
+    public:
+    std::vector<Tile> tiles;
+    std::vector<Engine::ECS::SpriteRenderer> renderers;
+    int *key;
+    size_t size() {
+        return tiles.size();
+    }
+    Tile &operator[](int i) {
+        return tiles[i];
+    }
+    Tile &at(int i) {
+        return tiles.at(i);
+    }
+
+};
+
 rect rectFromObj(Engine::ECS::GameObject obj) {
     return {
         {obj.pos.x - obj.width / 2.0f, obj.pos.y - obj.height / 2.0f},
@@ -36,12 +54,7 @@ rect rectFromObj(Engine::ECS::GameObject obj) {
 
 #define TILEMAP_WIDTH 10
 #define TILEMAP_HEIGHT 10
-#define NUM_TILES TILEMAP_WIDTH * TILEMAP_HEIGHT
-
-void getTileMap(unsigned n, unsigned k, std::vector<Tile> tiles, int *key, Graphics::IconMap tileset) {
-    // empty tiles
-    // loop through key, inserting tiles if key[n*k] >= 0
-}
+#define NUM_TILES tilemap.size()
 
 static Player player;
 static Engine::ECS::GameObject obj;
@@ -53,20 +66,48 @@ static Pontilus::Graphics::IconMap tileTextures;
 
 static int key[TILEMAP_WIDTH][TILEMAP_HEIGHT] = {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, },
+    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
 };
 
-static std::vector<Tile> tilemap;
+
+
+TileMap tilemap = TileMap();
 
 typedef Pair<Tile, rect> tile_rect;
+
+void getTileMap(unsigned n, unsigned k, TileMap &t, int tilewidth, Graphics::IconMap *tileset) {
+    // empty tiles
+    t.tiles.clear();
+    t.renderers.clear();
+    using namespace Engine::ECS;
+    // loop through key, inserting tiles if key[n*k] >= 0
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < k; j++) {
+            if (int tiletex = t.key[i + j * n] >= 0) {
+                Tile tile = Tile();
+                tile.init({i * tilewidth, j * tilewidth, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, tilewidth, tilewidth);
+
+                SpriteRenderer s = SpriteRenderer();
+                if (tileset) {
+                    s.init(Graphics::getTexture(*tileset, tiletex));
+                } else {
+                    s.init({nullptr});
+                }
+
+                t.tiles.push_back(tile);
+                t.renderers.push_back(s);
+            }
+        }
+    }
+}
 
 static bool detectRectRect(rect a, rect b)
 {
@@ -82,12 +123,12 @@ static void getCollisionInfo(Engine::ECS::GameObject &obj, std::vector<tile_rect
     info.erase(info.begin(), info.end());
 
     glm::vec2 obj_v[4] = {
-        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.1f,  obj.height + 0.1f} / 2.0f, 
-        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.1f,  obj.height + 0.1f} / 2.0f,
-        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.1f, -obj.height - 0.1f} / 2.0f, 
-        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.1f, -obj.height - 0.1f} / 2.0f,
+        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.01f,  obj.height + 0.1f} / 2.0f, 
+        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.01f,  obj.height + 0.1f} / 2.0f,
+        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.01f, -obj.height - 0.1f} / 2.0f, 
+        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.01f, -obj.height - 0.1f} / 2.0f,
     };
-    for (int i = 0; i < NUM_TILES; i++) {
+    for (int i = 0; i < tilemap.size(); i++) {
         Tile t = tilemap[i]; // selection process can be optimized
         rect r_obj = {obj_v[3], obj_v[1]};
         rect r_t = {glm::vec2(t.pos) - glm::vec2{t.width, t.height} / 2.0f, glm::vec2(t.pos) + glm::vec2{t.width, t.height} / 2.0f};
@@ -133,7 +174,7 @@ static bool collide() {
 
 static bool checkForFloor() {
     bool ret = false;
-    for (int i = 0; i < NUM_TILES; i++) {
+    for (int i = 0; i < tilemap.size(); i++) {
         rect foot = {
             {player.pos.x - player.width / 2.0f, player.pos.y - player.height / 2.0f - 0.1f},
             {player.pos.x + player.width / 2.0f, player.pos.y - player.height / 2.0f - 0.1f},
@@ -216,28 +257,31 @@ static Engine::Scene mainScene = {
     []() {
         Pontilus::Graphics::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
         Pontilus::Graphics::initIconMap("./assets/textures/test2.png", tileTextures, 8, 8, 0);
-        playerRenderer.init({nullptr});
+        playerRenderer.init(Graphics::getTexture(playerTextures, 0));
 
         objRenderer.init({nullptr});
-        getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, tilemap, &key[0][0], tileTextures);
+        tilemap.key = &key[0][0];
+        getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, tilemap, 4, &tileTextures);
 
-        for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-            mainScene.objs.push_back(tilemap[i]);
+        for (int i = 0; i < tilemap.size(); i++) {
+            tilemap.at(i).addComponent(tilemap.renderers.at(i));
+            mainScene.objs.push_back(&tilemap.at(i));
         }
         
         playerController.init(&sControllers[0], 3);
 
-        player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 2.0f, 8.0f);
+        player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 5.0f, 5.0f);
         player.addComponent(playerRenderer);
         player.addComponent(playerController);
 
-        obj.init({0.0f, 20.0f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, 4.0f, 4.0f);
-        obj.addComponent(objRenderer);
+        //obj.init({0.0f, 20.0f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, 4.0f, 4.0f);
+        //obj.addComponent(objRenderer);
 
-        mainScene.objs.push_back(player);
-        mainScene.objs.push_back(obj);
+        mainScene.objs.push_back(&player);
+        //mainScene.objs.push_back(&obj);
         
         updateSceneGraphics(mainScene);
+        Renderer::Camera::move(0, 0, 15);
     },
     [](double dt) {
         player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);

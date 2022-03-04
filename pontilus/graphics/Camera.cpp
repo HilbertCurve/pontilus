@@ -20,13 +20,7 @@ namespace Pontilus
             {
                 if (projectionMatrixIsDirty)
                 {
-                    float left = -projectionWidth / 2;
-                    float right = -left;
-
-                    float down = -projectionHeight / 2;
-                    float up = -down;
-
-                    camera.projection = glm::ortho(left, right, down, up, -10.0f, 100.0f);
+                    camera.projection = glm::perspective(90.0f, projectionWidth / projectionHeight, 0.0f, 100.0f);
                 }
 
                 return camera.projection;
