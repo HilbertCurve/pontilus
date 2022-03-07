@@ -33,6 +33,7 @@ class TileMap {
     std::vector<Tile> tiles;
     std::vector<Engine::ECS::SpriteRenderer> renderers;
     int *key;
+    float tilewidth;
     size_t size() {
         return tiles.size();
     }
@@ -65,16 +66,16 @@ static Pontilus::Graphics::IconMap playerTextures;
 static Pontilus::Graphics::IconMap tileTextures;
 
 static int key[TILEMAP_WIDTH][TILEMAP_HEIGHT] = {
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, },
-    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  },
+    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
+    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
+    { -1, -1, -1, -1, -1, -1,  1,  1,  1,  1,  },
+    { -1, -1, -1, -1, -1, -1,  1,  1,  1,  1,  },
+    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
+    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  },
 };
 
 
@@ -83,17 +84,18 @@ TileMap tilemap = TileMap();
 
 typedef Pair<Tile, rect> tile_rect;
 
-void getTileMap(unsigned n, unsigned k, TileMap &t, int tilewidth, Graphics::IconMap *tileset) {
+void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::IconMap *tileset) {
     // empty tiles
     t.tiles.clear();
     t.renderers.clear();
+    t.tilewidth = tilewidth;
     using namespace Engine::ECS;
-    // loop through key, inserting tiles if key[n*k] >= 0
+    // loop through key, inserting tiles if key[i + j*n] >= 0
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < k; j++) {
             if (int tiletex = t.key[i + j * n] >= 0) {
                 Tile tile = Tile();
-                tile.init({i * tilewidth, j * tilewidth, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, tilewidth, tilewidth);
+                tile.init({i * tilewidth, (k - (j + 1)) * tilewidth, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, tilewidth, tilewidth);
 
                 SpriteRenderer s = SpriteRenderer();
                 if (tileset) {
@@ -120,16 +122,26 @@ static bool detectRectRect(rect a, rect b)
 }
 
 static void getCollisionInfo(Engine::ECS::GameObject &obj, std::vector<tile_rect> &info) {
-    info.erase(info.begin(), info.end());
+    info.clear();
 
     glm::vec2 obj_v[4] = {
-        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.01f,  obj.height + 0.1f} / 2.0f, 
-        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.01f,  obj.height + 0.1f} / 2.0f,
-        glm::vec2(obj.pos) + glm::vec2{ obj.width + 0.01f, -obj.height - 0.1f} / 2.0f, 
-        glm::vec2(obj.pos) + glm::vec2{-obj.width - 0.01f, -obj.height - 0.1f} / 2.0f,
+        glm::vec2(obj.pos) + glm::vec2{-obj.width,  obj.height} / 2.0f, 
+        glm::vec2(obj.pos) + glm::vec2{ obj.width,  obj.height} / 2.0f,
+        glm::vec2(obj.pos) + glm::vec2{ obj.width, -obj.height} / 2.0f, 
+        glm::vec2(obj.pos) + glm::vec2{-obj.width, -obj.height} / 2.0f,
     };
+
+    std::vector<Tile> surrounding;
+    glm::vec2 p_tileCoordsMin, p_tileCoordsMax;
+    p_tileCoordsMin = floor(obj_v[3] - glm::vec2{(obj.width, obj.height) / 2.0f});
+    p_tileCoordsMax = ceil(obj_v[1] + glm::vec2{(obj.width, obj.height) / 2.0f});
+    
     for (int i = 0; i < tilemap.size(); i++) {
-        Tile t = tilemap[i]; // selection process can be optimized
+        if (Math::between(p_tileCoordsMin, tilemap[i].pos, p_tileCoordsMax)) surrounding.push_back(tilemap[i]);
+    }
+
+    for (int i = 0; i < surrounding.size(); i++) {
+        Tile t = surrounding[i];
         rect r_obj = {obj_v[3], obj_v[1]};
         rect r_t = {glm::vec2(t.pos) - glm::vec2{t.width, t.height} / 2.0f, glm::vec2(t.pos) + glm::vec2{t.width, t.height} / 2.0f};
         if (!detectRectRect(r_obj, r_t)) continue;
@@ -141,39 +153,55 @@ static void getCollisionInfo(Engine::ECS::GameObject &obj, std::vector<tile_rect
     }
 }
 
-static bool collide() {
+static void collide(double dt) {
     // collision
     std::vector<tile_rect> info;
     getCollisionInfo(player, info);
     bool hasFloor = false;
+    bool hasLeft, hasRight, hasUp;
     for (auto i : info) {
         float w = i.second.max.x - i.second.min.x;
         float h = i.second.max.y - i.second.min.y;
+        
+        // if it's a small corner overlap between tile on a wall and player, player 
+        // could get caught on the top of one tile of the wall.
+        if (w * h < __pEPSILON * 30 /* adjust */) continue;
+
         if (w / player.width < h / player.height) {
             if (i.first.pos.x > player.pos.x) {
                 if (player.velocity.x > 0.0f)
                     player.velocity.x = 0.0f;
-                player.pos.x -= w;
+                if (!hasRight) {
+                    player.pos.x -= w;
+                    hasRight = true;
+                }
             } else {
                 if (player.velocity.x < 0.0f)
                     player.velocity.x = 0.0f;
-                player.pos.x += w;
+                if (!hasLeft) { 
+                    player.pos.x += w;
+                    hasLeft = true;
+                }
             }
         } else {
-            player.velocity.y = 0.0f;
             if (i.first.pos.y > player.pos.y) {
-                player.pos.y -= h;
-            } else {
+                player.velocity.y = -0.1f;
+                if (!hasUp) {
+                    player.pos.y -= h;
+                    hasUp = true;
+                }
+            } else if (!hasFloor) {
+                player.velocity.y = 0.0f;
                 player.pos.y += h;
                 hasFloor = true;
             }
         }
     }
-    return hasFloor;
 }
 
-static bool checkForFloor() {
+static bool checkForFloor(std::vector<tile_rect> &t) {
     bool ret = false;
+    t.clear();
     for (int i = 0; i < tilemap.size(); i++) {
         rect foot = {
             {player.pos.x - player.width / 2.0f, player.pos.y - player.height / 2.0f - 0.1f},
@@ -181,6 +209,7 @@ static bool checkForFloor() {
         };
         if (detectRectRect(foot, rectFromObj(tilemap[i]))) {
             ret = true;
+            t.push_back({tilemap[i], {}});
             break;
         }
     }
@@ -192,10 +221,10 @@ static void horizontalMotion(double dt) {
     // move
     if (Pontilus::IO::isKeyPressed(GLFW_KEY_A)) {
         player.velocity.x -= 100.0f * dt;
-        if (player.velocity.x < -16.0f) player.velocity.x = -16.0f;
+        if (player.velocity.x < -32.0f) player.velocity.x = -32.0f;
     } else if (Pontilus::IO::isKeyPressed(GLFW_KEY_D)) {
         player.velocity.x += 100.0f * dt;
-        if (player.velocity.x > 16.0f) player.velocity.x = 16.0f;
+        if (player.velocity.x > 32.0f) player.velocity.x = 32.0f;
     } else {
         if (player.velocity.x < -1.0f) player.velocity.x += 100.0f * dt;
         else if (player.velocity.x > 1.0f) player.velocity.x -= 100.0f * dt;
@@ -212,44 +241,60 @@ static Engine::ECS::State sControllers[] = {
         if (curr != prev && curr) {
             playerController.addState("jumped");
             playerController.removeState("grounded");
-            player.velocity.y = 20.0f;
+            player.velocity.y = 40.0f;
         }
         prev = curr;
 
         horizontalMotion(dt);
+        player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
         
-        collide();
-        bool hasFloor = checkForFloor();
-        if (!hasFloor) playerController.replaceState("grounded", "jumped");
+        collide(dt);
+        std::vector<tile_rect> info;
+        bool hasFloor = checkForFloor(info);
+        if (!hasFloor) {
+            playerController.replaceState("grounded", "jumped");
+        }
     }},
     {"jumped", &playerController, [](double dt) {
         player.color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
         // jump
-        player.velocity -= glm::vec2{0.0f, 19.6f} * (float) dt;
+        player.velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
         if (curr != prev && curr) {
             playerController.addState("double-jumped");
             playerController.removeState("jumped");
-            player.velocity.y = 15.0f;
+            player.velocity.y = 30.0f;
         }
         prev = curr;
         
         horizontalMotion(dt);
+        player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
 
-        collide();
-        bool hasFloor = checkForFloor();
-        if (hasFloor) playerController.replaceState("jumped", "grounded");
+        collide(dt);
+        std::vector<tile_rect> info;
+        bool hasFloor = checkForFloor(info);
+        if (hasFloor && player.velocity.y <= 0.0f) {
+            playerController.replaceState("jumped", "grounded");
+            //Tile floor = info.at(0).first;
+            //player.pos.y = floor.pos.y + (floor.height - player.height) / 2.0f;
+        }
     }},
     {"double-jumped", &playerController, [](double dt) {
         player.color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
         // fall
-        player.velocity -= glm::vec2{0.0f, 19.6f} * (float) dt;
+        player.velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
 
         horizontalMotion(dt);
+        player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
         
-        collide();
-        bool hasFloor = checkForFloor();
-        if (hasFloor) playerController.replaceState("double-jumped", "grounded");
+        collide(dt);
+        std::vector<tile_rect> info;
+        bool hasFloor = checkForFloor(info);
+        if (hasFloor && player.velocity.y <= 0.0f) {
+            playerController.replaceState("double-jumped", "grounded");
+            //Tile floor = info.at(0).first;
+            //player.pos.y = floor.pos.y + (floor.height - player.height) / 2.0f;
+        }
     }},
 };
 
@@ -257,7 +302,7 @@ static Engine::Scene mainScene = {
     []() {
         Pontilus::Graphics::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
         Pontilus::Graphics::initIconMap("./assets/textures/test2.png", tileTextures, 8, 8, 0);
-        playerRenderer.init(Graphics::getTexture(playerTextures, 0));
+        playerRenderer.init({nullptr}/*Graphics::getTexture(playerTextures, 0)*/);
 
         objRenderer.init({nullptr});
         tilemap.key = &key[0][0];
@@ -281,11 +326,11 @@ static Engine::Scene mainScene = {
         //mainScene.objs.push_back(&obj);
         
         updateSceneGraphics(mainScene);
-        Renderer::Camera::move(0, 0, 15);
+        Renderer::Camera::move(0, 0, 32);
     },
     [](double dt) {
-        player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
         updateSceneGraphics(mainScene);
+        printf("%f\n", player.pos.x);
     },
     []() {
 

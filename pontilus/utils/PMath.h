@@ -30,6 +30,7 @@ namespace Pontilus
         int signOrZero(float f);
         int sign(float f);
         bool between(float left, float f, float right);
+        bool between(glm::vec2 min, glm::vec2 point, glm::vec2 max);
         float overlap(float start1, float end1, float start2, float end2);
 
         glm::vec2 rotate(glm::vec2 v, glm::vec2 pivot, float theta);
@@ -40,6 +41,15 @@ namespace Pontilus
 
         float lerp(float start, float end, float amt);
         glm::vec2 lerp(glm::vec2 start, glm::vec2 end, float amt);
+
+        /**
+         * Continuous deformation of topological 0-sphere [start1, end1] to 
+         * [start2, end2] such that (val / (end1 - start1)), where val is
+         * in the reals, remains constant.
+         * 
+         * @return val post-transformation
+         */
+        float map(float start1, float end1, float start2, float end2, float val);
 
         /**
          * Finds the closest value f to the bound given by left and

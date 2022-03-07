@@ -25,6 +25,10 @@ namespace Pontilus
             return f > left && f < right;
         }
 
+        bool between(vec2 min, vec2 point, vec2 max) {
+            return between(min.x, point.x, max.x) && between(min.y, point.y, max.y);
+        }
+
         vec2 rotate(vec2 v, vec2 pivot, float theta)
         {
             vec2 tPoint = v - pivot;
@@ -106,6 +110,15 @@ namespace Pontilus
             };
 
             return inverse(m) * glm::vec2(c, f);
+        }
+
+        float map(float start1, float end1, float start2, float end2, float val) {
+            if (start1 - end1 == 0.0f) {
+                if (start2 - end2 == 0.0f) return start2 + (val - start1);
+                else return NAN;
+            }
+            float percent = (val / (end1 - start1));
+            return start2 + (percent * (end2 - start2));
         }
     }
 }
