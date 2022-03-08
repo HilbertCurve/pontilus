@@ -11,6 +11,11 @@ namespace Pontilus
     {
         namespace Camera
         {
+            enum CameraMode {
+                PONT_ORTHO,
+                PONT_PERSPECTIVE
+            };
+
             extern float projectionWidth;
             extern float projectionHeight;
 
@@ -33,8 +38,10 @@ namespace Pontilus
             glm::vec3 &getPosition();
             float getZoom();
             void updateProjection();
+            void setMode(CameraMode m);
 
             void move(float dx, float dy, float dz);
+            void setPosition(float x, float y, float z);
             void rotate(float dpitch, float dyaw);
         }
     }

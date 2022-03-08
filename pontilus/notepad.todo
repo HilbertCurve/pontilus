@@ -150,7 +150,10 @@ Roadmap:
     [+] State machines
     [ ] Physics
     [ ] UI
-    [ ] Make a small game
+    Make Some Games:
+        [+] Basic platformer
+        [ ] Mario clone
+        [ ] RPG-ish
     
 Issues:
     [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame.

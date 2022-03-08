@@ -12,6 +12,7 @@ namespace Pontilus
         {
             static _Camera camera = _Camera();
             static bool projectionMatrixIsDirty = true;
+            CameraMode mode = PONT_ORTHO;
 
             float projectionWidth = window.width / 10;
             float projectionHeight = window.height / 10;
@@ -20,7 +21,18 @@ namespace Pontilus
             {
                 if (projectionMatrixIsDirty)
                 {
-                    camera.projection = glm::perspective(90.0f, projectionWidth / projectionHeight, 0.0f, 100.0f);
+                    if (mode = PONT_PERSPECTIVE)
+                        camera.projection = glm::perspective(90.0f, projectionWidth / projectionHeight, 0.0f, 100.0f);
+                    else if (mode = PONT_ORTHO)
+                    {
+                        float left = -projectionWidth / 2;
+                        float right = -left;
+
+                        float down = -projectionHeight / 2;
+                        float up = -down;
+
+                        camera.projection = glm::ortho(left, right, down, up, -10.0f, 100.0f);
+                    }
                 }
 
                 return camera.projection;
@@ -47,6 +59,12 @@ namespace Pontilus
                 return camera.zoom;
             }
 
+            void setMode(CameraMode m)
+            {
+                mode = m;
+                updateProjection();
+            }
+
             void updateProjection()
             {
                 projectionWidth = window.width / 10;
@@ -67,6 +85,20 @@ namespace Pontilus
                     }
                 }
             }
+
+            void setPosition(float x, float y, float z)
+            {
+                camera.position = glm::vec3{x, y, z};
+
+                for (int i = 0; i < 4; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        ((float *)fullWindowQuad.data)[i * 7 + j] = glm::vec3(x, y, z)[j];
+                    }
+                }
+            }
+
             void rotate(float dpitch, float dyaw)
             {
                 camera.rotation += glm::vec3(dpitch, dyaw, 0);

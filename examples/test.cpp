@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <audio/AudioMaster.h>
 #include <core/Application.h>
 #include <core/Scene.h>
 #include <core/InputListener.h>
@@ -7,6 +8,8 @@
 #include <ecs/StateMachine.h>
 #include <ecs/SpriteRenderer.h>
 #include <ecs/Body2D.h>
+#include <ecs/AudioListener.h>
+#include <ecs/AudioSource.h>
 #include <graphics/Camera.h>
 #include <physics2d/CollisionDetection.h>
 #include <utils/PMath.h>
@@ -54,7 +57,7 @@ rect rectFromObj(Engine::ECS::GameObject obj) {
 }
 
 #define TILEMAP_WIDTH 10
-#define TILEMAP_HEIGHT 10
+#define TILEMAP_HEIGHT 20
 #define NUM_TILES tilemap.size()
 
 static Player player;
@@ -62,20 +65,32 @@ static Engine::ECS::GameObject obj;
 static Engine::ECS::SpriteRenderer playerRenderer;
 static Engine::ECS::SpriteRenderer objRenderer;
 static Engine::ECS::StateMachine playerController;
+static Engine::ECS::AudioSource playerSource;
 static Pontilus::Graphics::IconMap playerTextures;
 static Pontilus::Graphics::IconMap tileTextures;
+static Pontilus::Audio::WAVFile jump1, jump2;
 
-static int key[TILEMAP_WIDTH][TILEMAP_HEIGHT] = {
-    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  },
-    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
-    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
-    { -1, -1, -1, -1, -1, -1,  1,  1,  1,  1,  },
-    { -1, -1, -1, -1, -1, -1,  1,  1,  1,  1,  },
-    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
-    { -1, -1,  1, -1, -1,  1,  1,  1,  1,  1,  },
+static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH] = {
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  },
+    { -1, -1, -1, 15, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, 15, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, 15, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, 15, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, 15, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, 15, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, 15, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { 12,  9,  9,  9,  9,  9,  9,  9,  9, 11,  },
 };
 
 
@@ -93,7 +108,8 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
     // loop through key, inserting tiles if key[i + j*n] >= 0
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < k; j++) {
-            if (int tiletex = t.key[i + j * n] >= 0) {
+            int tiletex = t.key[i + j * n];
+            if (tiletex >= 0) {
                 Tile tile = Tile();
                 tile.init({i * tilewidth, (k - (j + 1)) * tilewidth, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, tilewidth, tilewidth);
 
@@ -108,6 +124,12 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
                 t.renderers.push_back(s);
             }
         }
+    }
+}
+
+void applyColorFilter(TileMap &t, glm::vec4 color) {
+    for (Tile &tile : t.tiles) {
+        tile.color = color;
     }
 }
 
@@ -132,9 +154,10 @@ static void getCollisionInfo(Engine::ECS::GameObject &obj, std::vector<tile_rect
     };
 
     std::vector<Tile> surrounding;
+    surrounding.clear();
     glm::vec2 p_tileCoordsMin, p_tileCoordsMax;
-    p_tileCoordsMin = floor(obj_v[3] - glm::vec2{(obj.width, obj.height) / 2.0f});
-    p_tileCoordsMax = ceil(obj_v[1] + glm::vec2{(obj.width, obj.height) / 2.0f});
+    p_tileCoordsMin = floor((obj_v[3] - tilemap.tilewidth / 2) / tilemap.tilewidth) * tilemap.tilewidth;
+    p_tileCoordsMax = ceil((obj_v[1] + tilemap.tilewidth / 2) / tilemap.tilewidth) * tilemap.tilewidth;
     
     for (int i = 0; i < tilemap.size(); i++) {
         if (Math::between(p_tileCoordsMin, tilemap[i].pos, p_tileCoordsMax)) surrounding.push_back(tilemap[i]);
@@ -165,7 +188,7 @@ static void collide(double dt) {
         
         // if it's a small corner overlap between tile on a wall and player, player 
         // could get caught on the top of one tile of the wall.
-        if (w * h < __pEPSILON * 30 /* adjust */) continue;
+        if (w * h < __pEPSILON * 50 /* adjust */) continue;
 
         if (w / player.width < h / player.height) {
             if (i.first.pos.x > player.pos.x) {
@@ -242,6 +265,8 @@ static Engine::ECS::State sControllers[] = {
             playerController.addState("jumped");
             playerController.removeState("grounded");
             player.velocity.y = 40.0f;
+            Engine::ECS::AudioSource *ptr = (Engine::ECS::AudioSource *) player.getComponent(typeid(Engine::ECS::AudioSource));
+            ptr->play(jump1, false);
         }
         prev = curr;
 
@@ -264,6 +289,8 @@ static Engine::ECS::State sControllers[] = {
             playerController.addState("double-jumped");
             playerController.removeState("jumped");
             player.velocity.y = 30.0f;
+            Engine::ECS::AudioSource *ptr = (Engine::ECS::AudioSource *) player.getComponent(typeid(Engine::ECS::AudioSource));
+            ptr->play(jump1, false);
         }
         prev = curr;
         
@@ -301,12 +328,16 @@ static Engine::ECS::State sControllers[] = {
 static Engine::Scene mainScene = {
     []() {
         Pontilus::Graphics::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
-        Pontilus::Graphics::initIconMap("./assets/textures/test2.png", tileTextures, 8, 8, 0);
+        Pontilus::Graphics::initIconMap("./assets/textures/tilemap1.png", tileTextures, 16, 16, 0);
+        Pontilus::Audio::initWAVFile(jump1, "./assets/sounds/jump1.wav");
+
         playerRenderer.init({nullptr}/*Graphics::getTexture(playerTextures, 0)*/);
+        playerSource.init();
 
         objRenderer.init({nullptr});
         tilemap.key = &key[0][0];
-        getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, tilemap, 4, &tileTextures);
+        getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, tilemap, 8, &tileTextures);
+        applyColorFilter(tilemap, {0.5f, 0.5f, 0.5f, 0.5f});
 
         for (int i = 0; i < tilemap.size(); i++) {
             tilemap.at(i).addComponent(tilemap.renderers.at(i));
@@ -318,6 +349,9 @@ static Engine::Scene mainScene = {
         player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 5.0f, 5.0f);
         player.addComponent(playerRenderer);
         player.addComponent(playerController);
+        player.addComponent(playerSource);
+        player.addComponent(Engine::ECS::AudioListener::get());
+        
 
         //obj.init({0.0f, 20.0f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, 4.0f, 4.0f);
         //obj.addComponent(objRenderer);
@@ -326,11 +360,14 @@ static Engine::Scene mainScene = {
         //mainScene.objs.push_back(&obj);
         
         updateSceneGraphics(mainScene);
-        Renderer::Camera::move(0, 0, 32);
+        Renderer::Camera::setPosition(0, 0, 32);
     },
     [](double dt) {
         updateSceneGraphics(mainScene);
-        printf("%f\n", player.pos.x);
+        glm::vec3 cam_pos = Renderer::Camera::getPosition();
+        if (Math::between(0.0f, player.pos.y, 110.0f)) {
+            Renderer::Camera::setPosition(cam_pos.x, player.pos.y, cam_pos.z);
+        }
     },
     []() {
 
