@@ -21,9 +21,11 @@ namespace Pontilus
             {
                 if (projectionMatrixIsDirty)
                 {
-                    if (mode = PONT_PERSPECTIVE)
+                    if (mode == PONT_PERSPECTIVE)
+                    {
                         camera.projection = glm::perspective(90.0f, projectionWidth / projectionHeight, 0.0f, 100.0f);
-                    else if (mode = PONT_ORTHO)
+                    }
+                    else if (mode == PONT_ORTHO)
                     {
                         float left = -projectionWidth / 2;
                         float right = -left;

@@ -13,6 +13,7 @@
 #include <graphics/Camera.h>
 #include <physics2d/CollisionDetection.h>
 #include <utils/PMath.h>
+#include <utils/Utils.h>
 
 using namespace Pontilus;
 
@@ -24,6 +25,7 @@ class Player : public Engine::ECS::GameObject {
 class Tile : public Engine::ECS::GameObject {
     public:
     bool collides = true;
+    glm::vec<2, int> tile_coords;
 };
 
 class rect {
@@ -37,6 +39,9 @@ class TileMap {
     std::vector<Engine::ECS::SpriteRenderer> renderers;
     int *key;
     float tilewidth;
+    int width, height;
+    glm::vec4 color;
+    Graphics::IconMap *tileset;
     size_t size() {
         return tiles.size();
     }
@@ -78,10 +83,10 @@ static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH] = {
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, 15, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, 15, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, 15, 15, 15, 15, 15, 15, 15, -1, -1,  },
+    { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, 15, 15, -1, 15, -1, -1, -1, -1, -1,  },
+    { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, 15, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, 15, -1,  },
@@ -104,6 +109,10 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
     t.tiles.clear();
     t.renderers.clear();
     t.tilewidth = tilewidth;
+    t.width = n;
+    t.height = k;
+    t.color = {1.0f, 1.0f, 1.0f, 1.0f};
+    t.tileset = tileset;
     using namespace Engine::ECS;
     // loop through key, inserting tiles if key[i + j*n] >= 0
     for (int i = 0; i < n; i++) {
@@ -111,7 +120,9 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
             int tiletex = t.key[i + j * n];
             if (tiletex >= 0) {
                 Tile tile = Tile();
-                tile.init({i * tilewidth, (k - (j + 1)) * tilewidth, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, tilewidth, tilewidth);
+                tile.init({i * tilewidth, (k - (j + 1)) * tilewidth, 0.0f}, t.color, tilewidth, tilewidth);
+
+                tile.tile_coords = {i, (k - (j + 1))};
 
                 SpriteRenderer s = SpriteRenderer();
                 if (tileset) {
@@ -127,10 +138,42 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
     }
 }
 
+glm::vec2 tileCoords(float x, float y, float tilewidth) {
+    return {floor((x + tilewidth / 2) / tilewidth), floor((y + tilewidth / 2) / tilewidth)};
+}
+
+void addTile(TileMap &t, glm::vec<2, int> coords, float tile) {
+    int i_tile = floor(tile);
+    if (!Math::between({-1, -1}, coords, {t.width + 1, t.height + 1})) {
+        return;
+    }
+
+    for (int i = 0; i < t.size(); i++) {
+        if (t[i].tile_coords == coords) {
+            return;
+        }
+    }
+
+    Tile _tile;
+    _tile.init({coords.x * t.tilewidth, (coords.y) * t.tilewidth, 0.0f}, t.color, t.tilewidth, t.tilewidth);
+
+    _tile.tile_coords = coords;
+    Engine::ECS::SpriteRenderer _renderer = Engine::ECS::SpriteRenderer();
+    _renderer.init(Graphics::getTexture(*t.tileset, i_tile));
+
+    t.tiles.push_back(_tile);
+    t.renderers.push_back(_renderer);
+
+    t.at(t.size() - 1).addComponent(t.renderers.at(t.size() - 1));
+    Pontilus::getCurrentScene()->objs.push_back(&t.at(t.size() - 1));
+    // TODO: insert value tile into t.key
+}
+
 void applyColorFilter(TileMap &t, glm::vec4 color) {
     for (Tile &tile : t.tiles) {
         tile.color = color;
     }
+    t.color = color;
 }
 
 static bool detectRectRect(rect a, rect b)
@@ -325,6 +368,9 @@ static Engine::ECS::State sControllers[] = {
     }},
 };
 
+float selectedBlock = 0;
+const float maxSelectedBlock = 30;
+
 static Engine::Scene mainScene = {
     []() {
         Pontilus::Graphics::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
@@ -353,21 +399,29 @@ static Engine::Scene mainScene = {
         player.addComponent(Engine::ECS::AudioListener::get());
         
 
-        //obj.init({0.0f, 20.0f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, 4.0f, 4.0f);
-        //obj.addComponent(objRenderer);
+        obj.init({0.0f, 20.0f, 0.0f}, {0.5f, 0.5f, 0.5f, 0.2f}, 8.0f, 8.0f);
+        obj.addComponent(objRenderer);
 
         mainScene.objs.push_back(&player);
-        //mainScene.objs.push_back(&obj);
+        mainScene.objs.push_back(&obj);
         
         updateSceneGraphics(mainScene);
-        Renderer::Camera::setPosition(0, 0, 32);
+        Renderer::Camera::setPosition(25, 0, 32);
     },
     [](double dt) {
-        updateSceneGraphics(mainScene);
+        obj.pos = floor((screenToWorldCoords(IO::mousePos()) + tilemap.tilewidth / 2.0f) / tilemap.tilewidth) * tilemap.tilewidth;
         glm::vec3 cam_pos = Renderer::Camera::getPosition();
         if (Math::between(0.0f, player.pos.y, 110.0f)) {
             Renderer::Camera::setPosition(cam_pos.x, player.pos.y, cam_pos.z);
         }
+
+        if (IO::isButtonPressed(GLFW_MOUSE_BUTTON_1)) {
+            // place tile 
+            addTile(tilemap, {(int) obj.pos.x / tilemap.tilewidth, (int) obj.pos.y / tilemap.tilewidth}, 15);
+        }
+        printf("%d\n", mainScene.objs.size());
+
+        updateSceneGraphics(mainScene);
     },
     []() {
 
