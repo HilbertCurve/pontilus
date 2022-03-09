@@ -75,6 +75,31 @@ namespace Pontilus
             }
         }
 
+        void Scene::addObj(ECS::GameObject *obj)
+        {
+            for (int i = 0; i < objs.size(); i++)
+            {
+                if (this->objs[i]->id == obj->id)
+                {
+                    return;
+                }
+            }
+            this->objs.push_back(obj);
+        }
+
+        void Scene::removeObj(int id)
+        {
+            for (int i = 0; i < objs.size(); i++)
+            {
+                if (this->objs[i]->id == id)
+                {
+                    this->objs.erase(objs.begin() + i);
+                    return;
+                }
+            }
+            __pWarning("Could not remove object of id %d from scene %p.", id, this);
+        }
+
         Scene Scenes::defaultScene = 
         {
             []()

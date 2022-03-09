@@ -23,6 +23,8 @@ namespace Pontilus
             void toRData(Graphics::rData &r, unsigned int rOffset);
 
             std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>(0);
+            void addObj(ECS::GameObject *obj);
+            void removeObj(int id);
 
             int numQuads = 0;
         };

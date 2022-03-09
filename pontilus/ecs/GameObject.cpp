@@ -8,8 +8,13 @@ namespace Pontilus
     {
         namespace ECS
         {
+            int GameObject::_id = 0;
+
             void GameObject::init(glm::vec3 pos, glm::vec4 color, float width, float height)
             {
+                if (!id) {
+                    __pWarning("Initialization of GameObject %p without id.", this);
+                }
                 this->pos = pos;
                 this->color = color;
                 this->width = width;

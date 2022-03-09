@@ -76,26 +76,46 @@ static Pontilus::Graphics::IconMap tileTextures;
 static Pontilus::Audio::WAVFile jump1, jump2;
 
 static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH] = {
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, 15, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, 15, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, 15, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, 15, 15, 15, 15, 15, 15, 15, -1, -1,  },
+    /*{ 15, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
     { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, 15, 15, -1, 15, -1, -1, -1, -1, -1,  },
+    { 15, -1, 15, -1, -1, -1, -1, -1, 15, -1,  },
+    { 15, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, 15, -1, -1, -1, -1,  },
+    { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, -1, 15, -1, 15, -1, 15, 15, -1, -1,  },
+    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, -1, 15, -1, 15, -1, -1, -1, -1, -1,  },
     { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, 15, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, 15, -1,  },
+    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, -1, 15, -1, -1, -1, -1, -1, 15, -1,  },
+    { -1, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, -1, 15, -1, -1, 15, -1, -1, -1, -1,  },
+    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, 15, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
+    { 12,  9,  9,  9,  9,  9,  9,  9,  9, 11,  },*/
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { 12,  9,  9,  9,  9,  9,  9,  9,  9, 11,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
+    { 15, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
 };
 
 
@@ -107,7 +127,9 @@ typedef Pair<Tile, rect> tile_rect;
 void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::IconMap *tileset) {
     // empty tiles
     t.tiles.clear();
+    t.tiles.reserve(n*k);
     t.renderers.clear();
+    t.renderers.reserve(n*k);
     t.tilewidth = tilewidth;
     t.width = n;
     t.height = k;
@@ -167,6 +189,28 @@ void addTile(TileMap &t, glm::vec<2, int> coords, float tile) {
     t.at(t.size() - 1).addComponent(t.renderers.at(t.size() - 1));
     Pontilus::getCurrentScene()->objs.push_back(&t.at(t.size() - 1));
     // TODO: insert value tile into t.key
+}
+
+// FIXME
+void removeTile(TileMap &t, glm::vec<2, int> coords) {
+    if (!Math::between({-1, -1}, coords, {t.width + 1, t.height + 1})) {
+        return;
+    }
+
+    for (int i = 0; i < t.size(); i++) {
+        if (t[i].tile_coords == coords) {
+            Tile &tile = t[i];
+            auto scene = Pontilus::getCurrentScene();
+            for (int j = 0; j < scene->objs.size(); j++) {
+                if (scene->objs[j]->id == tile.id) {
+                    t.tiles.erase(t.tiles.begin()+i);
+                    t.renderers.erase(t.renderers.begin()+i);
+                    scene->removeObj(tile.id);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 void applyColorFilter(TileMap &t, glm::vec4 color) {
@@ -270,8 +314,8 @@ static bool checkForFloor(std::vector<tile_rect> &t) {
     t.clear();
     for (int i = 0; i < tilemap.size(); i++) {
         rect foot = {
-            {player.pos.x - player.width / 2.0f, player.pos.y - player.height / 2.0f - 0.1f},
-            {player.pos.x + player.width / 2.0f, player.pos.y - player.height / 2.0f - 0.1f},
+            {player.pos.x - player.width / 2.0f + 0.1f, player.pos.y - player.height / 2.0f - 0.1f},
+            {player.pos.x + player.width / 2.0f - 0.1f, player.pos.y - player.height / 2.0f - 0.1f},
         };
         if (detectRectRect(foot, rectFromObj(tilemap[i]))) {
             ret = true;
@@ -411,15 +455,15 @@ static Engine::Scene mainScene = {
     [](double dt) {
         obj.pos = floor((screenToWorldCoords(IO::mousePos()) + tilemap.tilewidth / 2.0f) / tilemap.tilewidth) * tilemap.tilewidth;
         glm::vec3 cam_pos = Renderer::Camera::getPosition();
-        if (Math::between(0.0f, player.pos.y, 110.0f)) {
+        if (Math::between(0.0f, player.pos.y, 130.0f)) {
             Renderer::Camera::setPosition(cam_pos.x, player.pos.y, cam_pos.z);
         }
 
         if (IO::isButtonPressed(GLFW_MOUSE_BUTTON_1)) {
-            // place tile 
             addTile(tilemap, {(int) obj.pos.x / tilemap.tilewidth, (int) obj.pos.y / tilemap.tilewidth}, 15);
+        } else if (IO::isButtonPressed(GLFW_MOUSE_BUTTON_2)) {
+            removeTile(tilemap, {(int) obj.pos.x / tilemap.tilewidth, (int) obj.pos.y / tilemap.tilewidth});
         }
-        printf("%d\n", mainScene.objs.size());
 
         updateSceneGraphics(mainScene);
     },

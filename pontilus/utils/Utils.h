@@ -28,7 +28,7 @@
 }
 
 #define __pWarning(message, ...) \
-if (echoOn()) {\
+if (true/*echoOn()*/) {\
     fprintf(stdout, "\x1B[01m\x1B[31mWARNING: Warning at file %s, line %d:\x1B[0m ",\
             __FILE__, __LINE__);\
     fprintf(stdout, message __VA_OPT__(,) __VA_ARGS__);\
