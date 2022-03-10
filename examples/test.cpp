@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <stdio.h>
 #include <audio/AudioMaster.h>
 #include <core/Application.h>
 #include <core/Scene.h>
@@ -17,6 +17,10 @@
 
 using namespace Pontilus;
 
+///////////////
+// Class Definitions
+///////////////
+
 class Player : public Engine::ECS::GameObject {
     public:
     glm::vec2 velocity;
@@ -33,10 +37,11 @@ class rect {
     glm::vec2 min, max;
 };
 
+typedef Pair<Tile, Engine::ECS::SpriteRenderer> tile_renderer;
+
 class TileMap {
     public:
-    std::vector<Tile> tiles;
-    std::vector<Engine::ECS::SpriteRenderer> renderers;
+    std::vector<tile_renderer> tiles;
     int *key;
     float tilewidth;
     int width, height;
@@ -46,10 +51,10 @@ class TileMap {
         return tiles.size();
     }
     Tile &operator[](int i) {
-        return tiles[i];
+        return tiles[i].first;
     }
     Tile &at(int i) {
-        return tiles.at(i);
+        return tiles.at(i).first;
     }
 
 };
@@ -65,6 +70,10 @@ rect rectFromObj(Engine::ECS::GameObject obj) {
 #define TILEMAP_HEIGHT 20
 #define NUM_TILES tilemap.size()
 
+///////////////
+// Field Declarations
+///////////////
+
 static Player player;
 static Engine::ECS::GameObject obj;
 static Engine::ECS::SpriteRenderer playerRenderer;
@@ -76,26 +85,6 @@ static Pontilus::Graphics::IconMap tileTextures;
 static Pontilus::Audio::WAVFile jump1, jump2;
 
 static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH] = {
-    /*{ 15, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, -1, -1, -1, -1, 15, -1,  },
-    { 15, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, 15, -1, -1, -1, -1,  },
-    { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, 15, -1, 15, 15, -1, -1,  },
-    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, 15, -1, -1, -1, -1, -1,  },
-    { 15, 15, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, -1, -1, -1, -1, 15, -1,  },
-    { -1, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, -1, 15, -1, -1, -1, -1,  },
-    { 15, -1, 15, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { 12,  9,  9,  9,  9,  9,  9,  9,  9, 11,  },*/
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
@@ -118,7 +107,9 @@ static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH] = {
     { 15, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
 };
 
-
+///////////////
+// TileMap functions
+///////////////
 
 TileMap tilemap = TileMap();
 
@@ -128,8 +119,6 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
     // empty tiles
     t.tiles.clear();
     t.tiles.reserve(n*k);
-    t.renderers.clear();
-    t.renderers.reserve(n*k);
     t.tilewidth = tilewidth;
     t.width = n;
     t.height = k;
@@ -153,8 +142,7 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
                     s.init({nullptr});
                 }
 
-                t.tiles.push_back(tile);
-                t.renderers.push_back(s);
+                t.tiles.push_back({tile, s});
             }
         }
     }
@@ -166,7 +154,7 @@ glm::vec2 tileCoords(float x, float y, float tilewidth) {
 
 void addTile(TileMap &t, glm::vec<2, int> coords, float tile) {
     int i_tile = floor(tile);
-    if (!Math::between({-1, -1}, coords, {t.width + 1, t.height + 1})) {
+    if (!Math::between({-1, -1}, coords, {t.width, t.height})) {
         return;
     }
 
@@ -183,15 +171,16 @@ void addTile(TileMap &t, glm::vec<2, int> coords, float tile) {
     Engine::ECS::SpriteRenderer _renderer = Engine::ECS::SpriteRenderer();
     _renderer.init(Graphics::getTexture(*t.tileset, i_tile));
 
-    t.tiles.push_back(_tile);
-    t.renderers.push_back(_renderer);
+    t.tiles.push_back({_tile, _renderer});
 
-    t.at(t.size() - 1).addComponent(t.renderers.at(t.size() - 1));
+    t.at(t.size() - 1).addComponent(t.tiles.at(t.size() - 1).second);
+
     Pontilus::getCurrentScene()->objs.push_back(&t.at(t.size() - 1));
     // TODO: insert value tile into t.key
+
+    t.key[coords.x + t.width * (t.height - (coords.y + 1))] = i_tile;
 }
 
-// FIXME
 void removeTile(TileMap &t, glm::vec<2, int> coords) {
     if (!Math::between({-1, -1}, coords, {t.width + 1, t.height + 1})) {
         return;
@@ -203,9 +192,9 @@ void removeTile(TileMap &t, glm::vec<2, int> coords) {
             auto scene = Pontilus::getCurrentScene();
             for (int j = 0; j < scene->objs.size(); j++) {
                 if (scene->objs[j]->id == tile.id) {
-                    t.tiles.erase(t.tiles.begin()+i);
-                    t.renderers.erase(t.renderers.begin()+i);
+                    t.at(i) = Tile();
                     scene->removeObj(tile.id);
+                    t.key[coords.x + t.width * (t.height - (coords.y + 1))] = -1;
                     return;
                 }
             }
@@ -214,11 +203,15 @@ void removeTile(TileMap &t, glm::vec<2, int> coords) {
 }
 
 void applyColorFilter(TileMap &t, glm::vec4 color) {
-    for (Tile &tile : t.tiles) {
-        tile.color = color;
+    for (tile_renderer &tile : t.tiles) {
+        tile.first.color = color;
     }
     t.color = color;
 }
+
+///////////////
+// Inlined collision
+///////////////
 
 static bool detectRectRect(rect a, rect b)
 {
@@ -327,17 +320,21 @@ static bool checkForFloor(std::vector<tile_rect> &t) {
     return ret;
 }
 
+///////////////
+// Player State Machine
+///////////////
+
 static void horizontalMotion(double dt) {
     // move
     if (Pontilus::IO::isKeyPressed(GLFW_KEY_A)) {
-        player.velocity.x -= 100.0f * dt;
+        player.velocity.x -= 150.0f * dt;
         if (player.velocity.x < -32.0f) player.velocity.x = -32.0f;
     } else if (Pontilus::IO::isKeyPressed(GLFW_KEY_D)) {
-        player.velocity.x += 100.0f * dt;
+        player.velocity.x += 150.0f * dt;
         if (player.velocity.x > 32.0f) player.velocity.x = 32.0f;
     } else {
-        if (player.velocity.x < -1.0f) player.velocity.x += 100.0f * dt;
-        else if (player.velocity.x > 1.0f) player.velocity.x -= 100.0f * dt;
+        if (player.velocity.x < -1.0f) player.velocity.x += 150.0f * dt;
+        else if (player.velocity.x > 1.0f) player.velocity.x -= 150.0f * dt;
         else player.velocity.x = 0.0f;
     }
 }
@@ -412,8 +409,14 @@ static Engine::ECS::State sControllers[] = {
     }},
 };
 
+///////////////
+// Scene Declaration
+///////////////
+
 float selectedBlock = 0;
 const float maxSelectedBlock = 30;
+
+bool saved = false;
 
 static Engine::Scene mainScene = {
     []() {
@@ -430,7 +433,7 @@ static Engine::Scene mainScene = {
         applyColorFilter(tilemap, {0.5f, 0.5f, 0.5f, 0.5f});
 
         for (int i = 0; i < tilemap.size(); i++) {
-            tilemap.at(i).addComponent(tilemap.renderers.at(i));
+            tilemap.at(i).addComponent(tilemap.tiles.at(i).second);
             mainScene.objs.push_back(&tilemap.at(i));
         }
         
@@ -465,12 +468,39 @@ static Engine::Scene mainScene = {
             removeTile(tilemap, {(int) obj.pos.x / tilemap.tilewidth, (int) obj.pos.y / tilemap.tilewidth});
         }
 
+        if (IO::isKeyPressed(GLFW_KEY_LEFT_CONTROL) &&
+            IO::isKeyPressed(GLFW_KEY_S) &&
+            !saved) {
+            static const char *filepath = "./bin/test_level.bin";
+            FILE *fp;
+            fp = fopen(filepath, "w");
+            if (!fp) {
+                __pWarning("Opening file %s failed.", filepath);
+                return;
+            }
+
+            fputc(TILEMAP_WIDTH, fp);
+            fputc(TILEMAP_HEIGHT, fp);
+            for (int i = 0; i < 16 - 2; i++) {
+                fputc(0, fp);
+            }
+
+            for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+                fputc((&key[0][0])[i], fp);
+            }
+            saved = true;
+        }
+
         updateSceneGraphics(mainScene);
     },
     []() {
 
     }
 };
+
+///////////////
+// Library Initialization
+///////////////
 
 int main() 
 {
