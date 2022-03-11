@@ -158,6 +158,7 @@ Roadmap:
 Issues:
     [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
     It's because of it being orthographic instead of perspective
+    [ ] Text isn't rendering properly; the edges of glyphs clip
 
 Backburner:
     [ ] Python
