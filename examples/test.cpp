@@ -18,7 +18,7 @@
 using namespace Pontilus;
 
 ///////////////
-// Class Definitions
+// Class definitions
 ///////////////
 
 class Player : public Engine::ECS::GameObject {
@@ -71,7 +71,7 @@ rect rectFromObj(Engine::ECS::GameObject obj) {
 #define NUM_TILES tilemap.size()
 
 ///////////////
-// Field Declarations
+// Field declarations
 ///////////////
 
 static Player player;
@@ -115,6 +115,7 @@ TileMap tilemap = TileMap();
 
 typedef Pair<Tile, rect> tile_rect;
 
+// automatically adds objects to current scene
 void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::IconMap *tileset) {
     // empty tiles
     t.tiles.clear();
@@ -146,6 +147,20 @@ void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Graphics::I
             }
         }
     }
+
+    for (int i = 0; i < tilemap.size(); i++) {
+        t.at(i).addComponent(t.tiles.at(i).second);
+        Pontilus::getCurrentScene()->objs.push_back(&t.at(i));
+    }
+}
+
+void deleteTileMap(TileMap &t) {
+    for (int i = 0; i < t.size(); i++) {
+        t.at(i) = Tile();
+        Pontilus::getCurrentScene()->removeObj(t[i].id);
+    }
+    printf("Scene obj count: %d\n", Pontilus::getCurrentScene()->objs.size());
+    t.tiles.clear();
 }
 
 glm::vec2 tileCoords(float x, float y, float tilewidth) {
@@ -194,6 +209,7 @@ void removeTile(TileMap &t, glm::vec<2, int> coords) {
                 if (scene->objs[j]->id == tile.id) {
                     t.at(i) = Tile();
                     scene->removeObj(tile.id);
+                    t.at(i).tile_coords = {-1, -1};
                     t.key[coords.x + t.width * (t.height - (coords.y + 1))] = -1;
                     return;
                 }
@@ -409,14 +425,67 @@ static Engine::ECS::State sControllers[] = {
     }},
 };
 
+///////////////////////////
+// Serialization and Deserialization
+///////////////////////////
+
+void serialize(const char *filepath) {
+    FILE *fp;
+    fp = fopen(filepath, "w");
+    if (!fp) {
+        __pWarning("Opening file %s failed.", filepath);
+        return;
+    }
+
+    fputc(TILEMAP_WIDTH, fp);
+    fputc(TILEMAP_HEIGHT, fp);
+    fputc('\n', fp);
+
+    for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+        fputc((&key[0][0])[i], fp);
+    }
+
+    fclose(fp);
+}
+
+void deserialize(const char *filepath, TileMap &t) {
+    FILE *fp;
+    fp = fopen(filepath, "r");
+    if (!fp) {
+        __pWarning("Opening file %s failed.", filepath);
+        return;
+    }
+
+    int width = fgetc(fp);
+    int height = fgetc(fp);
+    fseek(fp, 1, SEEK_CUR);
+    int m_width = fmin(width, t.width);
+    int m_height = fmin(height, t.height);
+
+    memset(t.key, 0, t.width * t.height);
+
+    for (int j = 0; j < m_height; j++) {
+        for (int i = 0; i < m_width; i++) {
+            t.key[i + width * j] = (signed char) fgetc(fp);
+        }
+        if (m_width < t.width) {
+            fseek(fp, t.width - m_width, SEEK_CUR);
+        }
+    }
+
+    deleteTileMap(t);
+    getTileMap(t.width, t.height, t, t.tilewidth, t.tileset);
+}
+
 ///////////////
-// Scene Declaration
+// Scene declaration
 ///////////////
 
 float selectedBlock = 0;
 const float maxSelectedBlock = 30;
 
 bool saved = false;
+bool loaded = false;
 
 static Engine::Scene mainScene = {
     []() {
@@ -431,11 +500,6 @@ static Engine::Scene mainScene = {
         tilemap.key = &key[0][0];
         getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, tilemap, 8, &tileTextures);
         applyColorFilter(tilemap, {0.5f, 0.5f, 0.5f, 0.5f});
-
-        for (int i = 0; i < tilemap.size(); i++) {
-            tilemap.at(i).addComponent(tilemap.tiles.at(i).second);
-            mainScene.objs.push_back(&tilemap.at(i));
-        }
         
         playerController.init(&sControllers[0], 3);
 
@@ -444,7 +508,6 @@ static Engine::Scene mainScene = {
         player.addComponent(playerController);
         player.addComponent(playerSource);
         player.addComponent(Engine::ECS::AudioListener::get());
-        
 
         obj.init({0.0f, 20.0f, 0.0f}, {0.5f, 0.5f, 0.5f, 0.2f}, 8.0f, 8.0f);
         obj.addComponent(objRenderer);
@@ -471,24 +534,16 @@ static Engine::Scene mainScene = {
         if (IO::isKeyPressed(GLFW_KEY_LEFT_CONTROL) &&
             IO::isKeyPressed(GLFW_KEY_S) &&
             !saved) {
-            static const char *filepath = "./bin/test_level.bin";
-            FILE *fp;
-            fp = fopen(filepath, "w");
-            if (!fp) {
-                __pWarning("Opening file %s failed.", filepath);
-                return;
-            }
-
-            fputc(TILEMAP_WIDTH, fp);
-            fputc(TILEMAP_HEIGHT, fp);
-            for (int i = 0; i < 16 - 2; i++) {
-                fputc(0, fp);
-            }
-
-            for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-                fputc((&key[0][0])[i], fp);
-            }
+            serialize("./bin/test_level.bin");
             saved = true;
+        }
+
+        if (IO::isKeyPressed(GLFW_KEY_LEFT_CONTROL) &&
+            IO::isKeyPressed(GLFW_KEY_R) &&
+            !loaded) {
+            deserialize("./bin/test_level.bin", tilemap);
+            applyColorFilter(tilemap, {0.5f, 0.5f, 0.5f, 0.5f});
+            loaded = true;
         }
 
         updateSceneGraphics(mainScene);
@@ -499,7 +554,7 @@ static Engine::Scene mainScene = {
 };
 
 ///////////////
-// Library Initialization
+// Library initialization
 ///////////////
 
 int main() 
