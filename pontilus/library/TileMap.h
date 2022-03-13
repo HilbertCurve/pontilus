@@ -55,6 +55,7 @@ namespace Pontilus {
         void addTile(TileMap &t, glm::vec<2, int> coords, float tile);
         void removeTile(TileMap &t, glm::vec<2, int> coords);
         void applyColorFilter(TileMap &t, glm::vec4 color);
+        //void applyCollisionFilter(int *tiles, int count);
 
         ////////////////////////
         // Inlined collision detection

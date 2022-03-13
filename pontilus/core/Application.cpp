@@ -44,7 +44,7 @@ namespace Pontilus
 
     static void initQuads()
     {
-        Graphics::initRData(quadPool, 2000);
+        Graphics::initRData(quadPool, 4000);
 
         Graphics::initRData(fullWindowQuad, 4, fullWindowQuadAttribs, 2);
         glm::vec3 orientation;

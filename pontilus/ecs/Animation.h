@@ -34,7 +34,7 @@ namespace Pontilus
 
                 private:
                 SpriteRenderer *spr;
-                unsigned int index = 0;
+                int index = 0;
                 unsigned int currAnimationStart = 0, currAnimationEnd = 0;
 
                 bool checkParentForSpr();

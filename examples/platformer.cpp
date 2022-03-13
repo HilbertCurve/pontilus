@@ -7,6 +7,7 @@
 #include <ecs/Component.h>
 #include <ecs/StateMachine.h>
 #include <ecs/SpriteRenderer.h>
+#include <ecs/Animation.h>
 #include <ecs/Body2D.h>
 #include <ecs/AudioListener.h>
 #include <ecs/AudioSource.h>
@@ -28,8 +29,8 @@ class Player : public Engine::ECS::GameObject {
     glm::vec2 velocity;
 };
 
-#define TILEMAP_WIDTH 10
-#define TILEMAP_HEIGHT 20
+#define TILEMAP_WIDTH 30
+#define TILEMAP_HEIGHT 30
 #define NUM_TILES tilemap.size()
 
 ///////////////
@@ -37,37 +38,17 @@ class Player : public Engine::ECS::GameObject {
 ///////////////
 
 static Player player;
-static Engine::ECS::GameObject obj;
 static Engine::ECS::SpriteRenderer playerRenderer;
-static Engine::ECS::SpriteRenderer objRenderer;
 static Engine::ECS::StateMachine playerController;
 static Engine::ECS::AudioSource playerSource;
 static Pontilus::Graphics::IconMap playerTextures;
+static Engine::ECS::GameObject obj;
+static Engine::ECS::SpriteRenderer objRenderer;
+static Engine::ECS::Animation objAnimation;
 static Pontilus::Graphics::IconMap tileTextures;
 static Pontilus::Audio::WAVFile jump1, jump2;
 
-static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH] = {
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  },
-    { 15, 15, -1, -1, -1, -1, -1, -1, -1, -1,  },
-};
+static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 
 ///////////////
 // TileMap functions
@@ -298,11 +279,17 @@ static Engine::Scene mainScene = {
 
         playerRenderer.init({nullptr}/*Graphics::getTexture(playerTextures, 0)*/);
         playerSource.init();
+        objRenderer.init(Graphics::getTexture(tileTextures, 0));
+        objAnimation.init(tileTextures, 0, 30, true);
 
-        objRenderer.init({nullptr});
+        for (int i = 0; i < TILEMAP_HEIGHT * TILEMAP_WIDTH; i++) {
+            (&key[0][0])[i] = -1;
+        }
+        key[29][0] = 0;
+
         tilemap.key = &key[0][0];
         getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, tilemap, 8, &tileTextures);
-        applyColorFilter(tilemap, {0.5f, 0.5f, 0.5f, 0.5f});
+        applyColorFilter(tilemap, {1.0f, 1.0f, 1.0f, 1.0f});
         
         playerController.init(&sControllers[0], 3);
 
@@ -314,6 +301,7 @@ static Engine::Scene mainScene = {
 
         obj.init({0.0f, 20.0f, 0.0f}, {0.5f, 0.5f, 0.5f, 0.2f}, 8.0f, 8.0f);
         obj.addComponent(objRenderer);
+        obj.addComponent(objAnimation);
 
         mainScene.objs.push_back(&player);
         mainScene.objs.push_back(&obj);
@@ -324,12 +312,19 @@ static Engine::Scene mainScene = {
     [](double dt) {
         obj.pos = floor((screenToWorldCoords(IO::mousePos()) + tilemap.tilewidth / 2.0f) / tilemap.tilewidth) * tilemap.tilewidth;
         glm::vec3 cam_pos = Renderer::Camera::getPosition();
-        if (Math::between(0.0f, player.pos.y, 130.0f)) {
+        float cam_x = cam_pos.x;
+        float cam_y = cam_pos.y;
+        if (Math::between(25.0f, player.pos.x, 185.0f)) {
+            Renderer::Camera::setPosition(player.pos.x, cam_pos.y, cam_pos.z);
+            cam_pos.x = player.pos.x;
+        }
+        if (Math::between(0.0f, player.pos.y, 185.0f)) {
             Renderer::Camera::setPosition(cam_pos.x, player.pos.y, cam_pos.z);
+            cam_pos.y = player.pos.y;
         }
 
         if (IO::isButtonPressed(GLFW_MOUSE_BUTTON_1)) {
-            addTile(tilemap, {(int) obj.pos.x / tilemap.tilewidth, (int) obj.pos.y / tilemap.tilewidth}, 15);
+            addTile(tilemap, {(int) obj.pos.x / tilemap.tilewidth, (int) obj.pos.y / tilemap.tilewidth}, selectedBlock);
         } else if (IO::isButtonPressed(GLFW_MOUSE_BUTTON_2)) {
             removeTile(tilemap, {(int) obj.pos.x / tilemap.tilewidth, (int) obj.pos.y / tilemap.tilewidth});
         }
@@ -345,8 +340,28 @@ static Engine::Scene mainScene = {
             IO::isKeyPressed(GLFW_KEY_R) &&
             !loaded) {
             deserialize("./bin/test_level.bin", tilemap);
-            applyColorFilter(tilemap, {0.5f, 0.5f, 0.5f, 0.5f});
+            applyColorFilter(tilemap, {1.0f, 1.0f, 1.0f, 1.0f});
             loaded = true;
+        }
+        int dtile = IO::mouseScroll().y;
+        selectedBlock += IO::mouseScroll().y;
+        if (selectedBlock > 30) {
+            selectedBlock = 0;
+        }
+        if (selectedBlock < 0) {
+            selectedBlock = 30;
+        }
+
+        if (dtile > 0) {
+            while (dtile) {
+                objAnimation.next();
+                dtile--;
+            }
+        } else if (dtile < 0) {
+            while (dtile) {
+                objAnimation.previous();
+                dtile++;
+            }
         }
 
         updateSceneGraphics(mainScene);

@@ -230,6 +230,11 @@ namespace Pontilus
                              );
         }
 
+        glm::vec2 mouseScroll()
+        {
+            return glm::vec2(instance.core._m.scrollX, instance.core._m.scrollY);
+        }
+
         bool isKeyPressed(int key)
         {
             if (key >= NUM_KEYS || key < 0)

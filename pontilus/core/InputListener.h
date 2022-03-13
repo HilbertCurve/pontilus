@@ -52,7 +52,7 @@ namespace Pontilus
         // TOTAL MEMORY: 1 kb
         struct _IO
         {
-            union {
+            struct {
                 // 549 bits
                 Mouse _m;
                 Keyboard _k;
@@ -73,6 +73,7 @@ namespace Pontilus
          */
         glm::vec2 mousePos();
         glm::vec2 mousePosChange();
+        glm::vec2 mouseScroll();
         
         /**
          * Checks to see if a certain key is pressed.

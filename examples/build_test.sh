@@ -1,3 +1,3 @@
 cd ..
-g++ -o ./bin/rpg -g ./examples/rpg.cpp ./bin/pontilus.so -I./pontilus
-./bin/rpg
+g++ -o ./bin/platformer -g ./examples/platformer.cpp ./bin/pontilus.so -I./pontilus
+./bin/platformer
