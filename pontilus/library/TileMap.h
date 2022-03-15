@@ -26,9 +26,13 @@ namespace Pontilus {
 
         typedef Pair<Tile, rect> tile_rect;
         typedef Pair<Tile, Pontilus::Engine::ECS::SpriteRenderer> tile_renderer;
+        // Collision info datasets are arrays of colliding tiles and the
+        // rectangle of corresponding tiles over a certain game object
+        typedef std::vector<tile_rect> CollisionInfo;
 
         class TileMap {
             public:
+            // TODO: a public .init() function
             std::vector<tile_renderer> tiles;
             int *key;
             float tilewidth;
@@ -48,7 +52,7 @@ namespace Pontilus {
         };
 
         // automatically adds objects to current scene
-        void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Pontilus::Graphics::IconMap *tileset);
+        void getTileMap(unsigned n, unsigned k, int *key, TileMap &t, float tilewidth, Pontilus::Graphics::IconMap *tileset);
         void deleteTileMap(TileMap &t);
 
         rect rectFromObj(Engine::ECS::GameObject o);
@@ -62,6 +66,6 @@ namespace Pontilus {
         ////////////////////////
 
         bool detectRectRect(rect a, rect b);
-        void getCollisionInfo(Engine::ECS::GameObject &obj, std::vector<tile_rect> &info, TileMap &tilemap);
+        void getCollisionInfo(Engine::ECS::GameObject &obj, CollisionInfo &info, TileMap &tilemap);
     }
 }

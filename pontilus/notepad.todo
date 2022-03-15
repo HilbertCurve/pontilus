@@ -19,6 +19,9 @@ Misc:
     [+] Add https://github.com/kcat/openal-soft pull and install to Dockerfile
     [+] Zip together include and src directory
     [+] Update dockerfile after refactoring
+    Best Practices:
+        [ ] const-qualify appropriate functions everywhere
+        [ ] Use forward declarations instead of #includes in header files
 
 Postprocessing:
     [+] PointMap.cpp - a way to update/process points

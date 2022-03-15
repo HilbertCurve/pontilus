@@ -18,13 +18,14 @@ namespace Pontilus {
         }
 
         // automatically adds objects to current scene
-        void getTileMap(unsigned n, unsigned k, TileMap &t, float tilewidth, Pontilus::Graphics::IconMap *tileset) {
+        void getTileMap(unsigned n, unsigned k, int *key, TileMap &t, float tilewidth, Pontilus::Graphics::IconMap *tileset) {
             // empty tiles
             t.tiles.clear();
             t.tiles.reserve(n*k);
             t.tilewidth = tilewidth;
             t.width = n;
             t.height = k;
+            t.key = key;
             t.color = {1.0f, 1.0f, 1.0f, 1.0f};
             t.tileset = tileset;
             using namespace Pontilus::Engine::ECS;
@@ -61,7 +62,6 @@ namespace Pontilus {
                 t.at(i) = Tile();
                 Pontilus::getCurrentScene()->removeObj(t[i].id);
             }
-            printf("Scene obj count: %d\n", Pontilus::getCurrentScene()->objs.size());
             t.tiles.clear();
         }
 
@@ -137,7 +137,7 @@ namespace Pontilus {
                 Math::between(r_t.min.y, a_c.y, r_t.max.t);
         }
 
-        void getCollisionInfo(Pontilus::Engine::ECS::GameObject &obj, std::vector<tile_rect> &info, TileMap &tilemap) {
+        void getCollisionInfo(Pontilus::Engine::ECS::GameObject &obj, CollisionInfo &info, TileMap &tilemap) {
             info.clear();
 
             glm::vec2 obj_v[4] = {

@@ -258,7 +258,7 @@ void deserialize(const char *filepath, Library::TileMap &t) {
     }
 
     Library::deleteTileMap(t);
-    Library::getTileMap(t.width, t.height, t, t.tilewidth, t.tileset);
+    Library::getTileMap(t.width, t.height, t.key, t, t.tilewidth, t.tileset);
 }
 
 ///////////////
@@ -287,8 +287,7 @@ static Engine::Scene mainScene = {
         }
         key[29][0] = 0;
 
-        tilemap.key = &key[0][0];
-        getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, tilemap, 8, &tileTextures);
+        getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, 8, &tileTextures);
         applyColorFilter(tilemap, {1.0f, 1.0f, 1.0f, 1.0f});
         
         playerController.init(&sControllers[0], 3);
