@@ -10,7 +10,8 @@ using namespace Pontilus;
 
 static Engine::ECS::GameObject player;
 static Engine::ECS::SpriteRenderer r_player;
-static Engine::ECS::StateMachine c_player;
+static Engine::ECS::StateMachine c_stepwise;
+static Engine::ECS::StateMachine c_continuous;
 static Library::TileMap tilemap;
 static Graphics::IconMap tilemap_icons;
 
@@ -28,58 +29,66 @@ enum direction {
 
 int key[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 
-void move (direction dir, double dt) {
+void move(direction dir, double dt) {
     static double t_acc;
     t_acc += dt;
     if (t_acc > 0.2) t_acc = 0.0;
 }
 
 static int dir;
-static Engine::ECS::State p_states[] = {
-    {"still", &c_player, [](double dt) {
-        dir = NONE;
-        if (IO::isKeyPressed(GLFW_KEY_W)) {
-            dir |= NORTH;
-            c_player.replaceState("still", "moving");
-        }
-        if (IO::isKeyPressed(GLFW_KEY_S)) {
-            dir |= SOUTH;
-            c_player.replaceState("still", "moving");
-        }
-        if (IO::isKeyPressed(GLFW_KEY_A)) {
-            dir |= WEST;
-            c_player.replaceState("still", "moving");
-        }
-        if (IO::isKeyPressed(GLFW_KEY_D)) {
-            dir |= EAST;
-            c_player.replaceState("still", "moving");
-        }
-        printf("still!\n");
-    }},
-    {"moving", &c_player, [](double dt) {
-        static double t_acc = 0.0;
-        t_acc += dt;
-        if (t_acc > 0.2) {
-            c_player.replaceState("moving", "still");
-            t_acc = 0.0;
-            
-            // snap position
-            player.pos = floor((player.pos + tilemap.tilewidth / 2.0f) / tilemap.tilewidth) * tilemap.tilewidth;
+static Engine::ECS::State stepwise[] = {
+    {"still", &c_stepwise, [](double dt) 
+        {
+            dir = NONE;
+            if (IO::isKeyPressed(GLFW_KEY_W)) {
+                dir |= NORTH;
+                c_stepwise.replaceState("still", "moving");
+            }
+            if (IO::isKeyPressed(GLFW_KEY_S)) {
+                dir |= SOUTH;
+                c_stepwise.replaceState("still", "moving");
+            }
+            if (IO::isKeyPressed(GLFW_KEY_A)) {
+                dir |= WEST;
+                c_stepwise.replaceState("still", "moving");
+            }
+            if (IO::isKeyPressed(GLFW_KEY_D)) {
+                dir |= EAST;
+                c_stepwise.replaceState("still", "moving");
+            }
+        }},
+    {"moving", &c_stepwise, [](double dt) 
+        {
+            static double t_acc = 0.0;
+            t_acc += dt;
+            if (t_acc > 0.2) {
+                c_stepwise.replaceState("moving", "still");
+                t_acc = 0.0;
 
-            return;
-        }
+                // snap position
+                player.pos = floor((player.pos + tilemap.tilewidth / 2.0f) / tilemap.tilewidth) * tilemap.tilewidth;
 
-        if (dir & NORTH)
-            player.pos.y += tilemap.tilewidth * dt / 0.2; 
-        if (dir & SOUTH)
-            player.pos.y -= tilemap.tilewidth * dt / 0.2;
-        if (dir & EAST)
-            player.pos.x += tilemap.tilewidth * dt / 0.2;
-        if (dir & WEST)
-            player.pos.x -= tilemap.tilewidth * dt / 0.2; 
-        
-        printf("dir: %d\n", dir);
-    }}
+                return;
+            }
+
+            if (dir & NORTH)
+                player.pos.y += tilemap.tilewidth * dt / 0.2; 
+            if (dir & SOUTH)
+                player.pos.y -= tilemap.tilewidth * dt / 0.2;
+            if (dir & EAST)
+                player.pos.x += tilemap.tilewidth * dt / 0.2;
+            if (dir & WEST)
+                player.pos.x -= tilemap.tilewidth * dt / 0.2; 
+        }}
+};
+
+static Engine::ECS::State continuous[] = {
+    {"sentinel", &c_continuous, [](double dt)
+        {
+            if (IO::isKeyPressed(GLFW_KEY_W)) {
+
+            }
+        }}
 };
 
 Engine::Scene mainScene = {
@@ -97,10 +106,10 @@ Engine::Scene mainScene = {
         Library::getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, 4, &tilemap_icons);
 
         r_player.init({nullptr});
-        c_player.init(&p_states[0], 2);
+        c_stepwise.init(&stepwise[0], 2);
 
         player.addComponent(r_player);
-        player.addComponent(c_player);
+        player.addComponent(c_stepwise);
 
         mainScene.addObj(&player);
 

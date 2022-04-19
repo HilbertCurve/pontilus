@@ -274,7 +274,7 @@ bool loaded = false;
 static Engine::Scene mainScene = {
     []() {
         Pontilus::Graphics::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
-        Pontilus::Graphics::initIconMap("./assets/textures/tilemap1.png", tileTextures, 16, 16, 0);
+        Pontilus::Graphics::initIconMap("./assets/textures/sad_painting.png", tileTextures, 16, 16, 0);
         Pontilus::Audio::initWAVFile(jump1, "./assets/sounds/jump1.wav");
 
         playerRenderer.init({nullptr}/*Graphics::getTexture(playerTextures, 0)*/);
@@ -344,11 +344,11 @@ static Engine::Scene mainScene = {
         }
         int dtile = IO::mouseScroll().y;
         selectedBlock += IO::mouseScroll().y;
-        if (selectedBlock > 30) {
+        if (selectedBlock > 31) {
             selectedBlock = 0;
         }
         if (selectedBlock < 0) {
-            selectedBlock = 30;
+            selectedBlock = 31;
         }
 
         if (dtile > 0) {
