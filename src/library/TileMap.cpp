@@ -169,6 +169,58 @@ namespace Pontilus {
                 info.push_back({t, {min, max}});
             }
         }
+        
+        ///////////////////////////
+        // Serialization and Deserialization
+        ///////////////////////////
+
+        void serializeTileMap(const char *filepath, TileMap &t) {
+            FILE *fp;
+            fp = fopen(filepath, "w");
+            if (!fp) {
+                __pWarning("Opening file %s failed.", filepath);
+                return;
+            }
+
+            fputc(t.width, fp);
+            fputc(t.height, fp);
+            fputc('\n', fp);
+
+            for (int i = 0; i < t.width * t.height; i++) {
+                fputc(t.key[i], fp);
+            }
+
+            fclose(fp);
+        }
+
+        void deserializeTileMap(const char *filepath, TileMap &t) {
+            FILE *fp;
+            fp = fopen(filepath, "r");
+            if (!fp) {
+                __pWarning("Opening file %s failed.", filepath);
+                return;
+            }
+
+            int width = fgetc(fp);
+            int height = fgetc(fp);
+            fseek(fp, 1, SEEK_CUR);
+            int m_width = fmin(width, t.width);
+            int m_height = fmin(height, t.height);
+
+            memset(t.key, 0, t.width * t.height);
+
+            for (int j = 0; j < m_height; j++) {
+                for (int i = 0; i < m_width; i++) {
+                    t.key[i + width * j] = (signed char) fgetc(fp);
+                }
+                if (m_width < t.width) {
+                    fseek(fp, t.width - m_width, SEEK_CUR);
+                }
+            }
+
+            Library::deleteTileMap(t);
+            Library::getTileMap(t.width, t.height, t.key, t, t.tilewidth, t.tileset);
+        }
 
     }
 }

@@ -19,6 +19,7 @@ namespace Pontilus {
             glm::vec<2, int> tile_coords;
         };
 
+        // TODO: refactor to AABB
         class rect {
             public:
             glm::vec2 min, max;
@@ -62,10 +63,17 @@ namespace Pontilus {
         //void applyCollisionFilter(int *tiles, int count);
 
         ////////////////////////
-        // Inlined collision detection
+        // Collision detection
         ////////////////////////
 
         bool detectRectRect(rect a, rect b);
         void getCollisionInfo(Engine::ECS::GameObject &obj, CollisionInfo &info, TileMap &tilemap);
+
+        ///////////////////////////
+        // Serialization and Deserialization
+        ///////////////////////////
+        void serializeTileMap(const char *filepath, TileMap &t);
+        void deserializeTileMap(const char *filepath, TileMap &t);
     }
 }
+

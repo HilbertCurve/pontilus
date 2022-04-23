@@ -1,4 +1,4 @@
-#version 430 core
+#version 330 core
 #ifdef GL_ES
  precision mediump float;
 #endif

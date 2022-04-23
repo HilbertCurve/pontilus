@@ -331,14 +331,14 @@ static Engine::Scene mainScene = {
         if (IO::isKeyPressed(GLFW_KEY_LEFT_CONTROL) &&
             IO::isKeyPressed(GLFW_KEY_S) &&
             !saved) {
-            serialize("./bin/test_level.bin");
+            Library::serializeTileMap("./bin/test_level.bin", tilemap);
             saved = true;
         }
 
         if (IO::isKeyPressed(GLFW_KEY_LEFT_CONTROL) &&
             IO::isKeyPressed(GLFW_KEY_R) &&
             !loaded) {
-            deserialize("./bin/test_level.bin", tilemap);
+            Library::deserializeTileMap("./bin/test_level.bin", tilemap);
             applyColorFilter(tilemap, {1.0f, 1.0f, 1.0f, 1.0f});
             loaded = true;
         }
