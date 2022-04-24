@@ -147,10 +147,10 @@ static Engine::ECS::State continuous[] = {
             }
 
             // if player is colliding on parallel sides, set snap to player's position
-            if (collidingFaces & (NORTH | SOUTH) == NORTH | SOUTH) {
+            if (collidingFaces & (NORTH | SOUTH) == (NORTH | SOUTH)) {
                 snapPos.y = player.pos.y;
             }
-            if (collidingFaces & (EAST | WEST) == EAST | WEST) {
+            if (collidingFaces & (EAST | WEST) == (EAST | WEST)) {
                 snapPos.x = player.pos.x;
             }
             
@@ -188,7 +188,7 @@ Engine::Scene mainScene = {
 
         Library::getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, 4, &tilemap_icons);
 
-        r_player.init({nullptr});
+        r_player.init(getTexture(tilemap_icons, 0));
         c_continuous.init(&continuous[0], 1);
 
         player.addComponent(r_player);
@@ -199,6 +199,13 @@ Engine::Scene mainScene = {
         updateSceneGraphics(mainScene);
     },
     [](double dt) {
+        if (IO::isKeyPressed(GLFW_KEY_R)) {
+            if (IO::isKeyPressed(GLFW_KEY_Z))
+                player.rotation.z += 1.0f * (float) dt;
+            else
+                player.rotation.x += 1.0f * (float) dt;
+        }
+
         updateSceneGraphics(mainScene);
     },
     []() {

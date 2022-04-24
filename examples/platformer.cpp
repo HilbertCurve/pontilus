@@ -302,9 +302,11 @@ static Engine::Scene mainScene = {
         obj.addComponent(objRenderer);
         obj.addComponent(objAnimation);
 
+        player.rotation = glm::vec3(4.0f, 4.0f, 4.0f);
+
         mainScene.objs.push_back(&player);
         mainScene.objs.push_back(&obj);
-        
+
         updateSceneGraphics(mainScene);
         Renderer::Camera::setPosition(25, 0, 32);
     },

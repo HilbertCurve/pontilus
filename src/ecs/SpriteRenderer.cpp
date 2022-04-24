@@ -1,4 +1,7 @@
 #include "ecs/SpriteRenderer.h"
+
+#include <glm/gtx/transform.hpp>
+#include <glm/glm.hpp>
 #include "graphics/rData.h"
 #include <typeinfo>
 
@@ -20,6 +23,11 @@ namespace Pontilus
                 __pAssert(!(rOffset >= r.vertCount / 4), "rData not big enough to hold game states!");
 
                 int stride = rOffset * getLayoutLen(r) * 4;
+
+                glm::mat4 rotation = glm::rotate(parent->rotation.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
+                                     glm::rotate(parent->rotation.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
+                                     glm::rotate(parent->rotation.z, glm::vec3{0.0f, 0.0f, 1.0f});
+                glm::mat4 translation = glm::translate(parent->pos);
                 for (int i = 0; i < 4; i++)
                 {
                     glm::vec3 orientation;
@@ -31,18 +39,17 @@ namespace Pontilus
                         case 3: orientation = {1.0f * parent->width, 0.0f * parent->height, 0.0f}; break;
                     }
 
+
                     off_len result = getAttribMetaData(r, PONT_POS);
                     if (result.second >= 3 * sizeof(float))
                     {
-                        parent->pos += orientation - glm::vec3{parent->width / 2, parent->height / 2, 0.0f};
+                        glm::vec3 t_orient = translation * rotation * glm::vec4(orientation - glm::vec3(0.5f * parent->width, 0.5f * parent->height, 0.0f), 1.0f);
 
-                        // TODO: just use memcpy, bonehead.
-                        for (int j = 0; j < 3; j++)
-                        {
-                            ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&parent->pos)[j];
-                        }
-
-                        parent->pos -= orientation - glm::vec3{parent->width / 2, parent->height / 2, 0.0f};
+                        memcpy((char *) r.data + result.first + stride, value_ptr(t_orient), 3 * sizeof(float));
+                        //for (int j = 0; j < 3; j++)
+                        //{
+                        //    ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&parent->pos)[j];
+                        //}
                     }
                     
                     result = getAttribMetaData(r, PONT_COLOR);
@@ -155,3 +162,4 @@ namespace Pontilus
         }
     }
 }
+
