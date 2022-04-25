@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 #include <GL/gl.h>
 
 #define __alCall(fun, ...) \
@@ -83,8 +84,11 @@ namespace Pontilus
     void loadFile(const char *filepath, File &fb, bool isBinary);
     void freeFile(File &f);
 
+    nlohmann::json getJSON(const char *filepath);
+
     glm::vec3 screenToWorldCoords(const glm::vec2 screenPos);
     glm::vec3 screenToWorldSize(const glm::vec2 screenSize);
 }
 
 #endif // _PONTILUS_UTILS_H
+

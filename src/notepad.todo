@@ -35,6 +35,7 @@ ECS:
         [ ] Move GameObject.color into Texture
         [+] Animation.h - a component that updates a SpriteRenderer's texture; requires the GameObject to have a SpriteRenderer
     [ ] Body2D.cpp - convert physics body into a component
+    [ ] Separate components out of the ecs/ file and into their respective places (AudioListener into audio/, Animation into library/, etc.)
 
 UI:
     [ ] TextRenderer.cpp - basic renderable component with a std::string field

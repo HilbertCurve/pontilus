@@ -4,6 +4,7 @@
 #include <ecs/GameObject.h>
 #include <ecs/SpriteRenderer.h>
 #include <ecs/StateMachine.h>
+#include <ecs/TextRenderer.h>
 #include <library/TileMap.h>
 #include <utils/PMath.h>
 
@@ -12,6 +13,57 @@ using namespace Pontilus;
 class Player : public Engine::ECS::GameObject {
     public:
     glm::vec2 velocity;
+};
+
+static Graphics::Font timesNewRoman;
+
+class TextBox : public Engine::ECS::GameObject {
+    public:
+    TextBox() = default;
+    TextBox(const char *text) {
+        this->text = text;
+
+        if (!timesNewRoman.filepath)
+            Graphics::initFont(timesNewRoman, "assets/fonts/times.ttf", 13);
+        this->r_text.init("", timesNewRoman);
+
+        this->color = glm::vec4(0.2f, 0.2f, 0.2f, 0.0f);
+        this->r_box.init({nullptr});
+
+        this->addComponent(this->r_text);
+        this->addComponent(this->r_box);
+    }
+    void appear(glm::vec2 center) {
+        this->pos = glm::vec3(center, 0.0f);
+
+        this->r_text.text = std::string(text);
+        this->color.a = 0.7f;
+        this->visible = true;
+    }
+    void disappear() {
+        this->r_text.text = std::string("");
+        this->color.a = 0.0f;
+        this->visible = false;
+    }
+    private:
+    Engine::ECS::TextRenderer r_text;
+    Engine::ECS::SpriteRenderer r_box;
+    const char *text = nullptr;
+    bool visible = false;
+};
+class NPC : public Engine::ECS::GameObject {
+    public:
+    NPC(const char *dialog) {
+        this->myBox = TextBox(dialog);
+    }
+    void talk() {
+        this->myBox.appear({this->pos.x, this->pos.y + 12.0f});
+    }
+    void hush() {
+        this->myBox.disappear();
+    }
+    private:
+    TextBox myBox;
 };
 
 static Player player;
@@ -114,6 +166,7 @@ static Engine::ECS::State continuous[] = {
     {"sentinel", &c_continuous, [](double dt)
         {
             using namespace Pontilus::Library;
+
             CollisionInfo info;
             glm::vec2 snapPos = glm::vec2(0.0f, 0.0f);
 
@@ -121,7 +174,7 @@ static Engine::ECS::State continuous[] = {
             player.height += 0.1;
             getCollisionInfo(player, info, tilemap);
             player.width -= 0.1f;
-            player.height -=0.1f;
+            player.height -= 0.1f;
 
             int collidingFaces = NONE;
             for (auto collision : info) {
@@ -199,13 +252,6 @@ Engine::Scene mainScene = {
         updateSceneGraphics(mainScene);
     },
     [](double dt) {
-        if (IO::isKeyPressed(GLFW_KEY_R)) {
-            if (IO::isKeyPressed(GLFW_KEY_Z))
-                player.rotation.z += 1.0f * (float) dt;
-            else
-                player.rotation.x += 1.0f * (float) dt;
-        }
-
         updateSceneGraphics(mainScene);
     },
     []() {

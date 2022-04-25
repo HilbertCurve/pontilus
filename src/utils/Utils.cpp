@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 
 #include "graphics/Camera.h"
 #include "core/Application.h"
@@ -39,6 +40,28 @@ namespace Pontilus
     {
         free(f.buffer);
         f.size = 0;
+    }
+
+    using json = nlohmann::json;
+    json getJSON(const char *filepath)
+    {
+        FILE *f = fopen(filepath, "r");
+
+        fseek(f, 0, SEEK_END);
+        int fsize = ftell(f);
+        fseek(f, 0, SEEK_SET);
+
+        char *strbuff = (char *)malloc(fsize + 1);
+        fread(strbuff, fsize, sizeof(char), f);
+        strbuff[fsize] = '\0';
+
+        std::string src = std::string(strbuff);
+        json j = json::parse(src.begin(), src.end());
+
+        free(strbuff);
+        fclose(f);
+
+        return j;
     }
 
     using namespace glm;

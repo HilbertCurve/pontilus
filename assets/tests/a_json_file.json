@@ -1,0 +1,15 @@
+{
+  "tmp": "hmm",
+  "pi": 3.141,
+  "happy": true,
+  "nothing": null,
+  "stands": {
+    "the_world": false
+  },
+  "list": [1, 2, 3],
+  "object": {
+    "currency": "ETH",
+    "value": 0.0000099
+  }
+}
+
