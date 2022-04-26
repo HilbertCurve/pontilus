@@ -12,15 +12,6 @@ namespace Pontilus
 {
     typedef short _PONTILUS_SETTINGS;
 
-    extern Graphics::rData quadPool;
-    extern Graphics::rData linePool;
-    extern Graphics::rData fullWindowQuad;
-    extern Graphics::rData pointLightPool;
-    extern Graphics::IconMap *iconPool[8];
-    extern Graphics::Font *fontPool[8];
-    extern int iconPoolStackPointer;
-    extern int fontPoolStackPointer;
-
     extern float resolution;
 
     struct Window

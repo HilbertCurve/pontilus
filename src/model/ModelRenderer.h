@@ -16,9 +16,8 @@ namespace Pontilus
             int toRData(Graphics::rData &r, unsigned int rOffset);
             void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property);
 
-            const char *jsonFP = nullptr;
-            const char *binFP = nullptr;
             nlohmann::json gltfData;
+            rData vertices;
 
             void init(const char *gltfFile);
         };

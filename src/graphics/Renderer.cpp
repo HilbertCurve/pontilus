@@ -15,74 +15,153 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        // TODO: abstract this away
-        GLuint vaoID, postvaoID, debugvaoID;
-        GLuint vboID, postvboID, debugvboID;
-        GLuint eboID, posteboID, debugeboID;
+        // quad pool:
+        Renderer::rData quadPool = {};
 
-        static Graphics::rData *currentRData;
-        static Graphics::Primitive currentMode = Graphics::Primitives::QUAD;
+        // debug line pool:
+        Renderer::rData linePool = {};
+        Renderer::vAttrib linePoolAttribs[2] = 
+        {
+            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 },
+            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 }
+        };
+
+        // fullScreenQuad
+        Renderer::rData fullWindowQuad = {};
+        Renderer::vAttrib fullWindowQuadAttribs[2] = 
+        {
+            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 },
+            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 }
+        };
+
+        static void initQuads()
+        {
+            Renderer::initRData(quadPool, 4000, &Primitives::QUAD);
+
+            Renderer::initRData(fullWindowQuad, 4, &Primitives::QUAD, fullWindowQuadAttribs, 2);
+            glm::vec3 orientation;
+
+            for (int i = 0; i < 4; i++)
+            {
+                float r = Renderer::Camera::projectionWidth/2;
+                float u = Renderer::Camera::projectionHeight/2;
+                switch (i)
+                {
+                    case 0: orientation = { r,  u, 0.0f}; break;
+                    case 1: orientation = {-r,  u, 0.0f}; break;
+                    case 2: orientation = {-r, -u, 0.0f}; break;
+                    case 3: orientation = { r, -u, 0.0f}; break;
+                }
+                for (int j = 0; j < 3; j++)
+                {
+                    ((float *)fullWindowQuad.data)[i * 7 + j] = orientation[j];
+                }
+
+                for (int j = 0; j < 4; j++)
+                {
+                    ((float *)fullWindowQuad.data)[i * 7 + j + 3] = 0.00f;
+                }
+            }
+        }
+
+        static void initLines()
+        {
+            Renderer::initRData(linePool, 1000, &Primitives::LINE, linePoolAttribs, 2);
+        }
+
+        static void cleanQuads()
+        {
+            free(quadPool.data);
+            free(quadPool.layout);
+        }
+
+        static void cleanLines()
+        {
+            free(linePool.data);
+            free(linePool.layout);
+        }
+
+        // pointLight pool
+        Renderer::rData pointLightPool = {};
+        static Renderer::vAttrib pointLightAttributes[3] = 
+        {
+            { Renderer::PONT_POS,   Renderer::PONT_FLOAT, 3 },
+            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 },
+            { Renderer::PONT_OTHER, Renderer::PONT_FLOAT, 1 }
+        };
+
+        static void initPointLights()
+        {
+            Renderer::initRData(pointLightPool, 16, &Primitives::NONE, pointLightAttributes, 3);
+        }
+
+        static void cleanPointLights()
+        {
+            free(pointLightPool.data);
+            free(pointLightPool.layout);
+        }
+
+        // Texture pool:
+        Renderer::IconMap *iconPool[8];
+        int iconPoolStackPointer = 0;
+
+        static void initTexPool()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                iconPool[i] = nullptr;
+            }
+        }
+
+        static void cleanTexPool()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                iconPool[i] = nullptr;
+            }
+        }
+
+        Renderer::Font *fontPool[8];
+        int fontPoolStackPointer = 0;
+
+        static void initFontPool()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                fontPool[i] = nullptr;
+            }
+        }
+        // TODO: abstract this away
+
+        static Renderer::rData *currentRData;
 
         static const GLint texSlots[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 
-        Graphics::Shader gameShader;
-        Graphics::Shader postShader;
-        Graphics::Shader debugShader;
+        Renderer::Shader gameShader;
+        Renderer::Shader postShader;
+        Renderer::Shader debugShader;
 
-        static void setRData(Graphics::rData &r)
+        static void setRData(Renderer::rData &r)
         {
             currentRData = &r;
         }
 
-        static void setPrimitive(Graphics::Primitive p)
-        {
-            currentMode = p;
-
-            int numElements = 0;
-
-            switch (p.renderMode)
-            {
-            case PONT_GAME:
-            {
-                if (getCurrentScene() != nullptr)
-                {
-                    numElements = getCurrentScene()->numQuads;
-                }
-            }
-            break;
-            case PONT_DEBUG:
-            {
-                numElements = 1; // automate me
-            }
-            break;
-            }
-
-            GLint elementIndices[currentMode.elementSize * numElements];
-            for (int i = 0; i < numElements; i++)
-            {
-                currentMode.generateIndices(elementIndices, i);
-            }
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementIndices), elementIndices, GL_DYNAMIC_DRAW);
-        }
-
-        static void enableVertexAttribs(Graphics::rData &r)
+        static void enableVertexAttribs(Renderer::rData &r)
         {
             u_int64_t propOffset = 0;
             for (int i = 0; i < r.layoutCount; i++)
             {
                 int propertyLen = r.layout[i].count;
-                Graphics::vPropType type = r.layout[i].type;
+                Renderer::vPropType type = r.layout[i].type;
 
                 glVertexAttribPointer(i, propertyLen, GL_FLOAT, false, getLayoutLen(r), (void *)propOffset);
                 glEnableVertexAttribArray(i);
 
-                propOffset += propertyLen * Graphics::getVTypeLen(type);
+                propOffset += propertyLen * Renderer::getVTypeLen(type);
             }
         }
 
-        static void disableVertexAttribs(Graphics::rData &r)
+        static void disableVertexAttribs(Renderer::rData &r)
         {
             for (int i = 0; i < r.layoutCount; i++)
             {
@@ -92,56 +171,78 @@ namespace Pontilus
 
         void start()
         {
-            glGenBuffers(1, &vboID);
-            glGenBuffers(1, &postvboID);
-            glGenBuffers(1, &debugvboID);
+            initQuads();
+            initLines();
+            initTexPool();
 
-            glGenBuffers(1, &eboID);
-            glGenBuffers(1, &posteboID);
-            glGenBuffers(1, &debugeboID);
+            glGenBuffers(1, &quadPool.vbo);
+            glGenBuffers(1, &fullWindowQuad.vbo);
+            glGenBuffers(1, &linePool.vbo);
+
+            glGenBuffers(1, &quadPool.ebo);
+            glGenBuffers(1, &fullWindowQuad.ebo);
+            glGenBuffers(1, &linePool.ebo);
 
             // GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
-            glGenVertexArrays(1, &vaoID);
-            glGenVertexArrays(1, &postvaoID);
-            glGenVertexArrays(1, &debugeboID);
-            glBindVertexArray(vaoID);
-            setPrimitive(Graphics::Primitives::QUAD);
-            glBindVertexArray(postvaoID);
-            setPrimitive(Graphics::Primitives::QUAD);
-            glBindVertexArray(debugvaoID);
-            setPrimitive(Graphics::Primitives::LINE);
-            // glBindVertexArray(vaoID);
+            glGenVertexArrays(1, &quadPool.vao);
+            glGenVertexArrays(1, &fullWindowQuad.vao);
+            glGenVertexArrays(1, &linePool.ebo);
 
-            gameShader = Graphics::initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
-            postShader = Graphics::initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
-            debugShader = Graphics::initShader("./assets/shaders/debug.vert", "./assets/shaders/debug.frag");
+            glBindVertexArray(quadPool.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadPool.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                    quadPool.indexCount * sizeof(unsigned int),
+                    quadPool.indices,
+                    GL_DYNAMIC_DRAW);
 
-            // enableVertexAttribs(*currentRData);
+            glBindVertexArray(fullWindowQuad.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fullWindowQuad.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
+                    fullWindowQuad.indexCount * sizeof(unsigned int), 
+                    fullWindowQuad.indices, 
+                    GL_DYNAMIC_DRAW);
+
+            glBindVertexArray(linePool.ebo);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linePool.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                    linePool.indexCount * sizeof(unsigned int),
+                    linePool.indices,
+                    GL_DYNAMIC_DRAW);
+
+            gameShader = initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
+            postShader = initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
+            debugShader = initShader("./assets/shaders/debug.vert", "./assets/shaders/debug.frag");
         }
 
         void render()
         {
             setRData(quadPool);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vboID);
+            glBindBuffer(GL_ARRAY_BUFFER, quadPool.vbo);
             glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRData) * currentRData->vertCount, currentRData->data, GL_DYNAMIC_DRAW);
 
             int numObjects = 0;
 
             if (getCurrentScene() != nullptr)
             {
+                // TODO: phase this out; rData sizes are dynamic now.
                 numObjects = getCurrentScene()->numQuads;
             }
             // regenerate element buffer
-            setPrimitive(Pontilus::Graphics::Primitives::QUAD);
+            glBindVertexArray(quadPool.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadPool.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                    quadPool.indexCount * sizeof(unsigned int),
+                    quadPool.indices,
+                    GL_DYNAMIC_DRAW);
 
-            Graphics::attachShader(gameShader);
+            Renderer::attachShader(gameShader);
             // default shader uniforms
-            Graphics::uploadMat4(gameShader, "uProjection", Camera::getProjection());
-            Graphics::uploadMat4(gameShader, "uView", Camera::getView());
-            Graphics::uploadIntArr(gameShader, "uTextures", texSlots, 16);
-            Graphics::uploadFloat(gameShader, "uTime", (float)glfwGetTime());
+            Renderer::uploadMat4(gameShader, "uProjection", Camera::getProjection());
+            Renderer::uploadMat4(gameShader, "uView", Camera::getView());
+            Renderer::uploadIntArr(gameShader, "uTextures", texSlots, 16);
+            Renderer::uploadFloat(gameShader, "uTime", (float)glfwGetTime());
 
             for (int i = 0; i < 8; i++)
             {
@@ -149,7 +250,7 @@ namespace Pontilus
                     continue;
 
                 glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
-                Graphics::bindIconMap(*iconPool[i]);
+                Renderer::bindIconMap(*iconPool[i]);
             }
 
             for (int i = 0; i < 8; i++)
@@ -158,10 +259,10 @@ namespace Pontilus
                     continue;
 
                 glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
-                Graphics::bindFont(*fontPool[i]);
+                Renderer::bindFont(*fontPool[i]);
             }
 
-            glBindVertexArray(vaoID);
+            glBindVertexArray(quadPool.vao);
             enableVertexAttribs(*currentRData);
 
             glDrawElements(GL_TRIANGLES, numObjects * 6, GL_UNSIGNED_INT, 0);
@@ -175,7 +276,7 @@ namespace Pontilus
                     continue;
 
                 glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
-                Graphics::unbindIconMap(*iconPool[i]);
+                Renderer::unbindIconMap(*iconPool[i]);
             }
 
             for (int i = 0; i < 8; i++)
@@ -184,21 +285,26 @@ namespace Pontilus
                     continue;
 
                 glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
-                Graphics::unbindFont(*fontPool[i]);
+                Renderer::unbindFont(*fontPool[i]);
             }
 
-            Graphics::detachShader(gameShader);
+            Renderer::detachShader(gameShader);
         }
 
         void postRender()
         {
             setRData(fullWindowQuad);
-            glBindBuffer(GL_ARRAY_BUFFER, postvboID);
+            glBindBuffer(GL_ARRAY_BUFFER, fullWindowQuad.vbo);
             glBufferData(GL_ARRAY_BUFFER, getLayoutLen(fullWindowQuad) * fullWindowQuad.vertCount, fullWindowQuad.data, GL_DYNAMIC_DRAW);
 
-            setPrimitive(Pontilus::Graphics::Primitives::QUAD);
+            glBindVertexArray(fullWindowQuad.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fullWindowQuad.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
+                    fullWindowQuad.indexCount * sizeof(unsigned int), 
+                    fullWindowQuad.indices, 
+                    GL_DYNAMIC_DRAW);
 
-            Graphics::attachShader(postShader);
+            Renderer::attachShader(postShader);
 
             float lightPos[4 * 3];
             float lightColor[4 * 4];
@@ -224,19 +330,19 @@ namespace Pontilus
 
             // printf("%f\n", lightIntensity[0]);
 
-            Graphics::uploadMat4(postShader, "uProjection", Camera::getProjection());
-            Graphics::uploadMat4(postShader, "uView", Camera::getView());
-            Graphics::uploadVec2Arr(postShader, "uCameraPos", (float *)&Camera::getPosition(), 2);
+            Renderer::uploadMat4(postShader, "uProjection", Camera::getProjection());
+            Renderer::uploadMat4(postShader, "uView", Camera::getView());
+            Renderer::uploadVec2Arr(postShader, "uCameraPos", (float *)&Camera::getPosition(), 2);
             // printf("%f\n", Renderer::Camera::getPosition().x);
 
-            Graphics::uploadVec3Arr(postShader, "uLightPos", lightPos, 3 * 4);
-            Graphics::uploadVec4Arr(postShader, "uLightColor", lightColor, 4 * 4);
-            Graphics::uploadFloatArr(postShader, "uLightIntensity", lightIntensity, 4);
+            Renderer::uploadVec3Arr(postShader, "uLightPos", lightPos, 3 * 4);
+            Renderer::uploadVec4Arr(postShader, "uLightColor", lightColor, 4 * 4);
+            Renderer::uploadFloatArr(postShader, "uLightIntensity", lightIntensity, 4);
 
             // there's probably an alternative here that I could use involving matrices, but oh well
-            Graphics::uploadVec2Arr(postShader, "uResolution", &resolution, 1);
+            Renderer::uploadVec2Arr(postShader, "uResolution", &resolution, 1);
 
-            glBindVertexArray(postvaoID);
+            glBindVertexArray(fullWindowQuad.vbo);
             enableVertexAttribs(*currentRData);
 
             glDrawElements(GL_TRIANGLES, 1 * 6, GL_UNSIGNED_INT, 0);
@@ -244,24 +350,29 @@ namespace Pontilus
             disableVertexAttribs(*currentRData);
             glBindVertexArray(0);
 
-            Graphics::detachShader(postShader);
+            Renderer::detachShader(postShader);
         }
 
         void debugRender()
         {
             setRData(linePool);
 
-            glBindBuffer(GL_ARRAY_BUFFER, debugvboID);
+            glBindBuffer(GL_ARRAY_BUFFER, linePool.vbo);
             glBufferData(GL_ARRAY_BUFFER, getLayoutLen(linePool) * linePool.vertCount, linePool.data, GL_DYNAMIC_DRAW);
-            
-            setPrimitive(Pontilus::Graphics::Primitives::LINE);
 
-            Graphics::attachShader(debugShader);
+            glBindVertexArray(linePool.ebo);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linePool.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                    linePool.indexCount * sizeof(unsigned int),
+                    linePool.indices,
+                    GL_DYNAMIC_DRAW);
 
-            Graphics::uploadMat4(debugShader, "uProjection", Camera::getProjection());
-            Graphics::uploadMat4(debugShader, "uView", Camera::getView());
+            Renderer::attachShader(debugShader);
 
-            glBindVertexArray(debugvaoID);
+            Renderer::uploadMat4(debugShader, "uProjection", Camera::getProjection());
+            Renderer::uploadMat4(debugShader, "uView", Camera::getView());
+
+            glBindVertexArray(linePool.vbo);
             enableVertexAttribs(*currentRData);
 
             glDrawElements(GL_LINES_ADJACENCY, 1 * 6, GL_UNSIGNED_INT, 0);
@@ -269,7 +380,16 @@ namespace Pontilus
             disableVertexAttribs(*currentRData);
             glBindVertexArray(0);
 
-            Graphics::detachShader(debugShader);
+            Renderer::detachShader(debugShader);
+        }
+
+        void close()
+        {
+            cleanQuads();
+            cleanPointLights();
+            cleanLines();
+            cleanTexPool();
         }
     }
 }
+

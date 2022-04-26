@@ -16,7 +16,7 @@
 
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
 
         Shader initShader(const char *vertPath, const char *fragPath)

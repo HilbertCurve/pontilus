@@ -10,7 +10,7 @@
 
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
         // If width or height is zero, texture widths or heights are the full dimension of the texture
         void initIconMap(const char *filepath, IconMap &im, int textureWidth, int textureHeight, int padding)

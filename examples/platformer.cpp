@@ -41,11 +41,11 @@ static Player player;
 static Engine::ECS::SpriteRenderer playerRenderer;
 static Engine::ECS::StateMachine playerController;
 static Engine::ECS::AudioSource playerSource;
-static Pontilus::Graphics::IconMap playerTextures;
+static Pontilus::Renderer::IconMap playerTextures;
 static Engine::ECS::GameObject obj;
 static Engine::ECS::SpriteRenderer objRenderer;
 static Engine::ECS::Animation objAnimation;
-static Pontilus::Graphics::IconMap tileTextures;
+static Pontilus::Renderer::IconMap tileTextures;
 static Pontilus::Audio::WAVFile jump1, jump2;
 
 static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH];
@@ -273,13 +273,13 @@ bool loaded = false;
 
 static Engine::Scene mainScene = {
     []() {
-        Pontilus::Graphics::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
-        Pontilus::Graphics::initIconMap("./assets/textures/sad_painting.png", tileTextures, 16, 16, 0);
+        Pontilus::Renderer::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
+        Pontilus::Renderer::initIconMap("./assets/textures/sad_painting.png", tileTextures, 16, 16, 0);
         Pontilus::Audio::initWAVFile(jump1, "./assets/sounds/jump1.wav");
 
-        playerRenderer.init({nullptr}/*Graphics::getTexture(playerTextures, 0)*/);
+        playerRenderer.init({nullptr}/*Renderer::getTexture(playerTextures, 0)*/);
         playerSource.init();
-        objRenderer.init(Graphics::getTexture(tileTextures, 0));
+        objRenderer.init(Renderer::getTexture(tileTextures, 0));
         objAnimation.init(tileTextures, 0, 30, true);
 
         for (int i = 0; i < TILEMAP_HEIGHT * TILEMAP_WIDTH; i++) {

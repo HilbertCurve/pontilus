@@ -11,7 +11,7 @@
 
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
         static const vAttrib vAttribDefault[] =
             {
@@ -22,7 +22,7 @@ namespace Pontilus
                 /*{PONT_OTHER, PONT_FLOAT, 3}*/};
 
         // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
-        void initRData(rData &r, unsigned int numVerts)
+        void initRData(rData &r, unsigned int numVerts, Primitive *p)
         {
             r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
 
@@ -33,12 +33,22 @@ namespace Pontilus
             }
 
             r.data = malloc(getLayoutLen(r) * numVerts);
-
             r.vertCount = numVerts;
+
+            r.primitive = p;
+            if (p == &Primitives::NONE)
+            {
+                r.indexCount = 0;
+                return;
+            }
+            int iPerElement = r.primitive->elementSize;
+            r.indexCount = ceil(numVerts / iPerElement) * iPerElement;
+            r.indices = (int *)malloc(r.indexCount * sizeof(unsigned int));
         }
 
-        void initRData(rData &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs)
+        void initRData(rData &r, unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs)
         {
+            // initialize vertex layout
             r.layoutCount = numAttribs;
 
             r.layout = (vAttrib *)malloc(sizeof(vAttrib) * r.layoutCount);
@@ -50,23 +60,50 @@ namespace Pontilus
             r.data = malloc(getLayoutLen(r) * numVerts);
 
             r.vertCount = numVerts;
+
+            // initialize index buffer & fill it up
+            r.primitive = p;
+            if (p == &Primitives::NONE) return;
+            int iPerElement = r.primitive->elementSize;
+            r.indices = (int *)malloc(ceil(numVerts / iPerElement) * iPerElement * sizeof(unsigned int));
+
+            for (int i = 0; i < ceil(numVerts / iPerElement); i++) {
+                r.primitive->generateIndices(r.indices, i);
+            }
         }
 
-        void initRDataByShader(rData &r, Graphics::Shader &s)
+        void initRDataByShader(rData &r, Renderer::Shader &s)
         {
             // Waiting on Shader.h's todo to be completed.
+            __pError("Function `initRDataByShader` not implemented yet.")
         }
 
         void resizeRData(rData &r, unsigned int newNumVerts)
         {
             // ensure r has been initialized
-            if (r.layoutCount == 0) // every rData should have a layout
-            {
-                initRData(r, newNumVerts);
-                return;
-            }
+            // every rData should have a layout
+            __pAssert(r.layoutCount == 0, "Attempted to resize uninitialized rData.");
 
             r.data = realloc(r.data, getLayoutLen(r) * newNumVerts);
+
+            if (r.primitive == &Primitives::NONE) return;
+            int iPerElement = r.primitive->elementSize;
+            r.indices = (int *) realloc(r.indices, ceil(newNumVerts / iPerElement) * iPerElement * sizeof(unsigned int));
+
+            for (int i = 0; i < ceil(newNumVerts / iPerElement); i++)
+            {
+                r.primitive->generateIndices(r.indices, i);
+            }
+
+            r.vertCount = newNumVerts;
+        }
+
+        void clearRData(rData &r)
+        {
+            free(r.data);
+            free(r.indices);
+
+            r.vertCount = 0;
         }
 
         int getVTypeLen(vPropType p)
@@ -104,7 +141,7 @@ namespace Pontilus
             return len;
         }
 
-        // this should, theoretically, return the pointer to a place in the Rend and the size of that attribute.
+        // this should, theoretically, return the pointer to a place in the rData and the size of that attribute.
         off_len getAttribMetaData(rData &r, vProp p)
         {
             off_len result = {0, p};
@@ -156,32 +193,32 @@ namespace Pontilus
                     // set color of text
                     switch (r.layout[j].prop)
                     {
-                        case Graphics::PONT_POS:
+                        case PONT_POS:
                         {
                             printf("\033[31m");
                         } break;
-                        case Graphics::PONT_COLOR:
+                        case PONT_COLOR:
                         {
                             printf("\033[32m");
                         } break;
-                        case Graphics::PONT_TEXCOORD:
+                        case PONT_TEXCOORD:
                         {
                             printf("\033[33m");
                         } break;
-                        case Graphics::PONT_TEXID:
+                        case PONT_TEXID:
                         {
                             printf("\033[34m");
                         } break;
-                        case Graphics::PONT_OTHER:
+                        case PONT_OTHER:
                         {
                             printf("\033[35m");
                         } break;
                     }
 
-                    Graphics::off_len result = Graphics::getAttribMetaData(r, r.layout[j].prop);
+                    off_len result = getAttribMetaData(r, r.layout[j].prop);
                     switch (r.layout[j].type)
                     {
-                    case Graphics::PONT_SHORT:
+                    case PONT_SHORT:
                     {
                         for (int k = 0; k < r.layout[j].count; k++)
                         {
@@ -190,7 +227,7 @@ namespace Pontilus
                         printf("\033[0m");
                     }
                     break;
-                    case Graphics::PONT_INT:
+                    case PONT_INT:
                     {
                         for (int k = 0; k < r.layout[j].count; k++)
                         {
@@ -199,7 +236,7 @@ namespace Pontilus
                         printf("\033[0m");
                     }
                     break;
-                    case Graphics::PONT_UINT:
+                    case PONT_UINT:
                     {
                         for (int k = 0; k < r.layout[j].count; k++)
                         {
@@ -208,7 +245,7 @@ namespace Pontilus
                         printf("\033[0m");
                     }
                     break;
-                    case Graphics::PONT_FLOAT:
+                    case PONT_FLOAT:
                     {
                         for (int k = 0; k < r.layout[j].count; k++)
                         {
@@ -220,9 +257,10 @@ namespace Pontilus
                     }
                 }
                 printf("\n    ");
-                stride += Graphics::getLayoutLen(r);
+                stride += getLayoutLen(r);
             }
             printf("\b\b\b\b}\n");
         }
     }
 }
+

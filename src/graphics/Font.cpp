@@ -21,7 +21,7 @@
 
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
         void initFont(Font &f, const char *fontname, unsigned int fontSize)
         {

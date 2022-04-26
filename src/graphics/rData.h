@@ -6,12 +6,13 @@
 
 #include <GL/gl.h>
 
+#include "graphics/Primitive.h"
 #include "graphics/Shader.h"
 #include "utils/Utils.h"
 
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
         enum vProp
         {
@@ -43,11 +44,19 @@ namespace Pontilus
          */
         struct rData
         {
+            // vertex data
             void *data;
-            
             vAttrib *layout;
             unsigned int layoutCount;
             unsigned int vertCount;
+
+            // index data
+            Primitive *primitive;
+            int *indices = nullptr;
+            unsigned int indexCount;
+
+            // OpenGL handles
+            GLuint vao, vbo, ebo;
 
             bool isDirty = false;
         };
@@ -56,13 +65,14 @@ namespace Pontilus
         // specify how they put vertex data into an rData
         class Renderable
         {
-            virtual int toRData(Graphics::rData &r, unsigned int rOffset) = 0;
-            virtual void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property) = 0;
+            virtual int toRData(Renderer::rData &r, unsigned int rOffset) = 0;
+            virtual void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property) = 0;
         };
 
-        void initRData(rData &r, unsigned int numVerts);
-        void initRData(rData &r, unsigned int numVerts, vAttrib *attribs, unsigned int numAttribs); // I'd love to know how to do typed variadic arguments without templates, but I guess not right now 
-        void initRDataByShader(rData &r, Graphics::Shader &s);
+        void initRData(rData &r, unsigned int numVerts, Primitive *p);
+        void initRData(rData &r, unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs); // I'd love to know how to do typed variadic arguments without templates, but I guess not right now 
+        void initRDataByShader(rData &r, Renderer::Shader &s);
+        void clearRData(rData &r);
 
         void resizeRData(rData &r, unsigned int newNumVerts);
 
@@ -81,3 +91,4 @@ namespace Pontilus
         void *getAttribPointer(rData &r, vProp p);
     }
 }
+

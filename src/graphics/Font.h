@@ -8,7 +8,7 @@
 
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
         struct Font;
 

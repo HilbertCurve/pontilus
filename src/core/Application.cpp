@@ -23,122 +23,6 @@ namespace Pontilus
 
     float resolution = 512;
 
-    // quad pool:
-    Graphics::rData quadPool = {};
-
-    // debug line pool:
-    Graphics::rData linePool = {};
-    Graphics::vAttrib linePoolAttribs[2] = 
-    {
-        { Graphics::PONT_POS, Graphics::PONT_FLOAT, 3 },
-        { Graphics::PONT_COLOR, Graphics::PONT_FLOAT, 4 }
-    };
-
-    // fullScreenQuad
-    Graphics::rData fullWindowQuad = {};
-    Graphics::vAttrib fullWindowQuadAttribs[2] = 
-    {
-        { Graphics::PONT_POS, Graphics::PONT_FLOAT, 3 },
-        { Graphics::PONT_COLOR, Graphics::PONT_FLOAT, 4 }
-    };
-
-    static void initQuads()
-    {
-        Graphics::initRData(quadPool, 4000);
-
-        Graphics::initRData(fullWindowQuad, 4, fullWindowQuadAttribs, 2);
-        glm::vec3 orientation;
-
-        for (int i = 0; i < 4; i++)
-        {
-            float r = Renderer::Camera::projectionWidth/2;
-            float u = Renderer::Camera::projectionHeight/2;
-            switch (i)
-            {
-                case 0: orientation = { r,  u, 0.0f}; break;
-                case 1: orientation = {-r,  u, 0.0f}; break;
-                case 2: orientation = {-r, -u, 0.0f}; break;
-                case 3: orientation = { r, -u, 0.0f}; break;
-            }
-            for (int j = 0; j < 3; j++)
-            {
-                ((float *)fullWindowQuad.data)[i * 7 + j] = orientation[j];
-            }
-
-            for (int j = 0; j < 4; j++)
-            {
-                ((float *)fullWindowQuad.data)[i * 7 + j + 3] = 0.00f;
-            }
-        }
-    }
-
-    static void initLines()
-    {
-        Graphics::initRData(linePool, 1000, linePoolAttribs, 2);
-    }
-
-    static void cleanQuads()
-    {
-        free(quadPool.data);
-        free(quadPool.layout);
-    }
-
-    static void cleanLines()
-    {
-        free(linePool.data);
-        free(linePool.layout);
-    }
-
-    // pointLight pool
-    Graphics::rData pointLightPool = {};
-    static Graphics::vAttrib pointLightAttributes[3] = 
-    {
-        { Graphics::PONT_POS,   Graphics::PONT_FLOAT, 3 },
-        { Graphics::PONT_COLOR, Graphics::PONT_FLOAT, 4 },
-        { Graphics::PONT_OTHER, Graphics::PONT_FLOAT, 1 }
-    };
-
-    static void initPointLights()
-    {
-        Graphics::initRData(pointLightPool, 16, pointLightAttributes, 3);
-    }
-
-    static void cleanPointLights()
-    {
-        free(pointLightPool.data);
-        free(pointLightPool.layout);
-    }
-
-    // Texture pool:
-    Graphics::IconMap *iconPool[8];
-    int iconPoolStackPointer = 0;
-
-    static void initTexPool()
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            iconPool[i] = nullptr;
-        }
-    }
-
-    static void cleanTexPool()
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            iconPool[i] = nullptr;
-        }
-    }
-
-    Graphics::Font *fontPool[8];
-    int fontPoolStackPointer = 0;
-
-    static void initFontPool()
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            fontPool[i] = nullptr;
-        }
-    }
 
     // i'd prefer to keep this private; there are some quirks with getting and setting this variable i'd rather automate
     static Engine::Scene *currentScene;
@@ -173,10 +57,6 @@ namespace Pontilus
     
     void init()
     {
-        // init memory pools
-        initQuads();
-        initPointLights();
-
         glfwSetErrorCallback(printError);
         
         if (!glfwInit())
@@ -298,7 +178,7 @@ namespace Pontilus
                 keyIsPressed0 = true;
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
-                    Graphics::printRData(quadPool, getCurrentScene()->numQuads * 4);
+                    Renderer::printRData(Renderer::quadPool, getCurrentScene()->numQuads * 4);
                     // don't do this; inputs and game logic should be handled in the scene, not in this loop
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
@@ -336,11 +216,9 @@ namespace Pontilus
             timeAccum += dt;
         }
 
-        cleanQuads();
-        cleanPointLights();
-        cleanTexPool();
-        
-        //Audio::closeAudio();
+        Renderer::close();
+
+        Audio::closeAudio();
 
         glfwDestroyWindow(window.ptr);
         glLinkProgram(0);

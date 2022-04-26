@@ -5,11 +5,21 @@
 
 #include "graphics/rData.h"
 #include "graphics/Texture.h"
+#include "graphics/Font.h"
 
 namespace Pontilus
 {
     namespace Renderer
     {
+        extern Renderer::rData quadPool;
+        extern Renderer::rData linePool;
+        extern Renderer::rData fullWindowQuad;
+        extern Renderer::rData pointLightPool;
+        extern Renderer::IconMap *iconPool[8];
+        extern Renderer::Font *fontPool[8];
+        extern int iconPoolStackPointer;
+        extern int fontPoolStackPointer;
+
         enum rMode
         {
             PONT_GAME,
@@ -21,8 +31,8 @@ namespace Pontilus
         void postRender();
         void debugRender();
 
-        //void renderRData(Graphics::rData &r, Graphics::Primitive mode, unsigned int numObjects);
-        void clean();
+        //void renderRData(Renderer::rData &r, Renderer::Primitive mode, unsigned int numObjects);
+        void close();
     }
 }
 

@@ -1,12 +1,14 @@
 #include "graphics/Primitive.h"
 
+#include "utils/Utils.h"
+
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
         namespace Primitives
         {
-            Primitive QUAD = Primitive{4, 6, GL_TRIANGLES, Renderer::PONT_GAME, [](int *elements, int location)
+            Primitive QUAD = Primitive{4, 6, GL_TRIANGLES, [](int *elements, int location)
                                        {
                                            int index = location * 6;
                                            int offset = location * 4;
@@ -20,7 +22,7 @@ namespace Pontilus
                                            elements[index + 5] = 1 + offset;
                                        }};
 
-            Primitive LINE = Primitive{2, 2, GL_LINE, Renderer::PONT_DEBUG, [](int *elements, int location)
+            Primitive LINE = Primitive{2, 2, GL_LINE, [](int *elements, int location)
                                        {
                                            int index = location * 2;
                                            int offset = location * 2;
@@ -28,13 +30,17 @@ namespace Pontilus
                                            elements[index + 0] = 0 + offset;
                                            elements[index + 1] = 1 + offset;
                                        }};
-            Primitive POINT = Primitive{1, 1, GL_POINT, Renderer::PONT_DEBUG, [](int *elements, int location)
+            Primitive POINT = Primitive{1, 1, GL_POINT, [](int *elements, int location)
                                         {
                                             int index = location;
                                             int offset = location;
 
                                             elements[index] = offset;
                                         }};
+            Primitive NONE = Primitive{0, 0, 0, [](int *elements, int location)
+                {
+                    __pWarning("rData with NONE primitive attempted to be buffered.");
+                }};
         }
     }
 }
