@@ -11,14 +11,14 @@ namespace Pontilus
     {
         namespace ECS
         {
-            class SpriteRenderer : public Component, public Graphics::Renderable
+            class SpriteRenderer : public Component, public Renderer::Renderable
             {
                 public:
-                void init(Graphics::Texture t);
+                void init(Renderer::Texture t);
 
-                Graphics::Texture tex = {nullptr};
-                int toRData(Graphics::rData &r, unsigned int rOffset);
-                void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property);
+                Renderer::Texture tex = {nullptr};
+                int toRData(Renderer::rData &r, unsigned int rOffset);
+                void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
             };
         }
     }

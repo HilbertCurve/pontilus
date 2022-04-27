@@ -10,16 +10,17 @@ namespace Pontilus
 {
     namespace Model
     {
-        class ModelRenderer : public Engine::ECS::Component, public Graphics::Renderable
+        class ModelRenderer : public Engine::ECS::Component, public Renderer::Renderable
         {
             public:
-            int toRData(Graphics::rData &r, unsigned int rOffset);
-            void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property);
+            int toRData(Renderer::rData &r, unsigned int rOffset);
+            void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
 
             nlohmann::json gltfData;
-            rData vertices;
+            Renderer::rData vertices;
 
             void init(const char *gltfFile);
         };
     }
 }
+

@@ -18,7 +18,7 @@ namespace Pontilus {
         }
 
         // automatically adds objects to current scene
-        void getTileMap(unsigned n, unsigned k, int *key, TileMap &t, float tilewidth, Pontilus::Graphics::IconMap *tileset) {
+        void getTileMap(unsigned n, unsigned k, int *key, TileMap &t, float tilewidth, Pontilus::Renderer::IconMap *tileset) {
             // empty tiles
             t.tiles.clear();
             t.tiles.reserve(n*k);
@@ -41,7 +41,7 @@ namespace Pontilus {
 
                         SpriteRenderer s = SpriteRenderer();
                         if (tileset) {
-                            s.init(Pontilus::Graphics::getTexture(*tileset, tiletex));
+                            s.init(Pontilus::Renderer::getTexture(*tileset, tiletex));
                         } else {
                             s.init({nullptr});
                         }
@@ -86,7 +86,7 @@ namespace Pontilus {
 
             _tile.tile_coords = coords;
             Engine::ECS::SpriteRenderer _renderer = Engine::ECS::SpriteRenderer();
-            _renderer.init(Graphics::getTexture(*t.tileset, i_tile));
+            _renderer.init(Renderer::getTexture(*t.tileset, i_tile));
 
             t.tiles.push_back({_tile, _renderer});
 

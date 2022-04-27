@@ -15,7 +15,7 @@ class Player : public Engine::ECS::GameObject {
     glm::vec2 velocity;
 };
 
-static Graphics::Font timesNewRoman;
+static Renderer::Font timesNewRoman;
 
 class TextBox : public Engine::ECS::GameObject {
     public:
@@ -24,7 +24,7 @@ class TextBox : public Engine::ECS::GameObject {
         this->text = text;
 
         if (!timesNewRoman.filepath)
-            Graphics::initFont(timesNewRoman, "assets/fonts/times.ttf", 13);
+            Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 13);
         this->r_text.init("", timesNewRoman);
 
         this->color = glm::vec4(0.2f, 0.2f, 0.2f, 0.0f);
@@ -71,7 +71,7 @@ static Engine::ECS::SpriteRenderer r_player;
 static Engine::ECS::StateMachine c_stepwise;
 static Engine::ECS::StateMachine c_continuous;
 static Library::TileMap tilemap;
-static Graphics::IconMap tilemap_icons;
+static Renderer::IconMap tilemap_icons;
 
 enum direction {
     NORTH = 0b0001,
@@ -232,7 +232,7 @@ Engine::Scene mainScene = {
         player.init({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
 
         // tilemap
-        Graphics::initIconMap("./assets/textures/tilemap1.png", tilemap_icons, 16, 16, 0);
+        Renderer::initIconMap("./assets/textures/tilemap1.png", tilemap_icons, 16, 16, 0);
 
         for (int i = 0; i < TILEMAP_HEIGHT * TILEMAP_WIDTH; i++) {
             (&(key[0][0]))[i] = -1;

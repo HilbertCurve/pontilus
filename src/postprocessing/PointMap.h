@@ -6,7 +6,7 @@
 
 namespace Pontilus
 {
-    namespace Graphics
+    namespace Renderer
     {
         struct PointMap
         {

@@ -14,16 +14,16 @@ namespace Pontilus
     {
         namespace ECS
         {
-            class TextRenderer : public Component, public Graphics::Renderable
+            class TextRenderer : public Component, public Renderer::Renderable
             {
                 public:
                 TextRenderer() = default;
-                void init(const char *text, Graphics::Font &f);
-                Graphics::Font *font;
+                void init(const char *text, Renderer::Font &f);
+                Renderer::Font *font;
                 std::string text;
 
-                int toRData(Graphics::rData &r, unsigned int rOffset);
-                void toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property);
+                int toRData(Renderer::rData &r, unsigned int rOffset);
+                void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
             };
         }
     }

@@ -13,7 +13,7 @@
 #include <stb/stb_image_write.h>
 #undef STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "core/Application.h"
+#include "graphics/Renderer.h"
 #include "utils/Utils.h"
 
 #define _PONTILUS_FONT_TEX_WIDTH 512
@@ -244,3 +244,4 @@ namespace Pontilus
         }
     }
 }
+

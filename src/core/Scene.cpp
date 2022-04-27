@@ -12,6 +12,7 @@
 #include "ecs/Animation.h"
 #include "ecs/AudioListener.h"
 #include "ecs/AudioSource.h"
+#include "graphics/Renderer.h"
 #include "graphics/rData.h"
 #include "graphics/Font.h"
 #include "graphics/Camera.h"
@@ -26,22 +27,22 @@ namespace Pontilus
         static ECS::GameObject g4 = ECS::GameObject();
         static ECS::SpriteRenderer s1;
         static ECS::SpriteRenderer s2;
-        static Graphics::IconMap im1;
-        static Graphics::IconMap im2;
-        static Graphics::IconMap blueberry;
-        static Graphics::IconMap burger;
-        static Graphics::IconMap pizzaMonster;
-        static Graphics::Font jetBrainsMono;
+        static Renderer::IconMap im1;
+        static Renderer::IconMap im2;
+        static Renderer::IconMap blueberry;
+        static Renderer::IconMap burger;
+        static Renderer::IconMap pizzaMonster;
+        static Renderer::Font jetBrainsMono;
 
         static ECS::GameObject leftPaddle, rightPaddle, ball, lScore, rScore;
         static ECS::SpriteRenderer lPaddleRenderer, rPaddleRenderer, ballRenderer;
         static ECS::TextRenderer lScoreText, rScoreText;
-        static Graphics::IconMap pogFace;
+        static Renderer::IconMap pogFace;
 
         static ECS::GameObject toBeAnimated;
         static ECS::SpriteRenderer toBeAnimatedSpr;
         static ECS::Animation animator;
-        static Graphics::IconMap toBeAnimatedFrames;
+        static Renderer::IconMap toBeAnimatedFrames;
 
         static ECS::GameObject theListener;
         static ECS::GameObject theNoiseGenerator;
@@ -52,7 +53,7 @@ namespace Pontilus
         static ECS::GameObject defaultLogo = ECS::GameObject();
         static ECS::TextRenderer defaultText = ECS::TextRenderer();
         static ECS::SpriteRenderer defaultIcon = ECS::SpriteRenderer();
-        static Graphics::IconMap defaultMap = Graphics::IconMap();
+        static Renderer::IconMap defaultMap = Renderer::IconMap();
 
         void updateSceneGraphics(Scene &s)
         {
@@ -63,14 +64,14 @@ namespace Pontilus
                 if (csr)
                 {
                     ECS::SpriteRenderer &sr = dynamic_cast<ECS::SpriteRenderer &>(*csr);
-                    s.numQuads = sr.toRData(quadPool, s.numQuads);
+                    s.numQuads = sr.toRData(Renderer::quadPool, s.numQuads);
                 }
 
                 ECS::Component *ctr = s.objs.at(i)->getComponent(typeid(ECS::TextRenderer));
                 if (ctr)
                 {
                     ECS::TextRenderer &tr = dynamic_cast<ECS::TextRenderer &>(*ctr);
-                    s.numQuads = tr.toRData(quadPool, s.numQuads);
+                    s.numQuads = tr.toRData(Renderer::quadPool, s.numQuads);
                 }
             }
         }
@@ -107,12 +108,12 @@ namespace Pontilus
                 defaultMessage.init({-30.0, 10.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 40, 50);
                 defaultLogo.init({0.0, -20.0, 0.0}, {1.0, 1.0, 1.0, 0.7}, 20, 16);
                 
-                Graphics::initFont(jetBrainsMono, "assets/fonts/JetBrainsMono-Medium.ttf", 26);
-                Graphics::initIconMap("assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
+                Renderer::initFont(jetBrainsMono, "assets/fonts/JetBrainsMono-Medium.ttf", 26);
+                Renderer::initIconMap("assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
 
                 defaultText.init("Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().", jetBrainsMono);
 
-                Graphics::Texture t = Graphics::getTexture(defaultMap, 0);
+                Renderer::Texture t = Renderer::getTexture(defaultMap, 0);
 
                 defaultIcon.init(t);
 
@@ -185,7 +186,7 @@ namespace Pontilus
         {
             []()
             {
-                Graphics::initIconMap("./assets/textures/test2.png", toBeAnimatedFrames, 8, 8, 0);
+                Renderer::initIconMap("./assets/textures/test2.png", toBeAnimatedFrames, 8, 8, 0);
 
                 toBeAnimated = ECS::GameObject();
                 toBeAnimatedSpr = ECS::SpriteRenderer();
@@ -229,9 +230,9 @@ namespace Pontilus
         {
             []()
             {
-                Graphics::initIconMap("./assets/textures/pogFace.png", pogFace, 200, 200, 0);
+                Renderer::initIconMap("./assets/textures/pogFace.png", pogFace, 200, 200, 0);
                 
-                Graphics::initFont(jetBrainsMono, "./assets/fonts/JetBrainsMono-Medium.ttf", 32);
+                Renderer::initFont(jetBrainsMono, "./assets/fonts/JetBrainsMono-Medium.ttf", 32);
 
                 leftPaddle = rightPaddle = ball = ECS::GameObject();
                 lScore = rScore = ECS::GameObject();
@@ -244,7 +245,7 @@ namespace Pontilus
                 lScore.init({-30.0, -17.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 3.0, 3.0);
                 rScore.init({30.0, -17.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 3.0, 3.0);
                 
-                ballRenderer.tex = Graphics::getTexture(pogFace, 0);
+                ballRenderer.tex = Renderer::getTexture(pogFace, 0);
 
                 lScoreText.init("0", jetBrainsMono);
                 rScoreText.init("0", jetBrainsMono);
@@ -359,16 +360,16 @@ namespace Pontilus
 
                 g4.init({ 7.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
 
-                Graphics::initIconMap("./assets/textures/test.png", im1, 8, 8, 0);
-                Graphics::initIconMap("./assets/textures/test2.png", im2, 8, 8, 0);
-                Graphics::initIconMap("./assets/textures/blueberry.png", blueberry, 32, 32, 0);
-                Graphics::initIconMap("./assets/textures/burger.png", burger, 32, 32, 0);
-                Graphics::initIconMap("./assets/textures/pizzaMonster.png", pizzaMonster, 32, 32, 0);
+                Renderer::initIconMap("./assets/textures/test.png", im1, 8, 8, 0);
+                Renderer::initIconMap("./assets/textures/test2.png", im2, 8, 8, 0);
+                Renderer::initIconMap("./assets/textures/blueberry.png", blueberry, 32, 32, 0);
+                Renderer::initIconMap("./assets/textures/burger.png", burger, 32, 32, 0);
+                Renderer::initIconMap("./assets/textures/pizzaMonster.png", pizzaMonster, 32, 32, 0);
 
-                Graphics::initFont(jetBrainsMono, "./assets/fonts/JetBrainsMono-Medium.ttf", 32);
+                Renderer::initFont(jetBrainsMono, "./assets/fonts/JetBrainsMono-Medium.ttf", 32);
 
-                s1.tex = Graphics::getTexture(blueberry, 0);
-                s2.tex = Graphics::getTexture(burger, 0);
+                s1.tex = Renderer::getTexture(blueberry, 0);
+                s2.tex = Renderer::getTexture(burger, 0);
 
                 g1.addComponent(s1);
                 g2.addComponent(s2);
@@ -463,7 +464,6 @@ namespace Pontilus
                     Renderer::Camera::move(-0.1f, 0.0f, 0.0f);
                 }
 
-                /*
                 // move camera
                 camToPlayer = abs(Renderer::Camera::getPosition().x - g1.pos.x);
                 if (camToPlayer > 8.5f)
@@ -479,7 +479,7 @@ namespace Pontilus
                 }
                 */
 
-                //g1.toRData(quadPool, 0, Graphics::PONT_POS);
+                //g1.toRData(quadPool, 0, Renderer::PONT_POS);
             },
             []()
             {

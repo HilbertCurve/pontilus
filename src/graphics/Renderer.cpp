@@ -121,17 +121,8 @@ namespace Pontilus
             }
         }
 
-        Renderer::Font *fontPool[8];
+        Renderer::Font *fontPool[8] = {0, 0, 0, 0, 0, 0, 0, 0};
         int fontPoolStackPointer = 0;
-
-        static void initFontPool()
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                fontPool[i] = nullptr;
-            }
-        }
-        // TODO: abstract this away
 
         static Renderer::rData *currentRData;
 
@@ -149,7 +140,7 @@ namespace Pontilus
         static void enableVertexAttribs(Renderer::rData &r)
         {
             u_int64_t propOffset = 0;
-            for (int i = 0; i < r.layoutCount; i++)
+            for (unsigned int i = 0; i < r.layoutCount; i++)
             {
                 int propertyLen = r.layout[i].count;
                 Renderer::vPropType type = r.layout[i].type;
@@ -163,7 +154,7 @@ namespace Pontilus
 
         static void disableVertexAttribs(Renderer::rData &r)
         {
-            for (int i = 0; i < r.layoutCount; i++)
+            for (unsigned int i = 0; i < r.layoutCount; i++)
             {
                 glDisableVertexAttribArray(i);
             }
@@ -172,6 +163,7 @@ namespace Pontilus
         void start()
         {
             initQuads();
+            initPointLights();
             initLines();
             initTexPool();
 

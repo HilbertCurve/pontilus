@@ -6,31 +6,31 @@ namespace Pontilus
     {
         namespace ECS
         {
-            void Animation::init(Graphics::IconMap &im, int start, int end, bool loopAtEnds) 
+            void Animation::init(Renderer::IconMap &im, int start, int end, bool loopAtEnds) 
             {
                 this->loopAtEnds = loopAtEnds;
 
                 for (int i = start; i <= end; i++)
                 {
-                    this->textures.push_back(Graphics::getTexture(im, i));
+                    this->textures.push_back(Renderer::getTexture(im, i));
                 }
             }
 
-            void Animation::addTexture(Graphics::Texture &t, int index)
+            void Animation::addTexture(Renderer::Texture &t, int index)
             {
                 this->textures.insert(this->textures.begin() + index, t);
             }
 
-            void Animation::pushTexture(Graphics::Texture &t)
+            void Animation::pushTexture(Renderer::Texture &t)
             {
                 this->textures.push_back(t);
             }
 
-            void Animation::pushTextures(Graphics::IconMap &im, int start, int end)
+            void Animation::pushTextures(Renderer::IconMap &im, int start, int end)
             {
                 for (int i = start; i <= end; i++)
                 {
-                    this->textures.push_back(Graphics::getTexture(im, i));
+                    this->textures.push_back(Renderer::getTexture(im, i));
                 }
             }
 

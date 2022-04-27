@@ -12,12 +12,12 @@ namespace Pontilus
         namespace ECS
         {
             
-            void SpriteRenderer::init(Graphics::Texture t)
+            void SpriteRenderer::init(Renderer::Texture t)
             {
                 this->tex = t;
             }
 
-            using namespace Graphics; // fight me
+            using namespace Renderer; // fight me
             int SpriteRenderer::toRData(rData &r, unsigned int rOffset)
             {
                 __pAssert(!(rOffset >= r.vertCount / 4), "rData not big enough to hold game states!");
@@ -93,7 +93,7 @@ namespace Pontilus
                 return stride / (4 * getLayoutLen(r));
             }
 
-            void SpriteRenderer::toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property)
+            void SpriteRenderer::toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property)
             {
                 int offset = rOffset * 4 * getLayoutLen(r);
                 

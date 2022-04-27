@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include "core/Application.h"
+#include "graphics/Renderer.h"
 
 namespace Pontilus
 {

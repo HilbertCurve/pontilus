@@ -18,14 +18,14 @@ namespace Pontilus
                 Animation() = default;
 
                 // all starts and ends are inclusive
-                void init(Graphics::IconMap &im, int start, int end, bool loopAtEnds);
+                void init(Renderer::IconMap &im, int start, int end, bool loopAtEnds);
 
-                std::vector<Graphics::Texture> textures;
+                std::vector<Renderer::Texture> textures;
                 bool loopAtEnds;
 
-                void addTexture(Graphics::Texture &t, int index);
-                void pushTexture(Graphics::Texture &t);
-                void pushTextures(Graphics::IconMap &im, int start, int end);
+                void addTexture(Renderer::Texture &t, int index);
+                void pushTexture(Renderer::Texture &t);
+                void pushTextures(Renderer::IconMap &im, int start, int end);
                 void removeTexture(int index);
                 void removeTextures(int start, int end);
                 bool setAnimationBounds(int start, int end);

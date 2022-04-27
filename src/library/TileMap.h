@@ -39,7 +39,7 @@ namespace Pontilus {
             float tilewidth;
             int width, height;
             glm::vec4 color;
-            Graphics::IconMap *tileset;
+            Renderer::IconMap *tileset;
             size_t size() {
                 return tiles.size();
             }
@@ -53,7 +53,7 @@ namespace Pontilus {
         };
 
         // automatically adds objects to current scene
-        void getTileMap(unsigned n, unsigned k, int *key, TileMap &t, float tilewidth, Pontilus::Graphics::IconMap *tileset);
+        void getTileMap(unsigned n, unsigned k, int *key, TileMap &t, float tilewidth, Pontilus::Renderer::IconMap *tileset);
         void deleteTileMap(TileMap &t);
 
         rect rectFromObj(Engine::ECS::GameObject o);

@@ -11,7 +11,6 @@ namespace Pontilus
         void ModelRenderer::init(const char *gltfFile)
         {
             this->gltfData = getJSON(gltfFile);
-            jsonFP = gltfFile;
 
         }
 

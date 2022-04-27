@@ -6,15 +6,15 @@ namespace Pontilus
     {
         namespace ECS
         {
-            void TextRenderer::init(const char *text, Graphics::Font &f)
+            void TextRenderer::init(const char *text, Renderer::Font &f)
             {
                 this->text = text;
                 this->font = &f;
             }
 
-            int TextRenderer::toRData(Graphics::rData &r, unsigned int rOffset)
+            int TextRenderer::toRData(Renderer::rData &r, unsigned int rOffset)
             {
-                using namespace Pontilus::Graphics;
+                using namespace Pontilus::Renderer;
 
                 __pAssert(!((rOffset + this->text.size()) * 4 >= r.vertCount), "rData not big enough to hold UI data!");
                 __pAssert(this->font != nullptr, "Text must be initialized with a font.");
@@ -139,7 +139,7 @@ namespace Pontilus
                 return stride / (4 * getLayoutLen(r));
             }
 
-            void TextRenderer::toRData(Graphics::rData &r, unsigned int rOffset, Graphics::vProp property)
+            void TextRenderer::toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property)
             {
                 // TODO
                 return;
