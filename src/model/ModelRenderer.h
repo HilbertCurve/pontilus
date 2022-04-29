@@ -17,9 +17,17 @@ namespace Pontilus
             void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
 
             nlohmann::json gltfData;
-            Renderer::rData vertices;
+            Renderer::rData *vertices = nullptr;
 
             void init(const char *gltfFile);
+
+            private:
+            // cache data, for toRData
+            const char *gltfFP;
+            const char *binFP;
+            int posLength, posOffset, posType, posCount;
+            int colorLength, colorOffset, colorType, colorCount;
+            int indexLength, indexOffset, indexType, indexCount;
         };
     }
 }

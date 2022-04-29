@@ -44,6 +44,10 @@ namespace Pontilus
             int iPerElement = r.primitive->elementSize;
             r.indexCount = ceil(numVerts / iPerElement) * iPerElement;
             r.indices = (int *)malloc(r.indexCount * sizeof(unsigned int));
+
+            for (int i = 0; i < ceil(numVerts / iPerElement); i++) {
+                r.primitive->generateIndices(r.indices, i);
+            }
         }
 
         void initRData(rData &r, unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs)

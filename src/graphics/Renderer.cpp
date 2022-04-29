@@ -175,7 +175,7 @@ namespace Pontilus
             glGenBuffers(1, &fullWindowQuad.ebo);
             glGenBuffers(1, &linePool.ebo);
 
-            // GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
+            GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
             glGenVertexArrays(1, &quadPool.vao);
             glGenVertexArrays(1, &fullWindowQuad.vao);
@@ -187,6 +187,14 @@ namespace Pontilus
                     quadPool.indexCount * sizeof(unsigned int),
                     quadPool.indices,
                     GL_DYNAMIC_DRAW);
+            __pWarning("indexCount: %d, indices %p", quadPool.indexCount, quadPool.indices);
+            __pWarning("some values from indices: \n%d, %d, %d, %d, %d, %d\n",
+                    quadPool.indices[0],
+                    quadPool.indices[1],
+                    quadPool.indices[2],
+                    quadPool.indices[3],
+                    quadPool.indices[4],
+                    quadPool.indices[5])
 
             glBindVertexArray(fullWindowQuad.vao);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fullWindowQuad.ebo);

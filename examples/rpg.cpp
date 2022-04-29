@@ -252,6 +252,14 @@ Engine::Scene mainScene = {
         updateSceneGraphics(mainScene);
     },
     [](double dt) {
+        if (IO::isKeyPressed(GLFW_KEY_R)) {
+            if (IO::isKeyPressed(GLFW_KEY_Z)) {
+                player.rotation.z += 1.0f * dt;
+            } else {
+                player.rotation.y += 1.0f * dt;
+            }
+        }
+
         updateSceneGraphics(mainScene);
     },
     []() {

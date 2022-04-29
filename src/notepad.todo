@@ -10,7 +10,7 @@ OpenGL:
     [+] Texture.cpp - textures, when that becomes necessary
     [+] IconMap.cpp - collections of textures / spritesheets
     [+] InputListener.cpp - mouse and keyboard callbacks/data
-    [-] RenderBatch.cpp - a way to contain a lot of a single primitive type
+    [-] RenderBatch.cpp - a way to contain a lot of a single primitive type, basically rData.cpp
 
 Misc:
     [-] Math.cpp - maybe later
@@ -117,22 +117,30 @@ Python:
     First, you initialize the library by calling Pontilus::init()
     Then you specify your scene objects.
     Then you call Pontilus::loop()
-    [+] Figure out how to use CPython
+    [-] Figure out how to use CPython
+    [ ] Find a better C++-to-Python library
     [-] Add argument parsing
     My thinking is that we have a bunch of functions return ints whenever they could throw
-    [ ] Add exception throwing (so python doesn't just crash whenever it tries to open a file)
+    [-] Add exception throwing (so python doesn't just crash whenever it tries to open a file)
 
     Exposing Library:
         [ ] Expose ECS datatypes & funcs
         [ ] Expose Graphics datatypes & funcs
-        [+] Expose Audio datatypes & funcs
+        [ ] Expose Audio datatypes & funcs
         [ ] Expose Core datatypes & funcs
-        [-] Exposing physics will have to wait
+        [ ] Exposing physics will have to wait
 
 State Machines:
     [+] StateMachine.cpp - Design a state machine component
     [+] Indivitual states
     [+] Example state machine
+
+glTF Model Rendering:
+    [ ] Basic models
+    [ ] Multiple buffers
+    [ ] Multiple scenes
+    [ ] Multiple meshes
+    [ ] Other edge case scenarios
 
 Roadmap:
     [+] Get renderer chugging out things

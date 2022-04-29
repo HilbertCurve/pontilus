@@ -24,6 +24,7 @@ namespace Pontilus
             extern Primitive TRIANGLE;
             extern Primitive CIRCLE;
             extern Primitive POINT;
+            extern Primitive MESH;
             extern Primitive NONE;
         }
     }
