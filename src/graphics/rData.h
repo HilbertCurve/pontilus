@@ -1,5 +1,3 @@
-//#pragma once
-
 #pragma once
 
 #include <vector>
@@ -53,7 +51,7 @@ namespace Pontilus
             // index data
             Primitive *primitive;
             int *indices = nullptr;
-            unsigned int indexCount;
+            unsigned int indexCount = 0;
 
             // OpenGL handles
             GLuint vao, vbo, ebo;

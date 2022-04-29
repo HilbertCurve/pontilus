@@ -56,16 +56,41 @@ namespace Pontilus
 
             posOffset = bufferViews[posLoc]["byteOffset"];
             indexOffset = bufferViews[indexLoc]["byteOffset"];
-
-            // fill up rData
-            FILE *binFile = fopen(binFP, "rb");
-
-
         }
         
-        int toRData(Renderer::rData &r, unsigned int rOffset)
+        int ModelRenderer::toRData(Renderer::rData &r, unsigned int rOffset)
         {
-            
+            using namespace Renderer;
+            FILE *f = fopen(binFP, "rb");
+            if (!f)
+            {
+                __pWarning("File %s could not be opened.", binFP);
+                return 0;
+            }
+
+            // fill up pos buffer
+            fseek(f, posOffset, SEEK_SET);
+            auto offlen = getAttribMetaData(r, PONT_POS);
+            int chunkSize = (int) (posLength / posCount);
+            int vertSize = getLayoutLen(r);
+
+            for (int i = 0; i < posCount; i++)
+            {
+                fread(&((char *) r.data)[offlen.first + i * vertSize], chunkSize, 1, f);
+            }
+
+            // fill up index buffer
+            fseek(f, indexOffset, SEEK_SET);
+            chunkSize = (int) (indexLength / posLength);
+
+            for (int i = 0; i < indexCount; i++)
+            {
+                fread((char *) r.indices + chunkSize*i + r.indexCount, chunkSize, 1, f);
+            }
+
+            fclose(f);
+
+            return 1;
         }
     }
 }
