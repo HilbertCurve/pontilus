@@ -18,6 +18,12 @@ namespace Pontilus
         // quad pool:
         Renderer::rData quadPool = {};
 
+        Renderer::rData modelPool = {};
+        Renderer::vAttrib modelPoolAttribs[1] =
+        {
+            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 }
+        };
+
         // debug line pool:
         Renderer::rData linePool = {};
         Renderer::vAttrib linePoolAttribs[2] = 
@@ -37,6 +43,7 @@ namespace Pontilus
         static void initQuads()
         {
             Renderer::initRData(quadPool, 4000, &Primitives::QUAD);
+            Renderer::initRData(modelPool, 4000, &Primitives::MESH, modelPoolAttribs, 1);
 
             Renderer::initRData(fullWindowQuad, 4, &Primitives::QUAD, fullWindowQuadAttribs, 2);
             glm::vec3 orientation;
@@ -129,6 +136,7 @@ namespace Pontilus
         static const GLint texSlots[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 
         Renderer::Shader gameShader;
+        Renderer::Shader modelShader;
         Renderer::Shader postShader;
         Renderer::Shader debugShader;
 
@@ -160,6 +168,21 @@ namespace Pontilus
             }
         }
 
+        static void initRDataGLCaps(rData &r)
+        {
+            glGenBuffers(1, &r.vbo);
+            glGenBuffers(1, &r.ebo);
+
+            glGenVertexArrays(1, &r.vao);
+
+            glBindVertexArray(r.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                    r.indexCount * sizeof(unsigned int),
+                    r.indices,
+                    GL_DYNAMIC_DRAW);
+        }
+
         void start()
         {
             initQuads();
@@ -167,34 +190,16 @@ namespace Pontilus
             initLines();
             initTexPool();
 
-            glGenBuffers(1, &quadPool.vbo);
             glGenBuffers(1, &fullWindowQuad.vbo);
             glGenBuffers(1, &linePool.vbo);
 
-            glGenBuffers(1, &quadPool.ebo);
             glGenBuffers(1, &fullWindowQuad.ebo);
             glGenBuffers(1, &linePool.ebo);
 
-            GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
+            // GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
-            glGenVertexArrays(1, &quadPool.vao);
             glGenVertexArrays(1, &fullWindowQuad.vao);
             glGenVertexArrays(1, &linePool.ebo);
-
-            glBindVertexArray(quadPool.vao);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadPool.ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                    quadPool.indexCount * sizeof(unsigned int),
-                    quadPool.indices,
-                    GL_DYNAMIC_DRAW);
-            __pWarning("indexCount: %d, indices %p", quadPool.indexCount, quadPool.indices);
-            __pWarning("some values from indices: \n%d, %d, %d, %d, %d, %d\n",
-                    quadPool.indices[0],
-                    quadPool.indices[1],
-                    quadPool.indices[2],
-                    quadPool.indices[3],
-                    quadPool.indices[4],
-                    quadPool.indices[5])
 
             glBindVertexArray(fullWindowQuad.vao);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fullWindowQuad.ebo);
@@ -210,7 +215,11 @@ namespace Pontilus
                     linePool.indices,
                     GL_DYNAMIC_DRAW);
 
+            initRDataGLCaps(quadPool);
+            initRDataGLCaps(modelPool);
+
             gameShader = initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
+            modelShader = initShader("./assets/shaders/model.vert", "./assets/shaders/model.frag");
             postShader = initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
             debugShader = initShader("./assets/shaders/debug.vert", "./assets/shaders/debug.frag");
         }
@@ -289,6 +298,71 @@ namespace Pontilus
             }
 
             Renderer::detachShader(gameShader);
+        }
+
+        void modelRender()
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, modelPool.vbo);
+            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(modelPool) * modelPool.vertCount, modelPool.data, GL_DYNAMIC_DRAW);
+
+            // regenerate element buffer
+            glBindVertexArray(modelPool.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, modelPool.ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                    modelPool.indexCount * sizeof(unsigned int),
+                    modelPool.indices,
+                    GL_DYNAMIC_DRAW);
+
+            Renderer::attachShader(modelShader);
+            // default shader uniforms
+            Renderer::uploadMat4(modelShader, "uProjection", Camera::getProjection());
+            Renderer::uploadMat4(modelShader, "uView", Camera::getView());
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (iconPool[i] == nullptr || iconPool[i]->texID == 0.0f)
+                    continue;
+
+                glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
+                Renderer::bindIconMap(*iconPool[i]);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (fontPool[i] == nullptr || fontPool[i]->texID == 0.0f)
+                    continue;
+
+                glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
+                Renderer::bindFont(*fontPool[i]);
+            }
+
+            glBindVertexArray(modelPool.vao);
+            enableVertexAttribs(modelPool);
+
+            glDrawElements(GL_TRIANGLES, modelPool.indexCount, GL_UNSIGNED_INT, 0);
+
+            disableVertexAttribs(modelPool);
+            glBindVertexArray(0);
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (iconPool[i] == nullptr || iconPool[i]->texID == 0.0f)
+                    continue;
+
+                glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
+                Renderer::unbindIconMap(*iconPool[i]);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (fontPool[i] == nullptr || fontPool[i]->texID == 0.0f)
+                    continue;
+
+                glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
+                Renderer::unbindFont(*fontPool[i]);
+            }
+
+            Renderer::detachShader(modelShader);
         }
 
         void postRender()

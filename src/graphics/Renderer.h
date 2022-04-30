@@ -12,6 +12,7 @@ namespace Pontilus
     namespace Renderer
     {
         extern Renderer::rData quadPool;
+        extern Renderer::rData modelPool;
         extern Renderer::rData linePool;
         extern Renderer::rData fullWindowQuad;
         extern Renderer::rData pointLightPool;
@@ -20,14 +21,9 @@ namespace Pontilus
         extern int iconPoolStackPointer;
         extern int fontPoolStackPointer;
 
-        enum rMode
-        {
-            PONT_GAME,
-            PONT_POST,
-            PONT_DEBUG
-        };
         void start();
         void render();
+        void modelRender();
         void postRender();
         void debugRender();
 

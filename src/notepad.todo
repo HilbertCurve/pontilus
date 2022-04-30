@@ -136,7 +136,13 @@ State Machines:
     [+] Example state machine
 
 glTF Model Rendering:
-    [ ] Basic models
+    Basic models:
+        [+] modelPool, modelPool filling, Renderer::modelRenderer
+        [ ] Model shader
+        [ ] Proper rData usage
+        [ ] Colors
+        [ ] Normals, for shading
+        [ ] Textures
     [ ] Multiple buffers
     [ ] Multiple scenes
     [ ] Multiple meshes
@@ -178,4 +184,3 @@ Backburner:
     [ ] Windows build
     [ ] More debug messages
 
-I'm taking a small break for now; trying to work on MIDI-fi a bit.

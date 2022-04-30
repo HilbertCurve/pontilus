@@ -6,6 +6,7 @@
 #include <ecs/StateMachine.h>
 #include <ecs/TextRenderer.h>
 #include <library/TileMap.h>
+#include <model/ModelRenderer.h>
 #include <utils/PMath.h>
 
 using namespace Pontilus;
@@ -70,6 +71,7 @@ static Player player;
 static Engine::ECS::SpriteRenderer r_player;
 static Engine::ECS::StateMachine c_stepwise;
 static Engine::ECS::StateMachine c_continuous;
+static Model::ModelRenderer m_player;
 static Library::TileMap tilemap;
 static Renderer::IconMap tilemap_icons;
 
@@ -242,9 +244,10 @@ Engine::Scene mainScene = {
         Library::getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, 4, &tilemap_icons);
 
         r_player.init(getTexture(tilemap_icons, 0));
+        m_player.init("assets/models/monkee.gltf");
         c_continuous.init(&continuous[0], 1);
 
-        player.addComponent(r_player);
+        player.addComponent(m_player);
         player.addComponent(c_continuous);
 
         mainScene.addObj(&player);

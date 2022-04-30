@@ -2,8 +2,9 @@
 
 #include "graphics/Renderer.h"
 #include "ecs/Component.h"
+#include <glm/gtx/transform.hpp>
 #include <nlohmann/json.hpp>
-#include <string> // std::string::rfind, ::substr, ::c_str
+#include <string> // std::string::rfind, ::substr, ::c_str, copy constructor
 
 namespace Pontilus
 {
@@ -20,16 +21,16 @@ namespace Pontilus
             // get relative filepath
             std::string fp = std::string(gltfFile);
             size_t lastSlash = fp.rfind('/');
-            fp = fp.substr(0, lastSlash);
+            fp = fp.substr(0, lastSlash + 1);
 
             // get binary name
             std::string bin = gltfData["buffers"][0]["uri"].get<std::string>();
             fp += bin;
 
-            binFP = fp.c_str();
+            binFP = fp;
 
             // get buffer info
-            int posAccessor, colorAccessor, indexAccessor;
+            int posAccessor, /*colorAccessor,*/ indexAccessor;
             auto gltfPrim = gltfData["meshes"][0]["primitives"][0];
 
             posAccessor = gltfPrim["attributes"]["POSITION"];
@@ -43,7 +44,7 @@ namespace Pontilus
 
             // get data types
             posType = accessors[posAccessor]["componentType"];
-            indexType = accessors[posAccessor]["componentType"];
+            indexType = accessors[indexAccessor]["componentType"];
 
             posCount = accessors[posAccessor]["count"];
             indexCount = accessors[indexAccessor]["count"];
@@ -58,13 +59,25 @@ namespace Pontilus
             indexOffset = bufferViews[indexLoc]["byteOffset"];
         }
         
+        static bool warned1 = false;
+        static bool warned2 = false;
         int ModelRenderer::toRData(Renderer::rData &r, unsigned int rOffset)
         {
             using namespace Renderer;
-            FILE *f = fopen(binFP, "rb");
+            if (rOffset && !warned1)
+            {
+                __pWarning("rOffset unused in model rendering due to complex index buffers.");
+                warned1 = true;
+            }
+
+            FILE *f = fopen(binFP.c_str(), "rb");
             if (!f)
             {
-                __pWarning("File %s could not be opened.", binFP);
+                if (!warned2)
+                {
+                    __pWarning("File %s could not be opened.", binFP.c_str());
+                    warned2 = true;
+                }
                 return 0;
             }
 
@@ -73,24 +86,48 @@ namespace Pontilus
             auto offlen = getAttribMetaData(r, PONT_POS);
             int chunkSize = (int) (posLength / posCount);
             int vertSize = getLayoutLen(r);
+            // TODO: rotation and translation can be cached with GameObject?
+            glm::mat4 rotation = glm::rotate(parent->rotation.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
+                glm::rotate(parent->rotation.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
+                glm::rotate(parent->rotation.z, glm::vec3{0.0f, 0.0f, 1.0f});
+            glm::mat4 translation = glm::translate(parent->pos);
 
-            for (int i = 0; i < posCount; i++)
+            for (int i = 0; i < posCount / 3; i++)
             {
-                fread(&((char *) r.data)[offlen.first + i * vertSize], chunkSize, 1, f);
+                float vertex[3];
+
+                fread(&vertex[0], sizeof(float), 3, f);
+
+                glm::vec3 glmVec = {vertex[0], vertex[1], vertex[2]};
+
+                glmVec = translation * rotation * glm::vec4(glmVec, 1.0f);
+
+                memcpy(&((char *) r.data)[offlen.first + i * vertSize], (float *)&glmVec, sizeof(float) * 3);
             }
 
             // fill up index buffer
             fseek(f, indexOffset, SEEK_SET);
-            chunkSize = (int) (indexLength / posLength);
+            chunkSize = (int) (indexLength / indexCount);
 
             for (int i = 0; i < indexCount; i++)
             {
-                fread((char *) r.indices + chunkSize*i + r.indexCount, chunkSize, 1, f);
+                unsigned int chunk;
+                fread(&chunk, chunkSize, 1, f);
+                chunk += r.indexCount;
+
+                memcpy((char *) r.indices + sizeof(int)*i + r.indexCount, &chunk, sizeof(int));
             }
 
             fclose(f);
+            
+            r.indexCount += indexCount;
 
             return 1;
+        }
+
+        void ModelRenderer::toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property)
+        {
+            __pWarning("Function `toRData(Renderer::rData, unsigned int, Renderer::vProp)` not implemented yet.");
         }
     }
 }

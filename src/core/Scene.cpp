@@ -12,6 +12,7 @@
 #include "ecs/Animation.h"
 #include "ecs/AudioListener.h"
 #include "ecs/AudioSource.h"
+#include "model/ModelRenderer.h"
 #include "graphics/Renderer.h"
 #include "graphics/rData.h"
 #include "graphics/Font.h"
@@ -58,7 +59,8 @@ namespace Pontilus
         void updateSceneGraphics(Scene &s)
         {
             s.numQuads = 0; // reset for tallying purposes
-            for (int i = 0; i < s.objs.size(); i++)
+            Renderer::modelPool.indexCount = 0;
+            for (unsigned int i = 0; i < s.objs.size(); i++)
             {
                 ECS::Component *csr = s.objs.at(i)->getComponent(typeid(ECS::SpriteRenderer));
                 if (csr)
@@ -72,6 +74,13 @@ namespace Pontilus
                 {
                     ECS::TextRenderer &tr = dynamic_cast<ECS::TextRenderer &>(*ctr);
                     s.numQuads = tr.toRData(Renderer::quadPool, s.numQuads);
+                }
+
+                ECS::Component *cmr = s.objs.at(i)->getComponent(typeid(Model::ModelRenderer));
+                if (cmr)
+                {
+                    Model::ModelRenderer &mr = dynamic_cast<Model::ModelRenderer &>(*cmr);
+                    mr.toRData(Renderer::modelPool, 0);
                 }
             }
         }

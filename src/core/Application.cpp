@@ -133,7 +133,7 @@ namespace Pontilus
         {
             t1 = glfwGetTime();
             
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
             
             // set default background
             glClear(GL_COLOR_BUFFER_BIT);
@@ -178,7 +178,7 @@ namespace Pontilus
                 keyIsPressed0 = true;
                 if (!(keyIsPressed0 == keyIsPressed1))
                 {
-                    Renderer::printRData(Renderer::quadPool, getCurrentScene()->numQuads * 4);
+                    Renderer::printRData(Renderer::modelPool, 12);
                     // don't do this; inputs and game logic should be handled in the scene, not in this loop
                     keyIsPressed1 = keyIsPressed0 = true;
                 }
@@ -196,6 +196,7 @@ namespace Pontilus
            
             // render
             Renderer::render();
+            Renderer::modelRender();
             //Renderer::postRender();
             
             // swap buffers (makes things smoother)

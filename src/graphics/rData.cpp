@@ -9,6 +9,8 @@
 #include "graphics/Renderer.h"
 #include "utils/Utils.h"
 
+#define MAX_MESH_INDICES 1 << 14
+
 namespace Pontilus
 {
     namespace Renderer
@@ -27,7 +29,7 @@ namespace Pontilus
             r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
 
             r.layout = (vAttrib *)malloc(sizeof(vAttribDefault));
-            for (int i = 0; i < r.layoutCount; i++)
+            for (unsigned int i = 0; i < r.layoutCount; i++)
             {
                 r.layout[i] = vAttribDefault[i];
             }
@@ -41,8 +43,15 @@ namespace Pontilus
                 r.indexCount = 0;
                 return;
             }
+            if (p == &Primitives::MESH)
+            {
+                r.indexCount = 0;
+                // TODO: memory efficiency and resizeable rData
+                r.indices = (int *)malloc(MAX_MESH_INDICES);
+                return;
+            }
             int iPerElement = r.primitive->elementSize;
-            r.indexCount = ceil(numVerts / iPerElement) * iPerElement;
+            r.indexCount = ceil(numVerts / r.primitive->vertexCount) * iPerElement;
             r.indices = (int *)malloc(r.indexCount * sizeof(unsigned int));
 
             for (int i = 0; i < ceil(numVerts / iPerElement); i++) {
@@ -56,7 +65,7 @@ namespace Pontilus
             r.layoutCount = numAttribs;
 
             r.layout = (vAttrib *)malloc(sizeof(vAttrib) * r.layoutCount);
-            for (int i = 0; i < r.layoutCount; i++)
+            for (unsigned int i = 0; i < r.layoutCount; i++)
             {
                 r.layout[i] = attribs[i];
             }
@@ -67,9 +76,21 @@ namespace Pontilus
 
             // initialize index buffer & fill it up
             r.primitive = p;
-            if (p == &Primitives::NONE) return;
+            if (p == &Primitives::NONE)
+            {
+                r.indexCount = 0;
+                return;
+            }
+            if (p == &Primitives::MESH)
+            {
+                r.indexCount = 0;
+                // TODO: memory efficiency and resizeable rData
+                r.indices = (int *)malloc(MAX_MESH_INDICES);
+                return;
+            }
             int iPerElement = r.primitive->elementSize;
-            r.indices = (int *)malloc(ceil(numVerts / iPerElement) * iPerElement * sizeof(unsigned int));
+            r.indexCount = ceil(numVerts / r.primitive->vertexCount) * iPerElement;
+            r.indices = (int *)malloc(r.indexCount * sizeof(unsigned int));
 
             for (int i = 0; i < ceil(numVerts / iPerElement); i++) {
                 r.primitive->generateIndices(r.indices, i);
@@ -137,7 +158,7 @@ namespace Pontilus
         int getLayoutLen(rData &r)
         {
             int len = 0;
-            for (int i = 0; i < r.layoutCount; i++)
+            for (unsigned int i = 0; i < r.layoutCount; i++)
             {
                 len += getVTypeLen(r.layout[i].type) * r.layout[i].count;
             }

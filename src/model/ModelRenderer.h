@@ -24,7 +24,7 @@ namespace Pontilus
             private:
             // cache data, for toRData
             const char *gltfFP;
-            const char *binFP;
+            std::string binFP;
             int posLength, posOffset, posType, posCount;
             int colorLength, colorOffset, colorType, colorCount;
             int indexLength, indexOffset, indexType, indexCount;
