@@ -19,9 +19,11 @@ namespace Pontilus
         Renderer::rData quadPool = {};
 
         Renderer::rData modelPool = {};
-        Renderer::vAttrib modelPoolAttribs[1] =
+        Renderer::vAttrib modelPoolAttribs[3] =
         {
-            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 }
+            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 },
+            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 },
+            { Renderer::PONT_OTHER, Renderer::PONT_FLOAT, 3 }
         };
 
         // debug line pool:
@@ -43,7 +45,7 @@ namespace Pontilus
         static void initQuads()
         {
             Renderer::initRData(quadPool, 4000, &Primitives::QUAD);
-            Renderer::initRData(modelPool, 4000, &Primitives::MESH, modelPoolAttribs, 1);
+            Renderer::initRData(modelPool, 4000, &Primitives::MESH, modelPoolAttribs, 3);
 
             Renderer::initRData(fullWindowQuad, 4, &Primitives::QUAD, fullWindowQuadAttribs, 2);
             glm::vec3 orientation;

@@ -27,6 +27,7 @@ namespace Pontilus
             std::string binFP;
             int posLength, posOffset, posType, posCount;
             int colorLength, colorOffset, colorType, colorCount;
+            int normalLength, normalOffset, normalType, normalCount;
             int indexLength, indexOffset, indexType, indexCount;
         };
     }

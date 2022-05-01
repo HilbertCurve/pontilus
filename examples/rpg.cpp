@@ -7,6 +7,7 @@
 #include <ecs/TextRenderer.h>
 #include <library/TileMap.h>
 #include <model/ModelRenderer.h>
+#include <graphics/Camera.h>
 #include <utils/PMath.h>
 
 using namespace Pontilus;
@@ -261,6 +262,10 @@ Engine::Scene mainScene = {
             } else {
                 player.rotation.y += 1.0f * dt;
             }
+        }
+
+        if (IO::isKeyPressed(GLFW_KEY_Z)) {
+            Renderer::Camera::getPosition() += glm::vec3(0.0f, 0.0f, .10f);
         }
 
         updateSceneGraphics(mainScene);
