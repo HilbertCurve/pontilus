@@ -25,12 +25,11 @@ namespace Pontilus
                 glm::vec3 pos;
                 // x axis, y axis, z axis rotation
                 glm::vec3 rotation = {0.0f, 0.0f, 0.0f};
-                glm::vec4 color;
                 float width, height;
                 std::vector<Component *> components = std::vector<Component *>();
                 int id = ++_id;
 
-                void init(glm::vec3 pos, glm::vec4 color, float width, float height);
+                void init(glm::vec3 pos, float width, float height);
                 
                 void addComponent(Component &c);
                 Component *getComponent(const std::type_info &ti);

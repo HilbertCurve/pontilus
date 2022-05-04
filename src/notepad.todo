@@ -32,7 +32,7 @@ ECS:
     [+] Component.h - these can be attached to GameObjects to give various engines control over the go's fields
     [+] SpriteRenderer.h - migrate toRData() calls here
     Animations:
-        [ ] Move GameObject.color into Texture
+        [ ] Move GameObject.color into SpriteRenderer, TextRenderer, etc.
         [+] Animation.h - a component that updates a SpriteRenderer's texture; requires the GameObject to have a SpriteRenderer
     [ ] Body2D.cpp - convert physics body into a component
     [ ] Separate components out of the ecs/ file and into their respective places (AudioListener into audio/, Animation into library/, etc.)
@@ -177,7 +177,7 @@ Roadmap:
 Issues:
     [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
     It's because of it being orthographic instead of perspective
-    [ ] Text isn't rendering properly; the edges of glyphs clip
+    [ ] Text isn't rendering properly; the edges of glyphs clip and they don't kern properly.
 
 Backburner:
     [ ] Python

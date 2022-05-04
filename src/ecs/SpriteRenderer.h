@@ -17,6 +17,7 @@ namespace Pontilus
                 void init(Renderer::Texture t);
 
                 Renderer::Texture tex = {nullptr};
+                glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
                 int toRData(Renderer::rData &r, unsigned int rOffset);
                 void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
             };

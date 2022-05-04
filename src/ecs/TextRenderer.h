@@ -14,6 +14,13 @@ namespace Pontilus
     {
         namespace ECS
         {
+            enum TextMode
+            {
+                CENTER_LEFT = 0,
+                CENTER_MIDDLE,
+                CENTER_RIGHT,
+                CENTER_JUSTIFY
+            };
             class TextRenderer : public Component, public Renderer::Renderable
             {
                 public:
@@ -21,6 +28,7 @@ namespace Pontilus
                 void init(const char *text, Renderer::Font &f);
                 Renderer::Font *font;
                 std::string text;
+                TextMode mode = CENTER_LEFT;
 
                 int toRData(Renderer::rData &r, unsigned int rOffset);
                 void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);

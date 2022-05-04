@@ -54,11 +54,17 @@ namespace Pontilus
                             case 3: orientation = {1.0f * g.width, 0.0f * g.height, 0.0f}; break;
                         }
 
+                        float xDiff = 0;
+                        if (this->mode == TextMode::CENTER_LEFT)
+                        {
+                            xDiff = this->parent->width / 2.0f;
+                        }
+
                         off_len result = getAttribMetaData(r, PONT_POS);
                         if (result.second >= 3 * sizeof(float))
                         {
                             // instead of position by bottom corner
-                            this->parent->pos += orientation - glm::vec3{0.0f, g.height, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
+                            this->parent->pos += orientation - glm::vec3{xDiff, g.height, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
 
                             // TODO: just use memcpy, bonehead.
                             for (int k = 0; k < 3; k++)
@@ -66,7 +72,7 @@ namespace Pontilus
                                 ((float *)((char *)r.data + result.first + stride))[k] = ((float *)&this->parent->pos)[k];
                             }
 
-                            this->parent->pos -= orientation - glm::vec3{0.0f, g.height, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
+                            this->parent->pos -= orientation - glm::vec3{xDiff, g.height, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
                         }
                         
                         result = getAttribMetaData(r, PONT_COLOR);
@@ -74,8 +80,8 @@ namespace Pontilus
                         {
                             for (int k = 0; k < 4; k++)
                             {
-                                ((float *)((char *)r.data + result.first + stride))[k] = ((float *)&this->parent->color)[k];
-                            }             
+                                ((float *)((char *)r.data + result.first + stride))[k] = ((float *)&this->color)[k];
+                            }
                         }
 
                         result = getAttribMetaData(r, PONT_TEXCOORD);

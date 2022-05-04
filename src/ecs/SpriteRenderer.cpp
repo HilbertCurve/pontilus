@@ -57,7 +57,7 @@ namespace Pontilus
                     {
                         for (int j = 0; j < 4; j++)
                         {
-                            ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&parent->color)[j];
+                            ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&this->color)[j];
                         }             
                     }
 
@@ -132,7 +132,7 @@ namespace Pontilus
                             {
                                 for (int j = 0; j < 4; j++)
                                 {
-                                    ((float *)((char *)r.data + result.first + offset))[j] = ((float *)&parent->color)[j];
+                                    ((float *)((char *)r.data + result.first + offset))[j] = ((float *)&this->color)[j];
                                 }
                             }
                         } break;

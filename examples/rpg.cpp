@@ -6,7 +6,6 @@
 #include <ecs/StateMachine.h>
 #include <ecs/TextRenderer.h>
 #include <library/TileMap.h>
-#include <model/ModelRenderer.h>
 #include <graphics/Camera.h>
 #include <utils/PMath.h>
 
@@ -17,62 +16,80 @@ class Player : public Engine::ECS::GameObject {
     glm::vec2 velocity;
 };
 
-static Renderer::Font timesNewRoman;
-
 class TextBox : public Engine::ECS::GameObject {
     public:
-    TextBox() = default;
-    TextBox(const char *text) {
+    TextBox() {
+        this->text = "";
+    }
+    void setText(const char *text, Renderer::Font &font) {
         this->text = text;
 
-        if (!timesNewRoman.filepath)
-            Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 13);
-        this->r_text.init("", timesNewRoman);
+        this->r_text.init("", font);
 
-        this->color = glm::vec4(0.2f, 0.2f, 0.2f, 0.0f);
+        this->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
         this->r_box.init({nullptr});
 
         this->addComponent(this->r_text);
         this->addComponent(this->r_box);
     }
-    void appear(glm::vec2 center) {
-        this->pos = glm::vec3(center, 0.0f);
-
+    void appear() {
         this->r_text.text = std::string(text);
-        this->color.a = 0.7f;
+        this->color = {0.2f, 0.2f, 0.2f, 1.0f};
         this->visible = true;
     }
     void disappear() {
         this->r_text.text = std::string("");
-        this->color.a = 0.0f;
+        this->color = {0.0f, 0.0f, 0.0f, 0.0f};
         this->visible = false;
     }
-    private:
     Engine::ECS::TextRenderer r_text;
+    private:
     Engine::ECS::SpriteRenderer r_box;
-    const char *text = nullptr;
+    std::string text = "";
     bool visible = false;
 };
+
+static Renderer::Font timesNewRoman;
+
 class NPC : public Engine::ECS::GameObject {
     public:
-    NPC(const char *dialog) {
-        this->myBox = TextBox(dialog);
+    void setText() {
+        if (!timesNewRoman.filepath)
+            Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 26);
+
+        if (!added) getCurrentScene()->addObj(&this->myBox);
+        this->myBox.init({this->pos.x, this->pos.y + 2.0f, 0.0f},
+                {1.0f, 1.0f, 1.0f, 0.0f}, 30, 10);
+        this->myBox.setText("", timesNewRoman);
+    }
+    void setText(const char *dialog) {
+        if (!timesNewRoman.filepath)
+            Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 26);
+
+        if (!added) getCurrentScene()->addObj(&this->myBox);
+        this->myBox.init({this->pos.x, this->pos.y + 12.0f, 0.0f},
+                {1.0f, 1.0f, 1.0f, 0.0f}, 30, 30);
+        this->myBox.setText(dialog, timesNewRoman);
     }
     void talk() {
-        this->myBox.appear({this->pos.x, this->pos.y + 12.0f});
+        this->myBox.appear();
     }
     void hush() {
         this->myBox.disappear();
     }
     private:
     TextBox myBox;
+    bool added = 0;
 };
 
 static Player player;
 static Engine::ECS::SpriteRenderer r_player;
 static Engine::ECS::StateMachine c_stepwise;
 static Engine::ECS::StateMachine c_continuous;
-static Model::ModelRenderer m_player;
+static NPC npc;
+static Engine::ECS::SpriteRenderer r_npc;
+static Renderer::IconMap npc_icons;
+static TextBox tb;
 static Library::TileMap tilemap;
 static Renderer::IconMap tilemap_icons;
 
@@ -229,13 +246,18 @@ static Engine::ECS::State continuous[] = {
         }}
 };
 
+bool hidden = false;
+
 Engine::Scene mainScene = {
     []() {
         player = Player();
         player.init({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
+        npc.init({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
+        npc.setText("Greetings!");
 
         // tilemap
         Renderer::initIconMap("./assets/textures/tilemap1.png", tilemap_icons, 16, 16, 0);
+        Renderer::initIconMap("./assets/textures/ghostSwole.png", npc_icons, 675, 570, 0);
 
         for (int i = 0; i < TILEMAP_HEIGHT * TILEMAP_WIDTH; i++) {
             (&(key[0][0]))[i] = -1;
@@ -245,27 +267,33 @@ Engine::Scene mainScene = {
         Library::getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, 4, &tilemap_icons);
 
         r_player.init(getTexture(tilemap_icons, 0));
-        m_player.init("assets/models/monkee.gltf");
         c_continuous.init(&continuous[0], 1);
 
-        player.addComponent(m_player);
+        r_npc.init(getTexture(npc_icons, 0));
+
+        player.addComponent(r_player);
         player.addComponent(c_continuous);
+        npc.addComponent(r_npc);
+        npc.talk();
 
         mainScene.addObj(&player);
+        mainScene.addObj(&npc);
 
         updateSceneGraphics(mainScene);
     },
     [](double dt) {
         if (IO::isKeyPressed(GLFW_KEY_R)) {
             if (IO::isKeyPressed(GLFW_KEY_Z)) {
-                player.rotation.z += 1.0f * dt;
+                player.rotation += 10.0f * dt;
             } else {
                 player.rotation.y += 1.0f * dt;
             }
         }
-
-        if (IO::isKeyPressed(GLFW_KEY_Z)) {
-            Renderer::Camera::getPosition() += glm::vec3(0.0f, 0.0f, .10f);
+        if (IO::isKeyPressed(GLFW_KEY_H)) {
+            if (!hidden) {
+                npc.hush();
+                hidden = true;
+            }
         }
 
         updateSceneGraphics(mainScene);
