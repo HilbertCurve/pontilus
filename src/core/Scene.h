@@ -14,6 +14,11 @@ namespace Pontilus
         typedef void (* _update)(double dt);
         typedef void (* _clean)();
 
+        namespace ECS
+        {
+            class GameObject;
+        }
+
         struct Scene
         {
             _init init;
@@ -24,6 +29,7 @@ namespace Pontilus
 
             std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>(0);
             void addObj(ECS::GameObject *obj);
+            void removeObj(ECS::GameObject *obj);
             void removeObj(int id);
 
             int numQuads = 0;
@@ -42,3 +48,4 @@ namespace Pontilus
         }
     }
 }
+

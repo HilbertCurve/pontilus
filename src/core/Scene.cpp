@@ -94,15 +94,29 @@ namespace Pontilus
                     return;
                 }
             }
+            obj->currentScene = this;
             this->objs.push_back(obj);
         }
 
+        void Scene::removeObj(ECS::GameObject *obj)
+        {
+            for (int i = 0; i < objs.size(); i++)
+            {
+                if (this->objs[i] == obj)
+                {
+                    this->objs[i]->currentScene = nullptr;
+                    this->objs.erase(objs.begin() + i);
+                    return;
+                }
+            }
+        }
         void Scene::removeObj(int id)
         {
             for (int i = 0; i < objs.size(); i++)
             {
                 if (this->objs[i]->id == id)
                 {
+                    this->objs[i]->currentScene = nullptr;
                     this->objs.erase(objs.begin() + i);
                     return;
                 }
@@ -114,17 +128,17 @@ namespace Pontilus
         {
             []()
             {
-                defaultMessage.init({-30.0, 10.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 40, 50);
-                defaultLogo.init({0.0, -20.0, 0.0}, {1.0, 1.0, 1.0, 0.7}, 20, 16);
+                defaultMessage.init({-30.0, 10.0, 0.0}, 40, 50);
+                defaultLogo.init({0.0, -20.0, 0.0}, 20, 16);
                 
                 Renderer::initFont(jetBrainsMono, "assets/fonts/JetBrainsMono-Medium.ttf", 26);
                 Renderer::initIconMap("assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
 
-                defaultText.init("Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().", jetBrainsMono);
+                defaultText.init("Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().", jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f});
 
                 Renderer::Texture t = Renderer::getTexture(defaultMap, 0);
 
-                defaultIcon.init(t);
+                defaultIcon.init(t, {1.0f, 1.0f, 1.0f, 1.0f});
 
                 defaultMessage.addComponent(defaultText);
                 defaultLogo.addComponent(defaultIcon);
@@ -154,7 +168,7 @@ namespace Pontilus
 
                 theSource.init();
 
-                theNoiseGenerator.init({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, 0.0f, 0.0f);
+                theNoiseGenerator.init({0.0f, 0.0f, 0.0f}, 0.0f, 0.0f);
                 theNoiseGenerator.addComponent(theSource);
                 /*
                 IO::submitKeyCallback([](int key, int action)
@@ -201,7 +215,7 @@ namespace Pontilus
                 toBeAnimatedSpr = ECS::SpriteRenderer();
                 animator = ECS::Animation();
 
-                toBeAnimated.init({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 10, 10);
+                toBeAnimated.init({0.0, 0.0, 0.0}, 10, 10);
                 
                 animator.init(toBeAnimatedFrames, 0, 3, true);
                 animator.setAnimationBounds(0, 3);
@@ -248,16 +262,16 @@ namespace Pontilus
                 lPaddleRenderer = rPaddleRenderer = ballRenderer = ECS::SpriteRenderer();
                 lScoreText = rScoreText = ECS::TextRenderer();
 
-                leftPaddle.init({-30.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 1.0, 8.0);
-                rightPaddle.init({30.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 1.0, 8.0);
-                ball.init({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 2.0, 2.0);
-                lScore.init({-30.0, -17.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 3.0, 3.0);
-                rScore.init({30.0, -17.0, 0.0}, {1.0, 1.0, 1.0, 1.0}, 3.0, 3.0);
+                leftPaddle.init({-30.0, 0.0, 0.0}, 1.0, 8.0);
+                rightPaddle.init({30.0, 0.0, 0.0}, 1.0, 8.0);
+                ball.init({0.0, 0.0, 0.0}, 2.0, 2.0);
+                lScore.init({-30.0, -17.0, 0.0}, 3.0, 3.0);
+                rScore.init({30.0, -17.0, 0.0}, 3.0, 3.0);
                 
                 ballRenderer.tex = Renderer::getTexture(pogFace, 0);
 
-                lScoreText.init("0", jetBrainsMono);
-                rScoreText.init("0", jetBrainsMono);
+                lScoreText.init("0", jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f});
+                rScoreText.init("0", jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f});
 
                 leftPaddle.addComponent(lPaddleRenderer);
                 rightPaddle.addComponent(rPaddleRenderer);
@@ -361,13 +375,13 @@ namespace Pontilus
         {
             []() 
             {
-                g1.init({-7.5f, 0.0f, 0.0f }, { 0.0f, 0.1f, 0.5f, 1.0f }, 3.0f, 3.0f);
+                g1.init({-7.5f, 0.0f, 0.0f }, 3.0f, 3.0f);
 
-                g2.init({-2.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
+                g2.init({-2.5f, 0.0f, 0.0f }, 3.0f, 3.0f);
 
-                g3.init({ 2.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
+                g3.init({ 2.5f, 0.0f, 0.0f }, 3.0f, 3.0f);
 
-                g4.init({ 7.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 3.0f, 3.0f);
+                g4.init({ 7.5f, 0.0f, 0.0f }, 3.0f, 3.0f);
 
                 Renderer::initIconMap("./assets/textures/test.png", im1, 8, 8, 0);
                 Renderer::initIconMap("./assets/textures/test2.png", im2, 8, 8, 0);

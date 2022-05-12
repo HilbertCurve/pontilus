@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 
+#include "core/Scene.h"
 #include "ecs/Component.h"
 #include "graphics/rData.h"
 #include "graphics/Primitive.h"
@@ -13,6 +14,7 @@ namespace Pontilus
 {
     namespace Engine 
     {
+        struct Scene;
         namespace ECS
         {
             struct Component;
@@ -28,6 +30,7 @@ namespace Pontilus
                 float width, height;
                 std::vector<Component *> components = std::vector<Component *>();
                 int id = ++_id;
+                Engine::Scene *currentScene;
 
                 void init(glm::vec3 pos, float width, float height);
                 

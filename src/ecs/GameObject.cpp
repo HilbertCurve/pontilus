@@ -1,4 +1,5 @@
 #include "core/Application.h"
+#include "core/Scene.h"
 #include "ecs/GameObject.h"
 #include "utils/Utils.h"
 
@@ -10,16 +11,16 @@ namespace Pontilus
         {
             int GameObject::_id = 0;
 
-            void GameObject::init(glm::vec3 pos, glm::vec4 color, float width, float height)
+            void GameObject::init(glm::vec3 pos, float width, float height)
             {
                 if (!id) {
                     __pWarning("Initialization of GameObject %p without id.", this);
                 }
                 this->pos = pos;
-                this->color = color;
                 this->width = width;
                 this->height = height;
                 this->components.erase(components.begin(), components.end());
+                this->currentScene = nullptr;
             }
 
             void GameObject::addComponent(Component &c)

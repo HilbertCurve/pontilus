@@ -14,7 +14,7 @@ namespace Pontilus
             class SpriteRenderer : public Component, public Renderer::Renderable
             {
                 public:
-                void init(Renderer::Texture t);
+                void init(Renderer::Texture t, glm::vec4 color);
 
                 Renderer::Texture tex = {nullptr};
                 glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};

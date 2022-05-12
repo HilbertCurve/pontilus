@@ -30,37 +30,43 @@ namespace Pontilus {
             t.tileset = tileset;
             using namespace Pontilus::Engine::ECS;
             // loop through key, inserting tiles if key[i + j*n] >= 0
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < k; j++) {
+            for (unsigned i = 0; i < n; i++) {
+                for (unsigned j = 0; j < k; j++) {
                     int tiletex = t.key[i + j * n];
+                    Tile tile;
+                    tile.init({i * tilewidth, (k - (j + 1)) * tilewidth, 0.0f}, tilewidth, tilewidth);
+                    SpriteRenderer s = SpriteRenderer();
+                    tile.tile_coords = {i, (k - (j + 1))};
                     if (tiletex >= 0) {
-                        Tile tile = Tile();
-                        tile.init({i * tilewidth, (k - (j + 1)) * tilewidth, 0.0f}, t.color, tilewidth, tilewidth);
+                        tile.active = true;
+                        tile.collides = true;
 
-                        tile.tile_coords = {i, (k - (j + 1))};
-
-                        SpriteRenderer s = SpriteRenderer();
                         if (tileset) {
-                            s.init(Pontilus::Renderer::getTexture(*tileset, tiletex));
+                            s.init(Pontilus::Renderer::getTexture(*tileset, tiletex), t.color);
                         } else {
-                            s.init({nullptr});
+                            s.init({nullptr}, t.color);
                         }
 
-                        t.tiles.push_back({tile, s});
+                    } else {
+                        s.init({nullptr}, {0.0f, 0.0f, 0.0f, 0.0f});
+                    }
+
+                    t.tiles.push_back({tile, s});
+
+                    if (tiletex >= 0) {
+                        t.at(t.size() - 1).addComponent(t.tiles.at(t.size() - 1).second);
+                        Pontilus::getCurrentScene()->addObj(&t.at(t.size() - 1));
                     }
                 }
-            }
-
-            for (int i = 0; i < t.size(); i++) {
-                t.at(i).addComponent(t.tiles.at(i).second);
-                Pontilus::getCurrentScene()->objs.push_back(&t.at(i));
             }
         }
 
         void deleteTileMap(TileMap &t) {
             for (int i = 0; i < t.size(); i++) {
+                bool alreadyDeleted = t.at(i).currentScene == nullptr;
                 t.at(i) = Tile();
-                Pontilus::getCurrentScene()->removeObj(t[i].id);
+                if (!alreadyDeleted)
+                    Pontilus::getCurrentScene()->removeObj(t[i].id);
             }
             t.tiles.clear();
         }
@@ -75,54 +81,56 @@ namespace Pontilus {
                 return;
             }
 
-            for (int i = 0; i < t.size(); i++) {
-                if (t[i].tile_coords == coords) {
-                    return;
-                }
+            int posInArray = (t.height - (coords.y + 1)) + t.height * coords.x;
+            if (t[posInArray].active) {
+                return;
             }
 
-            Tile _tile;
-            _tile.init({coords.x * t.tilewidth, (coords.y) * t.tilewidth, 0.0f}, t.color, t.tilewidth, t.tilewidth);
+            Tile &_tile = t.at(posInArray);
+            _tile.active = true;
+            _tile.collides = true;
 
-            _tile.tile_coords = coords;
-            Engine::ECS::SpriteRenderer _renderer = Engine::ECS::SpriteRenderer();
-            _renderer.init(Renderer::getTexture(*t.tileset, i_tile));
+            Engine::ECS::SpriteRenderer &_renderer = t.tiles.at(posInArray).second;
+            _renderer = Engine::ECS::SpriteRenderer();
+            if (t.tileset)
+                _renderer.init(Renderer::getTexture(*t.tileset, i_tile), t.color);
+            else
+                _renderer.init({nullptr}, t.color);
 
-            t.tiles.push_back({_tile, _renderer});
+            _tile.addComponent(_renderer);
 
-            t.at(t.size() - 1).addComponent(t.tiles.at(t.size() - 1).second);
-
-            Pontilus::getCurrentScene()->objs.push_back(&t.at(t.size() - 1));
-            // TODO: insert value tile into t.key
+            Pontilus::getCurrentScene()->addObj(&t.at(posInArray));
 
             t.key[coords.x + t.width * (t.height - (coords.y + 1))] = i_tile;
         }
 
         void removeTile(TileMap &t, glm::vec<2, int> coords) {
-            if (!Math::between({-1, -1}, coords, {t.width + 1, t.height + 1})) {
+            if (!Math::between({-1, -1}, coords, {t.width, t.height})) {
                 return;
             }
 
-            for (int i = 0; i < t.size(); i++) {
+            for (unsigned i = 0; i < t.size(); i++) {
                 if (t[i].tile_coords == coords) {
                     Tile &tile = t[i];
                     auto scene = Pontilus::getCurrentScene();
-                    for (int j = 0; j < scene->objs.size(); j++) {
-                        if (scene->objs[j]->id == tile.id) {
-                            t.at(i) = Tile();
-                            scene->removeObj(tile.id);
-                            t.at(i).tile_coords = {-1, -1};
-                            t.key[coords.x + t.width * (t.height - (coords.y + 1))] = -1;
-                            return;
-                        }
+                    if (tile.currentScene == scene) {
+                        scene->removeObj(tile.id);
+                        t.key[coords.x + t.width * (t.height - (coords.y + 1))] = -1;
+                        t.at(i).removeComponent(typeid(Engine::ECS::SpriteRenderer));
+
+                        t.at(i).active = false;
+                        t.at(i).collides = false;
+                        t.tiles.at(i).second = Engine::ECS::SpriteRenderer();
+                        return;
                     }
                 }
             }
         }
 
         void applyColorFilter(TileMap &t, glm::vec4 color) {
+            using namespace Engine::ECS;
             for (tile_renderer &tile : t.tiles) {
-                tile.first.color = color;
+                ((SpriteRenderer *)tile.first.getComponent(typeid(SpriteRenderer)))->color = color;
             }
             t.color = color;
         }
@@ -154,7 +162,7 @@ namespace Pontilus {
             p_tileCoordsMax = ceil((obj_v[1] + tilemap.tilewidth / 2) / tilemap.tilewidth) * tilemap.tilewidth;
             
             for (int i = 0; i < tilemap.size(); i++) {
-                if (Math::between(p_tileCoordsMin, tilemap[i].pos, p_tileCoordsMax)) surrounding.push_back(tilemap[i]);
+                if (Math::between(p_tileCoordsMin, tilemap[i].pos, p_tileCoordsMax) && tilemap[i].collides) surrounding.push_back(tilemap[i]);
             }
 
             for (int i = 0; i < surrounding.size(); i++) {
@@ -224,3 +232,4 @@ namespace Pontilus {
 
     }
 }
+

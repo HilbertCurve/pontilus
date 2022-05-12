@@ -6,10 +6,11 @@ namespace Pontilus
     {
         namespace ECS
         {
-            void TextRenderer::init(const char *text, Renderer::Font &f)
+            void TextRenderer::init(const char *text, Renderer::Font &f, glm::vec4 color)
             {
                 this->text = text;
                 this->font = &f;
+                this->color = color;
             }
 
             int TextRenderer::toRData(Renderer::rData &r, unsigned int rOffset)
@@ -24,8 +25,10 @@ namespace Pontilus
                 // for each character in the text, add a default quad
                 glm::vec3 posAccumulate = {0.0f, 0.0f, 0.0f};
                 const float scale = this->font->fontSize / (this->font->ascent - this->font->descent);
+                // this is for making text fit inside textboxes
+                const float heightAdjust = screenToWorldSize({0.0f, (float) this->font->ascent}).y;
                 
-                for (int i = 0; i < this->text.length(); i++)
+                for (unsigned int i = 0; i < this->text.length(); i++)
                 {
                     char c = this->text[i];
                     Glyph g = getGlyph(*this->font, c);
@@ -55,16 +58,19 @@ namespace Pontilus
                         }
 
                         float xDiff = 0;
+                        float yDiff = 0;
                         if (this->mode == TextMode::CENTER_LEFT)
                         {
                             xDiff = this->parent->width / 2.0f;
                         }
+                        yDiff = this->parent->height / 2.0f;
 
                         off_len result = getAttribMetaData(r, PONT_POS);
                         if (result.second >= 3 * sizeof(float))
                         {
-                            // instead of position by bottom corner
-                            this->parent->pos += orientation - glm::vec3{xDiff, g.height, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
+                            // instead position by bottom corner
+                            // also move everything down a bit
+                            this->parent->pos += orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
 
                             // TODO: just use memcpy, bonehead.
                             for (int k = 0; k < 3; k++)
@@ -72,7 +78,7 @@ namespace Pontilus
                                 ((float *)((char *)r.data + result.first + stride))[k] = ((float *)&this->parent->pos)[k];
                             }
 
-                            this->parent->pos -= orientation - glm::vec3{xDiff, g.height, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
+                            this->parent->pos -= orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
                         }
                         
                         result = getAttribMetaData(r, PONT_COLOR);

@@ -25,8 +25,9 @@ namespace Pontilus
             {
                 public:
                 TextRenderer() = default;
-                void init(const char *text, Renderer::Font &f);
+                void init(const char *text, Renderer::Font &f, glm::vec4 color);
                 Renderer::Font *font;
+                glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
                 std::string text;
                 TextMode mode = CENTER_LEFT;
 

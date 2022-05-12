@@ -12,9 +12,10 @@ namespace Pontilus
         namespace ECS
         {
             
-            void SpriteRenderer::init(Renderer::Texture t)
+            void SpriteRenderer::init(Renderer::Texture t, glm::vec4 color)
             {
                 this->tex = t;
+                this->color = color;
             }
 
             using namespace Renderer; // fight me

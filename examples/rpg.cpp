@@ -1,6 +1,7 @@
 #include <core/Application.h>
 #include <core/InputListener.h>
 #include <core/Scene.h>
+#include <ecs/Animation.h>
 #include <ecs/GameObject.h>
 #include <ecs/SpriteRenderer.h>
 #include <ecs/StateMachine.h>
@@ -9,11 +10,17 @@
 #include <graphics/Camera.h>
 #include <utils/PMath.h>
 
+#include <sys/stat.h>
+
 using namespace Pontilus;
+
+/**
+ * Class definitions
+ */
 
 class Player : public Engine::ECS::GameObject {
     public:
-    glm::vec2 velocity;
+    glm::vec2 velocity = {0.0f, 0.0f};
 };
 
 class TextBox : public Engine::ECS::GameObject {
@@ -24,22 +31,23 @@ class TextBox : public Engine::ECS::GameObject {
     void setText(const char *text, Renderer::Font &font) {
         this->text = text;
 
-        this->r_text.init("", font);
+        this->r_text.init("", font, {1.0f, 1.0f, 1.0f, 1.0f});
 
-        this->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
-        this->r_box.init({nullptr});
+        this->r_box.init({nullptr}, {0.0f, 0.0f, 0.0f, 0.0f});
 
         this->addComponent(this->r_text);
         this->addComponent(this->r_box);
     }
     void appear() {
         this->r_text.text = std::string(text);
-        this->color = {0.2f, 0.2f, 0.2f, 1.0f};
+        this->r_text.color = {1.0f, 1.0f, 1.0f, 1.0f};
+        this->r_box.color = glm::vec4(.8f, .8f, .8f, .8f);
         this->visible = true;
     }
     void disappear() {
         this->r_text.text = std::string("");
-        this->color = {0.0f, 0.0f, 0.0f, 0.0f};
+        this->r_text.color = glm::vec4(.0f, .0f, .0f, .0f);
+        this->r_box.color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
         this->visible = false;
     }
     Engine::ECS::TextRenderer r_text;
@@ -55,11 +63,10 @@ class NPC : public Engine::ECS::GameObject {
     public:
     void setText() {
         if (!timesNewRoman.filepath)
-            Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 26);
+            Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 17);
 
         if (!added) getCurrentScene()->addObj(&this->myBox);
-        this->myBox.init({this->pos.x, this->pos.y + 2.0f, 0.0f},
-                {1.0f, 1.0f, 1.0f, 0.0f}, 30, 10);
+        this->myBox.init({this->pos.x, this->pos.y + 3.0f + this->height / 2, 0.0f}, 12, 6);
         this->myBox.setText("", timesNewRoman);
     }
     void setText(const char *dialog) {
@@ -67,8 +74,7 @@ class NPC : public Engine::ECS::GameObject {
             Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 26);
 
         if (!added) getCurrentScene()->addObj(&this->myBox);
-        this->myBox.init({this->pos.x, this->pos.y + 12.0f, 0.0f},
-                {1.0f, 1.0f, 1.0f, 0.0f}, 30, 30);
+        this->myBox.init({this->pos.x, this->pos.y + 3.0f + this->height / 2, 0.0f}, 12, 6);
         this->myBox.setText(dialog, timesNewRoman);
     }
     void talk() {
@@ -82,16 +88,28 @@ class NPC : public Engine::ECS::GameObject {
     bool added = 0;
 };
 
+/**
+ * Object definitions
+ */
+
 static Player player;
 static Engine::ECS::SpriteRenderer r_player;
 static Engine::ECS::StateMachine c_stepwise;
 static Engine::ECS::StateMachine c_continuous;
+
+static Engine::ECS::GameObject tile_placer;
+static Engine::ECS::SpriteRenderer r_placer;
+static Engine::ECS::Animation a_placer;
+
 static NPC npc;
 static Engine::ECS::SpriteRenderer r_npc;
 static Renderer::IconMap npc_icons;
+
 static TextBox tb;
 static Library::TileMap tilemap;
 static Renderer::IconMap tilemap_icons;
+
+static const char *levelFP = "./bin/rpg_level.bin";
 
 enum direction {
     NORTH = 0b0001,
@@ -112,6 +130,10 @@ void move(direction dir, double dt) {
     t_acc += dt;
     if (t_acc > 0.2) t_acc = 0.0;
 }
+
+/**
+ * State machine
+ */
 
 static int dir;
 static Engine::ECS::State stepwise[] = {
@@ -198,6 +220,12 @@ static Engine::ECS::State continuous[] = {
 
             int collidingFaces = NONE;
             for (auto collision : info) {
+                // if both collision boxes are tiny, ignore collision
+                float w = collision.second.max.x - collision.second.min.x;
+                float h = collision.second.max.y - collision.second.min.y;
+
+                if (w * h < __pEPSILON * 50 /* adjust */) continue;
+
                 // if collision box's width is longer than it's height, collide from top-down
                 if (collision.second.max.x - collision.second.min.x >
                         collision.second.max.y - collision.second.min.y) {
@@ -248,12 +276,54 @@ static Engine::ECS::State continuous[] = {
 
 bool hidden = false;
 
+/**
+ * Custom level (de)serialization
+ */
+void serialize(const char *filepath) {
+    // first, tilemap
+    serializeTileMap(filepath, tilemap);
+
+    FILE *f = fopen(filepath, "ab");
+
+    // then, serialize camera position
+    fwrite(&Renderer::Camera::getPosition(), 3, sizeof(float), f);
+    // player position
+    fwrite(&player.pos, 3, sizeof(float), f);
+    // maybe later I'll add npc location stuff
+
+    fclose(f);
+}
+
+void deserialize(const char *filepath) {
+    deserializeTileMap(filepath, tilemap);
+
+    FILE *f = fopen(filepath, "rb");
+    
+    fseek(f, -6 * sizeof(float), SEEK_END);
+
+    glm::vec3 newCamPos;
+    fread(&newCamPos, 3, sizeof(float), f);
+    Renderer::Camera::getPosition() = newCamPos;
+
+    fread(&player.pos, 3, sizeof(float), f);
+
+    fclose(f);
+}
+
+/**
+ * Scene definition
+ */
+
+int selectedBlock = 0;
+
+static const int tilesize = 8;
+
 Engine::Scene mainScene = {
     []() {
-        player = Player();
-        player.init({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
-        npc.init({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 4, 4);
-        npc.setText("Greetings!");
+        player.init({0.0f, 0.0f, 0.0f}, tilesize, tilesize);
+        tile_placer.init({0.0f, 0.0f, 0.0f}, tilesize, tilesize);
+//        npc.init({0.0f, 0.0f, 0.0f}, 16, 16);
+//        npc.setText("Greetings!");
 
         // tilemap
         Renderer::initIconMap("./assets/textures/tilemap1.png", tilemap_icons, 16, 16, 0);
@@ -262,26 +332,68 @@ Engine::Scene mainScene = {
         for (int i = 0; i < TILEMAP_HEIGHT * TILEMAP_WIDTH; i++) {
             (&(key[0][0]))[i] = -1;
         }
-        key[0][3] = 0;
+        for (int i = 0; i < TILEMAP_HEIGHT; i++) {
+            key[0][i] = 0;
+        }
 
-        Library::getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, 4, &tilemap_icons);
+        Library::getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, tilesize, &tilemap_icons);
 
-        r_player.init(getTexture(tilemap_icons, 0));
+        r_player.init(getTexture(tilemap_icons, 0), {1.0f, 1.0f, 1.0f, 1.0f});
+        r_placer.init(getTexture(tilemap_icons, 0), {0.5f, 0.5f, 0.5f, 0.5f});
+        a_placer.init(tilemap_icons, 0, 30, true);
+
         c_continuous.init(&continuous[0], 1);
 
-        r_npc.init(getTexture(npc_icons, 0));
+        r_npc.init(getTexture(npc_icons, 0), {1.0f, 1.0f, 1.0f, 1.0f});
 
         player.addComponent(r_player);
         player.addComponent(c_continuous);
-        npc.addComponent(r_npc);
-        npc.talk();
+//        npc.addComponent(r_npc);
+        tile_placer.addComponent(r_placer);
+        tile_placer.addComponent(a_placer);
 
         mainScene.addObj(&player);
-        mainScene.addObj(&npc);
+//        mainScene.addObj(&npc);
+        mainScene.addObj(&tile_placer);
+
+        if (fileExists(levelFP)) {
+            deserialize(levelFP);
+        }
 
         updateSceneGraphics(mainScene);
     },
     [](double dt) {
+        // update placer's position to snap to tilemap grid
+        tile_placer.pos = floor((screenToWorldCoords(IO::mousePos()) + tilemap.tilewidth / 2.0f) / tilemap.tilewidth) * tilemap.tilewidth;
+
+        // placing tiles
+        if (IO::isButtonPressed(GLFW_MOUSE_BUTTON_1)) {
+            addTile(tilemap, {(int) (tile_placer.pos.x / tilemap.tilewidth), (int) (tile_placer.pos.y / tilemap.tilewidth)}, selectedBlock);
+        } else if (IO::isButtonPressed(GLFW_MOUSE_BUTTON_2)) {
+            removeTile(tilemap, {(int) (tile_placer.pos.x / tilemap.tilewidth), (int) (tile_placer.pos.y / tilemap.tilewidth)});
+        }
+        // changing currently selected tile
+        int dtile = IO::mouseScroll().y;
+        selectedBlock += IO::mouseScroll().y;
+        if (selectedBlock > 30) {
+            selectedBlock = 0;
+        }
+        if (selectedBlock < 0) {
+            selectedBlock = 30;
+        }
+        if (dtile > 0) {
+            while (dtile) {
+                a_placer.next();
+                dtile--;
+            }
+        } else if (dtile < 0) {
+            while (dtile) {
+                a_placer.previous();
+                dtile++;
+            }
+        }
+
+        // rotation showoff
         if (IO::isKeyPressed(GLFW_KEY_R)) {
             if (IO::isKeyPressed(GLFW_KEY_Z)) {
                 player.rotation += 10.0f * dt;
@@ -289,11 +401,23 @@ Engine::Scene mainScene = {
                 player.rotation.y += 1.0f * dt;
             }
         }
+
+        // hush the npc
         if (IO::isKeyPressed(GLFW_KEY_H)) {
             if (!hidden) {
                 npc.hush();
                 hidden = true;
             }
+        }
+
+        // serialization stuff
+        if (IO::isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
+            // load
+            if (IO::isKeyPressed(GLFW_KEY_L) && fileExists(levelFP))
+                deserialize(levelFP);
+            // save
+            else if (IO::isKeyPressed(GLFW_KEY_S))
+                serialize(levelFP);
         }
 
         updateSceneGraphics(mainScene);
@@ -302,6 +426,10 @@ Engine::Scene mainScene = {
 
     }
 };
+
+/**
+ * Entry-point
+ */
 
 int main() {
     Pontilus::init();

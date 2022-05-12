@@ -35,7 +35,10 @@ namespace Pontilus
     void setCurrentScene(Engine::Scene &s)
     {
         if (currentScene != nullptr)
+        {
             currentScene->clean();
+            currentScene->objs.clear();
+        }
         
         currentScene = &s;
         currentScene->init();

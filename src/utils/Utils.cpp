@@ -42,6 +42,18 @@ namespace Pontilus
         f.size = 0;
     }
 
+    bool fileExists(const char *filepath)
+    {
+        FILE *f = fopen(filepath, "r");
+
+        bool ret = f; // if f == nullptr, ret = 0
+
+        if (ret)
+            fclose(f);
+
+        return ret;
+    }
+
     using json = nlohmann::json;
     json getJSON(const char *filepath)
     {

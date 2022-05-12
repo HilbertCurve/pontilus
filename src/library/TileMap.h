@@ -15,7 +15,8 @@ namespace Pontilus {
     namespace Library {
         class Tile : public Engine::ECS::GameObject {
             public:
-            bool collides = true;
+            bool collides = false;
+            bool active = false;
             glm::vec<2, int> tile_coords;
         };
 

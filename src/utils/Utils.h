@@ -83,6 +83,7 @@ namespace Pontilus
 
     void loadFile(const char *filepath, File &fb, bool isBinary);
     void freeFile(File &f);
+    bool fileExists(const char *filepath);
 
     nlohmann::json getJSON(const char *filepath);
 
