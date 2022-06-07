@@ -24,8 +24,12 @@ namespace Pontilus
 
     extern Window window;
     
+    // TODO: re-export stuff to make this header the public API
     Engine::Scene *getCurrentScene();
     void setCurrentScene(Engine::Scene &s);
+
+    void setDefaultShader(const char *vertPath, const char *fragPath);
+    const char *getDefaultShader(bool oneForVert);
 
     void init();
     void loop();

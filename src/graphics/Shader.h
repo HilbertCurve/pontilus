@@ -46,5 +46,7 @@ namespace Pontilus
         void detachShader(Shader &s);
         void deleteShader(Shader &s);
 
+        void setDefaultShader(const char *vertPath, const char *fragPath);
+        const char *getDefaultShader(bool oneForVert);
     }
 }

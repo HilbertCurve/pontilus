@@ -18,6 +18,8 @@ namespace Pontilus
 {
     namespace Renderer
     {
+        static const char *defaultVert = "./assets/shaders/default.vert";
+        static const char *defaultFrag = "./assets/shaders/default.frag";
 
         Shader initShader(const char *vertPath, const char *fragPath)
         {
@@ -39,6 +41,8 @@ namespace Pontilus
 
             fread((void *)vertCode, vertFilesize, 1, vertFile);
 
+            fclose(vertFile);
+
             // read fragment shader source
             FILE *fragFile = fopen(fragPath, "rb");
             int fragFilesize = 0;
@@ -56,6 +60,8 @@ namespace Pontilus
             char fragCode[fragFilesize];
 
             fread((void *)fragCode, fragFilesize, 1, fragFile);
+
+            fclose(fragFile);
 
             Shader shader;
             shader.vertexID = glCreateShader(GL_VERTEX_SHADER);
@@ -221,6 +227,17 @@ namespace Pontilus
                 attachShader(s);
             
             glUniform4fv(varLocation, count, arr);
+        }
+
+        void setDefaultShader(const char *vertPath, const char *fragPath)
+        {
+            defaultVert = vertPath;
+            defaultFrag = fragPath;
+        }
+
+        const char *getDefaultShader(bool oneForVert)
+        {
+            return oneForVert ? defaultVert : defaultFrag;
         }
     }
 }

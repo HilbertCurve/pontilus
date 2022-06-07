@@ -31,6 +31,7 @@ float calculateLighting(float d, float intensity)
 
 void main()
 {
+    /*
     vec2 st = (fPos.xy);
     vec4 bColor = vec4(0.0);
     float alpha = 0.0;
@@ -45,7 +46,6 @@ void main()
         {
             bColor = vec4(1.0);
         }
-        */
 
         // distance between the current pixel and the light position
 		float dist = distance(uLightPos[i].xy, st);
@@ -54,6 +54,7 @@ void main()
 		// accumulate the value into total lighting by adding
 		bColor += uLightColor[i] * attenuation;
     }
+    */
 
-    color = bColor;
+    color = vec4(1.0, 1.0, 1.0, 1.0);
 }

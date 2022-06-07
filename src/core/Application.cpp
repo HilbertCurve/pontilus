@@ -57,6 +57,16 @@ namespace Pontilus
     {
         return &args;
     }
+
+    void setDefaultShader(const char *vertPath, const char *fragPath)
+    {
+        Renderer::setDefaultShader(vertPath, fragPath);
+    }
+
+    const char *getDefaultShader(bool oneForVert)
+    {
+        return Renderer::getDefaultShader(oneForVert);
+    }
     
     void init()
     {
@@ -200,7 +210,7 @@ namespace Pontilus
             // render
             Renderer::render();
             Renderer::modelRender();
-            //Renderer::postRender();
+            Renderer::postRender();
             
             // swap buffers (makes things smoother)
             glfwSwapBuffers(window.ptr);

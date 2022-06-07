@@ -220,9 +220,9 @@ namespace Pontilus
             initRDataGLCaps(quadPool);
             initRDataGLCaps(modelPool);
 
-            gameShader = initShader("./assets/shaders/default.vert", "./assets/shaders/default.frag");
+            gameShader = initShader(getDefaultShader(true), getDefaultShader(false));
             modelShader = initShader("./assets/shaders/model.vert", "./assets/shaders/model.frag");
-            postShader = initShader("./assets/shaders/pointmap.vert", "./assets/shaders/pointmap.frag");
+            postShader = initShader("./assets/shaders/post.vert", "./assets/shaders/post.frag");
             debugShader = initShader("./assets/shaders/debug.vert", "./assets/shaders/debug.frag");
         }
 
