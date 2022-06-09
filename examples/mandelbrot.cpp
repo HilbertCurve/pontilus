@@ -1,5 +1,4 @@
-// shadertoy is interesting; basically, i'm editing some shaders to do
-// shading stuff, just for fun. basically a demonstration of shader caps.
+// a plot of the mandelbrot set
 
 #include <core/Application.h>
 #include <core/Scene.h>
@@ -13,7 +12,7 @@ Engine::ECS::SpriteRenderer r_graph = Engine::ECS::SpriteRenderer();
 
 Engine::Scene mainScene = {
     []() {
-        graph.init({0.0f, 0.0f, 0.0f}, 50, 50);
+        graph.init({0.0f, 0.0f, 0.0f}, 500, 500);
         r_graph.init({nullptr}, {1.0f, 1.0f, 1.0f, 1.0f});
 
         graph.addComponent(r_graph);
@@ -31,7 +30,7 @@ Engine::Scene mainScene = {
 };
 
 int main() {
-    Pontilus::setDefaultShader("./assets/shaders/complex_graph.vert", "./assets/shaders/complex_graph.frag");
+    Pontilus::setDefaultShader("./assets/shaders/complex_graph.vert", "./assets/shaders/mandelbrot.frag");
 
     Pontilus::init();
     Pontilus::setCurrentScene(mainScene);

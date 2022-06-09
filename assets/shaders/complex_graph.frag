@@ -11,10 +11,15 @@ out vec4 color;
 
 // constants
 const float PI = 3.14159265359;
+const float E = 2.7182818284;
 const float scale = 4.0;
+float zoom = uTime;
 const float magScale = 2.0;
 const float magMod = 1.0;
-const bool doMod = true;
+bool doMod = true;
+
+// animation
+float timeMod = 0.0;
 
 // imaginary number tools
 
@@ -41,15 +46,6 @@ float dist(vec2 p1, vec2 p2)
 }
 
 /**
- * Calculate the value of a complex number raised to some power
- */
-vec2 imagPow(vec2 base, vec2 xp)
-{
-    // TODO: implement me
-    return vec2(0.0);
-}
-
-/**
  * Convert from cartesian coords to polar coords
  */
 vec2 toArgMag(vec2 point)
@@ -70,10 +66,78 @@ vec2 toArgMag(vec2 point)
     return vec2(arg / 2.0, mag);
 }
 
-// input function
+/**
+ * Convert from polar coords to cartesian coords
+ */
+vec2 toCartesian(vec2 point)
+{
+    return vec2(cos(point.x), sin(point.x)) * point.y;
+}
+
+/**
+ * Calculate the value of a complex number raised to some power
+ */
+vec2 imagPow(vec2 base, vec2 xp)
+{
+    // FIXME: i don't know where the issue lies atm
+
+    // get polar of base
+    vec2 polar = toArgMag(base); // x, y => theta, r
+    // create new polar point
+    float lnVal = log(polar.y);
+
+    float arg = lnVal * xp.y;
+    vec2 newPolar = vec2(
+            lnVal * xp.y + xp.x * polar.x,
+            lnVal * xp.x - xp.y * polar.x
+            );
+
+    return toCartesian(newPolar);
+}
+
+bool between(float left, float x, float right)
+{
+    return x >= left && x < right;
+}
+
+// input function; changes over time
 vec2 func(vec2 point)
 {
-    return imagMul(point, point) - vec2(cos(uTime), sin(uTime));
+    float time = uTime - timeMod;
+    // mild hsv wheel
+    if (between(0.0, time, 5.0)) {
+        doMod = false;
+        zoom = 0.5;
+        return point;
+    } else if (between(5.0, time, 10.0)) {
+        // cool thingy
+        doMod = true;
+        zoom = 1.0;
+        return imagMul(point, point) - vec2(sin(uTime) * 2, 0.0);
+    } else if (between(10.0, time, 15.0)) {
+        // kinda looks like braids
+        doMod = false;
+        zoom = uTime;
+        return imagMul(sin(point), cos(point));
+    } else if (between(15.0, time, 20.0)) {
+        // ukranian flag-ish; may the war end soon
+        doMod = false;
+        zoom = 4.0;
+        if (point.y > 0)
+        {
+            return toCartesian(vec2(PI / 4 + 0.15, 1.0));
+        }
+        else
+        {
+            return vec2(-1.0, -1.0);
+        }
+    } else {
+        timeMod += 20.0;
+        return vec2(0.0);
+    }
+
+    // broken
+    //return imagPow(point, vec2(2.0, 0.0));
 }
 
 // thanks to http://github.com/983 for this
@@ -103,7 +167,7 @@ float scaleMag(float mag)
 void main()
 {
     // find input position
-    vec2 pos = (fPos.xy);
+    vec2 pos = (fPos.xy) * zoom;
 
     // calculate output based on complex function
     // then convert it to polar coords
