@@ -396,7 +396,9 @@ Engine::Scene mainScene = {
         // rotation showoff
         if (IO::isKeyPressed(GLFW_KEY_R)) {
             if (IO::isKeyPressed(GLFW_KEY_Z)) {
-                player.rotation += 10.0f * dt;
+                player.rotation.z += 1.0f * dt;
+            } else if (IO::isKeyPressed(GLFW_KEY_X)) {
+                player.rotation.x += 1.0f * dt;
             } else {
                 player.rotation.y += 1.0f * dt;
             }

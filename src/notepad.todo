@@ -32,7 +32,7 @@ ECS:
     [+] Component.h - these can be attached to GameObjects to give various engines control over the go's fields
     [+] SpriteRenderer.h - migrate toRData() calls here
     Animations:
-        [ ] Move GameObject.color into SpriteRenderer, TextRenderer, etc.
+        [+] Move GameObject.color into SpriteRenderer, TextRenderer, etc.
         [+] Animation.h - a component that updates a SpriteRenderer's texture; requires the GameObject to have a SpriteRenderer
     [ ] Body2D.cpp - convert physics body into a component
     [ ] Separate components out of the ecs/ file and into their respective places (AudioListener into audio/, Animation into library/, etc.)
@@ -48,6 +48,7 @@ Audio:
     [+] AudioMaster.cpp - .wav files and an audio system
     [+] Audio buffering
     [+] Audio playing and stopping
+    I actually don't know about this one
     [ ] Audio file buffering - stream directly from the audio file
 
 AssetPool:
@@ -106,7 +107,7 @@ Pontilus Language
     I have come to the conclusion of using Python. Ports to other languages will come next...?
 
 Deployment (handling of...):
-    [+] Non-existent audio drivers
+    [+] Non-existent audio drivers/devices
     [ ] Different OpenGL versions
     [ ] Configurable assets folder
     [+] Default scene if one isn't set
@@ -162,7 +163,6 @@ Roadmap:
     [+] Automatic rData allocation
     [+] Basic ECS
     [+] Pong demo
-    [ ] Documentation
     [+] Animations
     [+] Audio
     [+] State machines
@@ -171,7 +171,9 @@ Roadmap:
     [ ] UI
     Make Some Games:
         [+] Basic platformer
+        [ ] More platformers
         [ ] Mario clone
+        WIP
         [ ] RPG-ish
 
 Issues:
@@ -183,4 +185,5 @@ Backburner:
     [ ] Python
     [ ] Windows build
     [ ] More debug messages
+    [ ] Documentation :D
 
