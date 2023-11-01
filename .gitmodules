@@ -1,0 +1,9 @@
+[submodule "src/vendor/glfw"]
+	path = src/vendor/glfw
+	url = https://github.com/glfw/glfw
+[submodule "src/vendor/stb"]
+	path = src/vendor/stb
+	url = https://github.com/nothings/stb
+[submodule "src/vendor/openal-soft"]
+	path = src/vendor/openal-soft
+	url = https://github.com/kcat/openal-soft
