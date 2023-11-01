@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
-#include <GL/gl.h>
+#include <glad/gl.h>
 
 #define __alCall(fun, ...) \
 {\

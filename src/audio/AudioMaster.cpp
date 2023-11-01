@@ -1,4 +1,4 @@
-#include "audio/AudioMaster.h"
+#include "../../src/audio/AudioMaster.h"
 #include "ecs/AudioListener.h"
 #include "ecs/AudioSource.h"
 

@@ -8,7 +8,8 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/home/rivendell/c/pontilus/build/game",
+            // change the "platformer" here to whatever test you'd like
+            "program": "${workspaceFolder}/build/platformer",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include <stdlib.h>
-#include <GL/gl.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
@@ -115,6 +115,13 @@ namespace Pontilus
         // make the window visible
         glfwShowWindow(window.ptr);
 
+        // initialize opengl backend
+        if (!gladLoadGL((GLADloadfunc) glfwGetProcAddress))
+        {
+            printf("Failed to initialize OpenGL context\n");
+            return;
+        }
+
         glViewport(0, 0, window.width, window.height);
         // transparency stuff
         glEnable(GL_BLEND);
@@ -152,6 +159,7 @@ namespace Pontilus
             // update engines
             Audio::updateListener();
             Audio::updateSources();
+            //TODO: fixed update for updateAll() and getCurrentScene()->update()
             Engine::ECS::StateMachine::updateAll(dt);
             getCurrentScene()->update(dt);
             Physics2D::fixedUpdate();

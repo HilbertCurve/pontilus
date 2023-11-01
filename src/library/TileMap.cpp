@@ -130,7 +130,7 @@ namespace Pontilus {
         void applyColorFilter(TileMap &t, glm::vec4 color) {
             using namespace Engine::ECS;
             for (tile_renderer &tile : t.tiles) {
-                ((SpriteRenderer *)tile.first.getComponent(typeid(SpriteRenderer)))->color = color;
+                tile.second.color = color;
             }
             t.color = color;
         }

@@ -1,6 +1,6 @@
 #include "graphics/Renderer.h"
 
-#include <GL/gl.h>
+#include <glad/gl.h>
 #include <stdio.h>
 
 #include "core/Application.h"
@@ -221,9 +221,9 @@ namespace Pontilus
             initRDataGLCaps(modelPool);
 
             gameShader = initShader(getDefaultShader(true), getDefaultShader(false));
-            modelShader = initShader("./assets/shaders/model.vert", "./assets/shaders/model.frag");
-            postShader = initShader("./assets/shaders/post.vert", "./assets/shaders/post.frag");
-            debugShader = initShader("./assets/shaders/debug.vert", "./assets/shaders/debug.frag");
+            modelShader = initShader("../assets/shaders/model.vert", "../assets/shaders/model.frag");
+            postShader = initShader("../assets/shaders/post.vert", "../assets/shaders/post.frag");
+            debugShader = initShader("../assets/shaders/debug.vert", "../assets/shaders/debug.frag");
         }
 
         void render()

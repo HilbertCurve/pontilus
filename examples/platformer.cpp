@@ -56,7 +56,10 @@ static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 
 Library::TileMap tilemap = Library::TileMap();
 
-static void collide(double dt) {
+typedef int DirFlag;
+// bits: down left up right for four bits
+
+static DirFlag collide(double dt) {
     // collision
     std::vector<Library::tile_rect> info;
     Library::getCollisionInfo(player, info, tilemap);
@@ -100,24 +103,8 @@ static void collide(double dt) {
             }
         }
     }
-}
 
-static bool checkForFloor(std::vector<Library::tile_rect> &t) {
-    bool ret = false;
-    t.clear();
-    for (int i = 0; i < tilemap.size(); i++) {
-        Library::rect foot = {
-            {player.pos.x - player.width / 2.0f + 0.1f, player.pos.y - player.height / 2.0f - 0.1f},
-            {player.pos.x + player.width / 2.0f - 0.1f, player.pos.y - player.height / 2.0f - 0.1f},
-        };
-        if (Library::detectRectRect(foot, Library::rectFromObj(tilemap[i]))) {
-            ret = true;
-            t.push_back({tilemap[i], {}});
-            break;
-        }
-    }
-
-    return ret;
+    return hasFloor << 3 | hasLeft << 2 | hasUp << 1 | hasRight;
 }
 
 ///////////////
@@ -143,7 +130,8 @@ static bool curr = false, prev = false;
 static Engine::ECS::State sControllers[] = {
     {"grounded", &playerController, [](double dt) {
         // jump
-        player.color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+        ((Engine::ECS::SpriteRenderer *)player.getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+        player.velocity.y = 0.0f;
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
         if (curr != prev && curr) {
             playerController.addState("jumped");
@@ -157,15 +145,14 @@ static Engine::ECS::State sControllers[] = {
         horizontalMotion(dt);
         player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
         
-        collide(dt);
+        bool hasFloor = collide(dt) & 0b1000;
         std::vector<Library::tile_rect> info;
-        bool hasFloor = checkForFloor(info);
         if (!hasFloor) {
             playerController.replaceState("grounded", "jumped");
         }
     }},
     {"jumped", &playerController, [](double dt) {
-        player.color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
+        ((Engine::ECS::SpriteRenderer *)player.getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
         // jump
         player.velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
@@ -181,9 +168,8 @@ static Engine::ECS::State sControllers[] = {
         horizontalMotion(dt);
         player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
 
-        collide(dt);
+        bool hasFloor = collide(dt) & 0b1000;
         std::vector<Library::tile_rect> info;
-        bool hasFloor = checkForFloor(info);
         if (hasFloor && player.velocity.y <= 0.0f) {
             playerController.replaceState("jumped", "grounded");
             //Tile floor = info.at(0).first;
@@ -191,16 +177,15 @@ static Engine::ECS::State sControllers[] = {
         }
     }},
     {"double-jumped", &playerController, [](double dt) {
-        player.color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
+        ((Engine::ECS::SpriteRenderer *)player.getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
         // fall
         player.velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
 
         horizontalMotion(dt);
         player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
         
-        collide(dt);
+        bool hasFloor = collide(dt) & 0b1000;
         std::vector<Library::tile_rect> info;
-        bool hasFloor = checkForFloor(info);
         if (hasFloor && player.velocity.y <= 0.0f) {
             playerController.replaceState("double-jumped", "grounded");
             //Tile floor = info.at(0).first;
@@ -273,13 +258,13 @@ bool loaded = false;
 
 static Engine::Scene mainScene = {
     []() {
-        Pontilus::Renderer::initIconMap("./assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
-        Pontilus::Renderer::initIconMap("./assets/textures/sad_painting.png", tileTextures, 16, 16, 0);
-        Pontilus::Audio::initWAVFile(jump1, "./assets/sounds/jump1.wav");
+        Pontilus::Renderer::initIconMap("../assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
+        Pontilus::Renderer::initIconMap("../assets/textures/sad_painting.png", tileTextures, 16, 16, 0);
+        Pontilus::Audio::initWAVFile(jump1, "../assets/sounds/jump1.wav");
 
-        playerRenderer.init({nullptr}/*Renderer::getTexture(playerTextures, 0)*/);
+        playerRenderer.init({nullptr}/*Renderer::getTexture(playerTextures, 0)*/, glm::vec4{1.0, 1.0, 1.0, 1.0});
         playerSource.init();
-        objRenderer.init(Renderer::getTexture(tileTextures, 0));
+        objRenderer.init(Renderer::getTexture(tileTextures, 0), glm::vec4{0.5f, 0.5f, 0.5f, 0.2f});
         objAnimation.init(tileTextures, 0, 30, true);
 
         for (int i = 0; i < TILEMAP_HEIGHT * TILEMAP_WIDTH; i++) {
@@ -292,17 +277,17 @@ static Engine::Scene mainScene = {
         
         playerController.init(&sControllers[0], 3);
 
-        player.init({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 5.0f, 5.0f);
+        player.init({0.0f, 1.0f, 0.0f}, 5.0f, 5.0f);
         player.addComponent(playerRenderer);
         player.addComponent(playerController);
         player.addComponent(playerSource);
         player.addComponent(Engine::ECS::AudioListener::get());
 
-        obj.init({0.0f, 20.0f, 0.0f}, {0.5f, 0.5f, 0.5f, 0.2f}, 8.0f, 8.0f);
+        obj.init({0.0f, 20.0f, 0.0f}, 8.0f, 8.0f);
         obj.addComponent(objRenderer);
         obj.addComponent(objAnimation);
 
-        player.rotation = glm::vec3(4.0f, 4.0f, 4.0f);
+        // player.rotation = glm::vec3(4.0f, 4.0f, 4.0f);
 
         mainScene.objs.push_back(&player);
         mainScene.objs.push_back(&obj);

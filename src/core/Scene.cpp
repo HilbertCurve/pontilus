@@ -131,8 +131,8 @@ namespace Pontilus
                 defaultMessage.init({-30.0, 10.0, 0.0}, 40, 50);
                 defaultLogo.init({0.0, -20.0, 0.0}, 20, 16);
                 
-                Renderer::initFont(jetBrainsMono, "assets/fonts/JetBrainsMono-Medium.ttf", 26);
-                Renderer::initIconMap("assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
+                Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 26);
+                Renderer::initIconMap("../assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
 
                 defaultText.init("Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().", jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f});
 
@@ -164,7 +164,7 @@ namespace Pontilus
         {
             []()
             {
-                Audio::initWAVFile(*theNoise, "./assets/sounds/test2.wav");
+                Audio::initWAVFile(*theNoise, "../assets/sounds/test2.wav");
 
                 theSource.init();
 
@@ -209,7 +209,7 @@ namespace Pontilus
         {
             []()
             {
-                Renderer::initIconMap("./assets/textures/test2.png", toBeAnimatedFrames, 8, 8, 0);
+                Renderer::initIconMap("../assets/textures/test2.png", toBeAnimatedFrames, 8, 8, 0);
 
                 toBeAnimated = ECS::GameObject();
                 toBeAnimatedSpr = ECS::SpriteRenderer();
@@ -253,9 +253,9 @@ namespace Pontilus
         {
             []()
             {
-                Renderer::initIconMap("./assets/textures/pogFace.png", pogFace, 200, 200, 0);
+                Renderer::initIconMap("../assets/textures/pogFace.png", pogFace, 200, 200, 0);
                 
-                Renderer::initFont(jetBrainsMono, "./assets/fonts/JetBrainsMono-Medium.ttf", 32);
+                Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 32);
 
                 leftPaddle = rightPaddle = ball = ECS::GameObject();
                 lScore = rScore = ECS::GameObject();
@@ -383,13 +383,13 @@ namespace Pontilus
 
                 g4.init({ 7.5f, 0.0f, 0.0f }, 3.0f, 3.0f);
 
-                Renderer::initIconMap("./assets/textures/test.png", im1, 8, 8, 0);
-                Renderer::initIconMap("./assets/textures/test2.png", im2, 8, 8, 0);
-                Renderer::initIconMap("./assets/textures/blueberry.png", blueberry, 32, 32, 0);
-                Renderer::initIconMap("./assets/textures/burger.png", burger, 32, 32, 0);
-                Renderer::initIconMap("./assets/textures/pizzaMonster.png", pizzaMonster, 32, 32, 0);
+                Renderer::initIconMap("../assets/textures/test.png", im1, 8, 8, 0);
+                Renderer::initIconMap("../assets/textures/test2.png", im2, 8, 8, 0);
+                Renderer::initIconMap("../assets/textures/blueberry.png", blueberry, 32, 32, 0);
+                Renderer::initIconMap("../assets/textures/burger.png", burger, 32, 32, 0);
+                Renderer::initIconMap("../assets/textures/pizzaMonster.png", pizzaMonster, 32, 32, 0);
 
-                Renderer::initFont(jetBrainsMono, "./assets/fonts/JetBrainsMono-Medium.ttf", 32);
+                Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 32);
 
                 s1.tex = Renderer::getTexture(blueberry, 0);
                 s2.tex = Renderer::getTexture(burger, 0);

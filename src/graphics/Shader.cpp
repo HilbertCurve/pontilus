@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <vector>
 
-#include <GL/gl.h>
+#include <glad/gl.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,8 +18,8 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        static const char *defaultVert = "./assets/shaders/default.vert";
-        static const char *defaultFrag = "./assets/shaders/default.frag";
+        static const char *defaultVert = "../assets/shaders/default.vert";
+        static const char *defaultFrag = "../assets/shaders/default.frag";
 
         Shader initShader(const char *vertPath, const char *fragPath)
         {

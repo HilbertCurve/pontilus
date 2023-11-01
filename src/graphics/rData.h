@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <GL/gl.h>
+#include <glad/gl.h>
 
 #include "graphics/Primitive.h"
 #include "graphics/Shader.h"

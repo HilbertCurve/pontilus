@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <GL/gl.h>
+#include <glad/gl.h>
 
-#include <stb/stb_truetype.h>
+#include <vendor/stb/stb_truetype.h>
 
 namespace Pontilus
 {

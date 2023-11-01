@@ -326,8 +326,8 @@ Engine::Scene mainScene = {
 //        npc.setText("Greetings!");
 
         // tilemap
-        Renderer::initIconMap("./assets/textures/tilemap1.png", tilemap_icons, 16, 16, 0);
-        Renderer::initIconMap("./assets/textures/ghostSwole.png", npc_icons, 675, 570, 0);
+        Renderer::initIconMap("../assets/textures/tilemap1.png", tilemap_icons, 16, 16, 0);
+        Renderer::initIconMap("../assets/textures/ghostSwole.png", npc_icons, 675, 570, 0);
 
         for (int i = 0; i < TILEMAP_HEIGHT * TILEMAP_WIDTH; i++) {
             (&(key[0][0]))[i] = -1;

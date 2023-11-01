@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <GL/gl.h>
+#include <glad/gl.h>
 
 namespace Pontilus
 {

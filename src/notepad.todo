@@ -1,4 +1,5 @@
 Windows is hard.
+CMake makes life easier.
 
 OpenGL:
     An OpenGL program has shaders, vertex buffers, a window, a camera, mouse/keyboard callbacks, 
@@ -62,6 +63,7 @@ Events:
 
 Physics:
     [+] Math utils
+    [ ] Now that I'm taking college-level physics, actually implement a sensible collision resolver!
 
     2D:
         Every collision is resolved in 3 steps. First the collision
@@ -108,8 +110,8 @@ Pontilus Language
 
 Deployment (handling of...):
     [+] Non-existent audio drivers/devices
-    [ ] Different OpenGL versions
-    [ ] Configurable assets folder
+    [ ] Different OpenGL versions; GLAD kinda takes care of this
+    [ ] Configurable assets folder!!! Very important!
     [+] Default scene if one isn't set
 
 Python:
@@ -183,7 +185,6 @@ Issues:
 
 Backburner:
     [ ] Python
-    [ ] Windows build
+    [ ] Windows build - does CMake just do that for me though?
     [ ] More debug messages
     [ ] Documentation :D
-

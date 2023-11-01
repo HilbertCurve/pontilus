@@ -7,3 +7,4 @@ python/dist
 python/pontilus.egg-info
 __pycache__
 .ccls-cache/
+build/
