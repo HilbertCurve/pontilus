@@ -16,8 +16,10 @@ namespace Pontilus
                 public:
                 void init(Renderer::Texture t, glm::vec4 color);
 
-                Renderer::Texture tex = {nullptr};
+                Renderer::Texture tex = {nullptr, {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
                 glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+                bool visible = true;
+                void setVisible(bool v);
                 int toRData(Renderer::rData &r, unsigned int rOffset);
                 void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
             };

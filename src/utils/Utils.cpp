@@ -98,6 +98,8 @@ namespace Pontilus
 
         v = inverse(Renderer::Camera::getView()) * inverse(Renderer::Camera::getProjection()) * v;
 
+        v -= vec4(Renderer::Camera::getPosition(), 0.0f);
+
         return {v.x, v.y, 0.0f};
     }
 

@@ -25,6 +25,7 @@ namespace Pontilus
                 static int _id;
 
                 glm::vec3 pos;
+                glm::vec2 velocity;
                 // x axis, y axis, z axis rotation
                 glm::vec3 rotation = {0.0f, 0.0f, 0.0f};
                 float width, height;

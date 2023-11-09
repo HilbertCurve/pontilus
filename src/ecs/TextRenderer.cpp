@@ -26,11 +26,20 @@ namespace Pontilus
                 glm::vec3 posAccumulate = {0.0f, 0.0f, 0.0f};
                 const float scale = this->font->fontSize / (this->font->ascent - this->font->descent);
                 // this is for making text fit inside textboxes
-                const float heightAdjust = screenToWorldSize({0.0f, (float) this->font->ascent}).y;
-                
+                //const float heightAdjust = -screenToWorldSize({0.0f, (float) this->font->ascent}).y;
+                const float heightAdjust = 0.0;
+                const float lineHeight = screenToWorldSize(glm::vec2(0.0f, this->font->ascent - this->font->descent)).y;
                 for (unsigned int i = 0; i < this->text.length(); i++)
                 {
                     char c = this->text[i];
+
+                    if (c == '\n')
+                    {
+                        posAccumulate.y += lineHeight;
+                        posAccumulate.x = 0.0f;
+                        continue;
+                    }
+
                     Glyph g = getGlyph(*this->font, c);
 
                     ////////          ////////
@@ -42,7 +51,7 @@ namespace Pontilus
                     // kern please
                     if (i != 0)
                     {
-                        posAccumulate += screenToWorldSize({scale * stbtt_GetCodepointKernAdvance(&(g.parent->info), this->text[i - 1], this->text[i]), 0.0f});
+                        //posAccumulate += screenToWorldSize({scale * stbtt_GetCodepointKernAdvance(&(g.parent->info), this->text[i - 1], this->text[i]), 0.0f});
                     }
 
                     for (int j = 0; j < 4; j++)
@@ -141,7 +150,7 @@ namespace Pontilus
                     if (nextWordLength + posAccumulate.x > this->parent->width && i + 1 < this->text.length() && this->text[i + 1] != ' ')
                     {
                         posAccumulate.x = 0;
-                        posAccumulate.y += screenToWorldSize(glm::vec2(0.0f, g.parent->ascent - g.parent->descent)).y;
+                        posAccumulate.y += lineHeight;
                     }
 
                 }

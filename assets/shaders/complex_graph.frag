@@ -113,7 +113,7 @@ vec2 func(vec2 point)
         // cool thingy
         doMod = true;
         zoom = 1.0;
-        return imagMul(point, point) - vec2(sin(uTime) * 2, 0.0);
+        return imagMul(point + vec2(0.0, uTime), point);
     } else if (between(10.0, time, 15.0)) {
         // kinda looks like braids
         doMod = false;

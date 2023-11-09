@@ -177,6 +177,61 @@ namespace Pontilus {
                 info.push_back({t, {min, max}});
             }
         }
+
+
+        DirFlag collide(Engine::ECS::GameObject &obj, bool emphasizeFloor, TileMap &tilemap) {
+    // collision
+    std::vector<Library::tile_rect> info;
+    if (emphasizeFloor)
+        obj.height += 0.01;
+    Library::getCollisionInfo(obj, info, tilemap);
+    if (emphasizeFloor)
+        obj.height -= 0.01;
+    bool hasFloor = false;
+    bool hasLeft = false, hasRight = false, hasUp = false;
+    for (auto i : info) {
+        float w = i.second.max.x - i.second.min.x;
+        float h = i.second.max.y - i.second.min.y;
+        
+        // if it's a small corner overlap between tile on a wall and obj, obj 
+        // could get caught on the top of one tile of the wall.
+        if (w * h < __pEPSILON * 5 /* adjust */) continue;
+
+        if (w / obj.width < h / obj.height) {
+            if (i.first.pos.x > obj.pos.x) {
+                if (obj.velocity.x >= 0.0f)
+                    obj.velocity.x = 0.0f;
+                if (!hasRight) {
+                    obj.pos.x -= w;
+                    hasRight = true;
+                }
+            } else {
+                if (obj.velocity.x <= 0.0f)
+                    obj.velocity.x = 0.0f;
+                if (!hasLeft) { 
+                    obj.pos.x += w;
+                    hasLeft = true;
+                }
+            }
+        } else {
+            if (i.first.pos.y > obj.pos.y) {
+                if (!hasUp) {
+                    obj.velocity.y = 0.0f;
+                    obj.pos.y -= h;
+                    hasUp = true;
+                }
+            } else if (!hasFloor) {
+                obj.velocity.y = 0.0f;
+                obj.pos.y += h;
+                if (emphasizeFloor)
+                    obj.pos.y -= 0.01;
+                hasFloor = true;
+            }
+        }
+    }
+
+    return ((hasFloor << 3) | (hasLeft << 2) | (hasUp << 1) | (hasRight << 0)) & 0b1111;
+}
         
         ///////////////////////////
         // Serialization and Deserialization
@@ -217,13 +272,9 @@ namespace Pontilus {
 
             memset(t.key, 0, t.width * t.height);
 
-            for (int j = 0; j < m_height; j++) {
-                for (int i = 0; i < m_width; i++) {
-                    t.key[i + width * j] = (signed char) fgetc(fp);
-                }
-                if (m_width < t.width) {
-                    fseek(fp, t.width - m_width, SEEK_CUR);
-                }
+            for (int i = 0; i < t.width * t.height; i++)
+            {
+                t.key[i] = (signed char) fgetc(fp);
             }
 
             Library::deleteTileMap(t);

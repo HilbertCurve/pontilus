@@ -67,8 +67,15 @@ namespace Pontilus {
         // Collision detection
         ////////////////////////
 
+        typedef unsigned int DirFlag;
+        DirFlag RIGHT = 0b0001;
+        DirFlag UP = 0b0010;
+        DirFlag LEFT = 0b0100;
+        DirFlag DOWN = 0b1000;
+
         bool detectRectRect(rect a, rect b);
         void getCollisionInfo(Engine::ECS::GameObject &obj, CollisionInfo &info, TileMap &tilemap);
+        DirFlag collide(Engine::ECS::GameObject &obj, bool emphasizeFloor, TileMap &tilemap);
 
         ///////////////////////////
         // Serialization and Deserialization

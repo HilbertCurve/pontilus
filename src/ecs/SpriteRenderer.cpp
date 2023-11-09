@@ -19,8 +19,16 @@ namespace Pontilus
             }
 
             using namespace Renderer; // fight me
+            void SpriteRenderer::setVisible(bool v)
+            {
+                this->visible = v;
+            }
+
             int SpriteRenderer::toRData(rData &r, unsigned int rOffset)
             {
+                if (!this->visible)
+                    return rOffset;
+
                 __pAssert(!(rOffset >= r.vertCount / 4), "rData not big enough to hold game states!");
 
                 int stride = rOffset * getLayoutLen(r) * 4;
@@ -96,6 +104,9 @@ namespace Pontilus
 
             void SpriteRenderer::toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property)
             {
+                if (!this->visible)
+                    return;
+
                 int offset = rOffset * 4 * getLayoutLen(r);
                 
                 off_len result = getAttribMetaData(r, property);

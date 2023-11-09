@@ -44,7 +44,7 @@ namespace Pontilus
 
         static void initQuads()
         {
-            Renderer::initRData(quadPool, 4000, &Primitives::QUAD);
+            Renderer::initRData(quadPool, 40000, &Primitives::QUAD);
             Renderer::initRData(modelPool, 4000, &Primitives::MESH, modelPoolAttribs, 3);
 
             Renderer::initRData(fullWindowQuad, 4, &Primitives::QUAD, fullWindowQuadAttribs, 2);
