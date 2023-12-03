@@ -28,14 +28,17 @@ namespace Pontilus
             void toRData(Renderer::rData &r, unsigned int rOffset);
 
             std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>(0);
-            void addObj(ECS::GameObject *obj);
-            void removeObj(ECS::GameObject *obj);
-            void removeObj(int id);
+            void addObject(ECS::GameObject *obj);
+            void removeObject(ECS::GameObject *obj);
+            void removeObject(int id);
+
+            void updateObjects(double dt);
 
             int numQuads = 0;
-        };
 
-        void updateSceneGraphics(Scene &s);
+            private:
+            void updateSceneGraphics();
+        };
 
         namespace Scenes
         {

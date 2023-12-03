@@ -49,6 +49,7 @@ add_executable(mandelbrot "${CMAKE_SOURCE_DIR}/examples/mandelbrot.cpp")
 target_link_libraries(mandelbrot PUBLIC pontilus)
 add_test(NAME mandelbrot COMMAND mandelbrot)
 
+add_subdirectory("${CMAKE_SOURCE_DIR}/examples/platformer_ext")
 add_executable(platformer "${CMAKE_SOURCE_DIR}/examples/platformer.cpp")
-target_link_libraries(platformer PUBLIC pontilus)
+target_link_libraries(platformer PUBLIC pontilus platformer_ext)
 add_test(NAME platformer COMMAND platformer)

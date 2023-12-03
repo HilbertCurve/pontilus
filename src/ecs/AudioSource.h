@@ -20,7 +20,7 @@ namespace Pontilus
                 public:
                 void init();
                 void play(Audio::WAVFile &f, bool looping);
-                void updateStream();
+                virtual int update(double dt);
                 void stop();
                 ALuint alSource();
                 ALint &getState();

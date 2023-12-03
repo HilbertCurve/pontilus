@@ -17,6 +17,7 @@ namespace Pontilus
                 GameObject *parent = nullptr;
 
                 virtual bool operator==(Component &c);
+                virtual int update(double dt) = 0;
             };
         }
     }

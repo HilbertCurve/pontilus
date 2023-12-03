@@ -18,7 +18,7 @@ namespace Pontilus
                 this->center = c;
             }
 
-            void Circle::update(double dt)
+            int Circle::update(double dt)
             {
                 this->lastCenter = center;
                 this->center += this->velocity * (float) dt;
@@ -76,7 +76,7 @@ namespace Pontilus
                 this->center = (max + min) / 2.0f;
             }
 
-            void AABB::update(double dt)
+            int AABB::update(double dt)
             {
                 this->lastCenter = center;
                 this->angularVelocity = 0.0f;
@@ -92,7 +92,7 @@ namespace Pontilus
                 this->center = c;
             }
 
-            void Box2D::update(double dt)
+            int Box2D::update(double dt)
             {
                 this->lastCenter = center;
                 this->center += this->velocity * (float) dt;
@@ -100,10 +100,10 @@ namespace Pontilus
             }
 
             template<unsigned int N>
-            void Polygon<N>::update(double dt)
+            int Polygon<N>::update(double dt)
             {
                 // not implemented yet
-                return;
+                return 0;
             }
 
             Triangle::Triangle(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3)

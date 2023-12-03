@@ -14,6 +14,7 @@ namespace Pontilus
             {
                 public:
                 static AudioListener &get();
+                virtual int update(double dt);
                 private:
                 AudioListener() = default;
             };

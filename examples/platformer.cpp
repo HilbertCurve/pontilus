@@ -16,8 +16,9 @@
 #include <physics2d/CollisionDetection.h>
 #include <utils/PMath.h>
 #include <utils/Utils.h>
+#include <library/Colors.h>
 
-#include "library/TileMap.h"
+#include "platformer_ext/enemy.h"
 
 #include <string>
 
@@ -27,8 +28,8 @@ using namespace Pontilus;
 // Class definitions
 ///////////////
 
-class Player : public Engine::ECS::GameObject {
-};
+class Player : public Engine::ECS::GameObject {};
+
 
 #define TILEMAP_WIDTH 200
 #define TILEMAP_HEIGHT 300
@@ -44,6 +45,11 @@ static Engine::ECS::SpriteRenderer playerRenderer;
 static Engine::ECS::StateMachine playerController;
 static Engine::ECS::AudioSource playerSource;
 static Pontilus::Renderer::IconMap playerTextures;
+
+static Enemy enemy = Enemy({0.0f, 0.0f, 0.0f});
+static Engine::ECS::SpriteRenderer enemyRenderer;
+static EnemyController enemyController;
+
 static Engine::ECS::GameObject obj;
 static Engine::ECS::SpriteRenderer objRenderer;
 static Engine::ECS::Animation objAnimation;
@@ -61,7 +67,6 @@ static int key[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 // TileMap functions
 ///////////////
 
-Library::TileMap tilemap = Library::TileMap();
 
 ///////////////
 // Player State Machine
@@ -84,64 +89,64 @@ static void horizontalMotion(double dt) {
 
 static bool curr = false, prev = false;
 static Engine::ECS::State sControllers[] = {
-    {"grounded", &playerController, [](double dt) {
+    {"grounded", &playerController, [](double dt, Engine::ECS::GameObject *player) {
         // jump
-        ((Engine::ECS::SpriteRenderer *)player.getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-        player.velocity.y = 0.0f;
+        ((Engine::ECS::SpriteRenderer *)player->getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+        player->velocity.y = 0.0f;
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
         if (curr != prev && curr) {
             playerController.addState("jumped");
             playerController.removeState("grounded");
-            player.velocity.y = 40.0f;
-            Engine::ECS::AudioSource *ptr = (Engine::ECS::AudioSource *) player.getComponent(typeid(Engine::ECS::AudioSource));
+            player->velocity.y = 40.0f;
+            Engine::ECS::AudioSource *ptr = (Engine::ECS::AudioSource *) player->getComponent(typeid(Engine::ECS::AudioSource));
             ptr->play(jump1, false);
         }
         prev = curr;
 
         horizontalMotion(dt);
-        player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
+        player->pos += glm::vec3(player->velocity * (float) dt, 0.0f);
         
-        unsigned int flags = Library::collide(player, true, tilemap);
+        unsigned int flags = Library::collide(*player, true, tilemap);
         bool hasFloor = flags & 0b1000;
         if (!hasFloor) {
             playerController.replaceState("grounded", "jumped");
         }
     }},
-    {"jumped", &playerController, [](double dt) {
-        ((Engine::ECS::SpriteRenderer *)player.getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
+    {"jumped", &playerController, [](double dt, Engine::ECS::GameObject *player) {
+        ((Engine::ECS::SpriteRenderer *)player->getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 1.0f, 0.0f, 1.0f};
         // jump
-        player.velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
+        player->velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
         curr = Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE);
         if (curr != prev && curr) {
             playerController.addState("double-jumped");
             playerController.removeState("jumped");
-            player.velocity.y = 30.0f;
-            Engine::ECS::AudioSource *ptr = (Engine::ECS::AudioSource *) player.getComponent(typeid(Engine::ECS::AudioSource));
+            player->velocity.y = 30.0f;
+            Engine::ECS::AudioSource *ptr = (Engine::ECS::AudioSource *) player->getComponent(typeid(Engine::ECS::AudioSource));
             ptr->play(jump1, false);
         }
         prev = curr;
         
         horizontalMotion(dt);
-        player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
+        player->pos += glm::vec3(player->velocity * (float) dt, 0.0f);
 
-        unsigned int flags = Library::collide(player, true, tilemap);
+        unsigned int flags = Library::collide(*player, true, tilemap);
         bool hasFloor = flags & 0b1000;
         std::vector<Library::tile_rect> info;
-        if (hasFloor && player.velocity.y <= 0.0f) {
+        if (hasFloor && player->velocity.y <= 0.0f) {
             playerController.replaceState("jumped", "grounded");
         }
     }},
-    {"double-jumped", &playerController, [](double dt) {
-        ((Engine::ECS::SpriteRenderer *)player.getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
+    {"double-jumped", &playerController, [](double dt, Engine::ECS::GameObject *player) {
+        ((Engine::ECS::SpriteRenderer *)player->getComponent(typeid(Engine::ECS::SpriteRenderer)))->color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
         // fall
-        player.velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
+        player->velocity -= glm::vec2{0.0f, 39.6f} * (float) dt;
 
         horizontalMotion(dt);
-        player.pos += glm::vec3(player.velocity * (float) dt, 0.0f);
+        player->pos += glm::vec3(player->velocity * (float) dt, 0.0f);
         
-        unsigned int flags = Library::collide(player, true, tilemap);
+        unsigned int flags = Library::collide(*player, true, tilemap);
         bool hasFloor = flags & 0b1000;
-        if (hasFloor && player.velocity.y <= 0.0f) {
+        if (hasFloor && player->velocity.y <= 0.0f) {
             playerController.replaceState("double-jumped", "grounded");
         }
     }},
@@ -239,14 +244,17 @@ static Engine::Scene mainScene = {
         Pontilus::Renderer::initIconMap("../assets/textures/ghostSwole.png", playerTextures, 675, 570, 0);
         Pontilus::Renderer::initIconMap("../assets/textures/sad_painting.png", tileTextures, 16, 16, 0);
         Pontilus::Audio::initWAVFile(jump1, "../assets/sounds/jump1.wav");
-        Pontilus::Renderer::initFont(debugFont, "../assets/fonts/JetBrainsMono-Medium.ttf", 15);
+        Pontilus::Renderer::initFont(debugFont, "../assets/fonts/times.ttf", 30);
 
         playerRenderer.init({nullptr} /*Renderer::getTexture(playerTextures, 0)*/, glm::vec4{1.0, 1.0, 1.0, 1.0});
         playerSource.init();
+
+        enemyRenderer.init({nullptr}, Pontilus::Colors::BLUE);
+
         objRenderer.init(Renderer::getTexture(tileTextures, 0), glm::vec4{0.5f, 0.5f, 0.5f, 0.2f});
         objAnimation.init(tileTextures, 0, 31, true);
 
-        debugStuff = "asdf";
+        debugStuff = "";
 
         debugText.init(debugStuff.c_str(), debugFont, glm::vec4{1.0, 1.0, 1.0, 1.0});
 
@@ -254,17 +262,24 @@ static Engine::Scene mainScene = {
             (&key[0][0])[i] = -1;
         }
         key[TILEMAP_HEIGHT-1][0] = 0;
+        key[TILEMAP_HEIGHT-1][7] = 0;
+        key[TILEMAP_HEIGHT-1][8] = 0;
 
         getTileMap(TILEMAP_WIDTH, TILEMAP_HEIGHT, &key[0][0], tilemap, 4, &tileTextures);
         applyColorFilter(tilemap, {1.0f, 1.0f, 1.0f, 1.0f});
         
         playerController.init(&sControllers[0], 3);
+        enemyController.create();
 
         player.init({0.0f, 10.0f, 0.0f}, 4.0f, 5.0f);
         player.addComponent(playerRenderer);
         player.addComponent(playerController);
         player.addComponent(playerSource);
         player.addComponent(Engine::ECS::AudioListener::get());
+
+        enemy.init({30.0f, 10.0f, 0.0f}, 4.0, 5.0);
+        enemy.addComponent(enemyRenderer);
+        enemy.addComponent(enemyController);
 
         obj.init({0.0f, 20.0f, 0.0f}, 4.0f, 4.0f);
         obj.addComponent(objRenderer);
@@ -276,10 +291,10 @@ static Engine::Scene mainScene = {
         // player.rotation = glm::vec3(4.0f, 4.0f, 4.0f);
 
         mainScene.objs.push_back(&player);
+        mainScene.objs.push_back(&enemy);
         mainScene.objs.push_back(&obj);
         mainScene.objs.push_back(&debug);
 
-        updateSceneGraphics(mainScene);
         Renderer::Camera::setPosition(24, 0, 32);
     },
     [](double dt) {
@@ -297,7 +312,9 @@ static Engine::Scene mainScene = {
             std::to_string(obj.pos.y) + "\n"; 
         debugStuff += "Player Position: " +
             std::to_string(player.pos.x) + ", " +
-            std::to_string(player.pos.y) + "\n"; 
+            std::to_string(player.pos.y) + "\n";
+        debugStuff += "Game Object Count: " +
+            std::to_string(mainScene.objs.size()) + "\n";
 
         if (false && IO::isKeyPressed(GLFW_KEY_SPACE))
         {
@@ -352,8 +369,6 @@ static Engine::Scene mainScene = {
                 dtile++;
             }
         }
-
-        updateSceneGraphics(mainScene);
     },
     []() {
 

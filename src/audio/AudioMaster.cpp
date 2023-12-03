@@ -37,45 +37,9 @@ namespace Pontilus
             __pAssert(contextMadeCurrent, "OpenAL could not make audio context current.");
         }
 
-        void updateListener()
-        {
-            if (!__pAudioCheck) return;
-            static auto &l = Engine::ECS::AudioListener::get();
-            if (l.parent)
-            {
-                __alCall(alListener3f, AL_POSITION, l.parent->pos.x, l.parent->pos.y, l.parent->pos.z);
-            }
-            else
-            {
-                __alCall(alListener3f, AL_POSITION, 0.0f, 0.0f, 0.0f);
-            }
-            // TODO: direction and velocity
-        }
-
         void addSource(Engine::ECS::AudioSource &s)
         {
             audioSources.push_back(&s);
-        }
-
-        void updateSources()
-        {
-            if (!__pAudioCheck) return;
-            for (Engine::ECS::AudioSource *s : audioSources)
-            {
-                if (!s->parent)
-                {
-                    __alCall(alSource3f, s->alSource(), AL_POSITION, 0.0f, 0.0f, 0.0f);
-                }
-                else
-                {
-                    __alCall(alSource3f, s->alSource(), AL_POSITION, s->parent->pos.x, s->parent->pos.y, s->parent->pos.z);
-                }
-                    // TODO: velocity
-
-                
-                __alCall(alGetSourcei, s->alSource(), AL_SOURCE_STATE, &s->getState());
-                s->updateStream();
-            }
         }
 
         void closeAudio()

@@ -22,6 +22,8 @@ namespace Pontilus
                 void setVisible(bool v);
                 int toRData(Renderer::rData &r, unsigned int rOffset);
                 void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
+
+                virtual int update(double dt) { return 0; }
             };
         }
     }

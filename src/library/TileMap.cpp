@@ -55,7 +55,7 @@ namespace Pontilus {
 
                     if (tiletex >= 0) {
                         t.at(t.size() - 1).addComponent(t.tiles.at(t.size() - 1).second);
-                        Pontilus::getCurrentScene()->addObj(&t.at(t.size() - 1));
+                        Pontilus::getCurrentScene()->addObject(&t.at(t.size() - 1));
                     }
                 }
             }
@@ -66,7 +66,7 @@ namespace Pontilus {
                 bool alreadyDeleted = t.at(i).currentScene == nullptr;
                 t.at(i) = Tile();
                 if (!alreadyDeleted)
-                    Pontilus::getCurrentScene()->removeObj(t[i].id);
+                    Pontilus::getCurrentScene()->removeObject(t[i].id);
             }
             t.tiles.clear();
         }
@@ -99,7 +99,7 @@ namespace Pontilus {
 
             _tile.addComponent(_renderer);
 
-            Pontilus::getCurrentScene()->addObj(&t.at(posInArray));
+            Pontilus::getCurrentScene()->addObject(&t.at(posInArray));
 
             t.key[coords.x + t.width * (t.height - (coords.y + 1))] = i_tile;
         }
@@ -114,7 +114,7 @@ namespace Pontilus {
                     Tile &tile = t[i];
                     auto scene = Pontilus::getCurrentScene();
                     if (tile.currentScene == scene) {
-                        scene->removeObj(tile.id);
+                        scene->removeObject(tile.id);
                         t.key[coords.x + t.width * (t.height - (coords.y + 1))] = -1;
                         t.at(i).removeComponent(typeid(Engine::ECS::SpriteRenderer));
 
@@ -195,7 +195,7 @@ namespace Pontilus {
         
         // if it's a small corner overlap between tile on a wall and obj, obj 
         // could get caught on the top of one tile of the wall.
-        if (w * h < __pEPSILON * 5 /* adjust */) continue;
+        if (w * h < __pEPSILON * 50 /* adjust */) continue;
 
         if (w / obj.width < h / obj.height) {
             if (i.first.pos.x > obj.pos.x) {

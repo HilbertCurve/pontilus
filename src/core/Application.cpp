@@ -157,10 +157,8 @@ namespace Pontilus
             glfwPollEvents();
 
             // update engines
-            Audio::updateListener();
-            Audio::updateSources();
             //TODO: fixed update for updateAll() and getCurrentScene()->update()
-            Engine::ECS::StateMachine::updateAll(dt);
+            getCurrentScene()->updateObjects(dt);
             getCurrentScene()->update(dt);
             Physics2D::fixedUpdate();
 

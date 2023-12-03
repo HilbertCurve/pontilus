@@ -56,27 +56,27 @@ namespace Pontilus
         static ECS::SpriteRenderer defaultIcon = ECS::SpriteRenderer();
         static Renderer::IconMap defaultMap = Renderer::IconMap();
 
-        void updateSceneGraphics(Scene &s)
+        void Scene::updateSceneGraphics()
         {
-            s.numQuads = 0; // reset for tallying purposes
+            this->numQuads = 0; // reset for tallying purposes
             Renderer::modelPool.indexCount = 0;
-            for (unsigned int i = 0; i < s.objs.size(); i++)
+            for (unsigned int i = 0; i < this->objs.size(); i++)
             {
-                ECS::Component *csr = s.objs.at(i)->getComponent(typeid(ECS::SpriteRenderer));
+                ECS::Component *csr = this->objs.at(i)->getComponent(typeid(ECS::SpriteRenderer));
                 if (csr)
                 {
                     ECS::SpriteRenderer &sr = dynamic_cast<ECS::SpriteRenderer &>(*csr);
-                    s.numQuads = sr.toRData(Renderer::quadPool, s.numQuads);
+                    this->numQuads = sr.toRData(Renderer::quadPool, this->numQuads);
                 }
 
-                ECS::Component *ctr = s.objs.at(i)->getComponent(typeid(ECS::TextRenderer));
+                ECS::Component *ctr = this->objs.at(i)->getComponent(typeid(ECS::TextRenderer));
                 if (ctr)
                 {
                     ECS::TextRenderer &tr = dynamic_cast<ECS::TextRenderer &>(*ctr);
-                    s.numQuads = tr.toRData(Renderer::quadPool, s.numQuads);
+                    this->numQuads = tr.toRData(Renderer::quadPool, this->numQuads);
                 }
 
-                ECS::Component *cmr = s.objs.at(i)->getComponent(typeid(Model::ModelRenderer));
+                ECS::Component *cmr = this->objs.at(i)->getComponent(typeid(Model::ModelRenderer));
                 if (cmr)
                 {
                     Model::ModelRenderer &mr = dynamic_cast<Model::ModelRenderer &>(*cmr);
@@ -85,7 +85,7 @@ namespace Pontilus
             }
         }
 
-        void Scene::addObj(ECS::GameObject *obj)
+        void Scene::addObject(ECS::GameObject *obj)
         {
             for (int i = 0; i < objs.size(); i++)
             {
@@ -98,7 +98,7 @@ namespace Pontilus
             this->objs.push_back(obj);
         }
 
-        void Scene::removeObj(ECS::GameObject *obj)
+        void Scene::removeObject(ECS::GameObject *obj)
         {
             for (int i = 0; i < objs.size(); i++)
             {
@@ -110,7 +110,7 @@ namespace Pontilus
                 }
             }
         }
-        void Scene::removeObj(int id)
+        void Scene::removeObject(int id)
         {
             for (int i = 0; i < objs.size(); i++)
             {
@@ -122,6 +122,15 @@ namespace Pontilus
                 }
             }
             __pWarning("Could not remove object of id %d from scene %p.", id, this);
+        }
+
+        void Scene::updateObjects(double dt)
+        {
+            for (int i = 0; i < this->objs.size(); i++)
+            {
+                this->objs.at(i)->update(dt);
+            }
+            this->updateSceneGraphics();
         }
 
         Scene Scenes::defaultScene = 
@@ -145,8 +154,6 @@ namespace Pontilus
 
                 defaultScene.objs.push_back(&defaultLogo);
                 defaultScene.objs.push_back(&defaultMessage);
-
-                updateSceneGraphics(defaultScene);
             },
             [](double dt)
             {
@@ -226,8 +233,6 @@ namespace Pontilus
                 toBeAnimated.addComponent(animator);
 
                 animation.objs.push_back(&toBeAnimated);
-
-                updateSceneGraphics(animation);
             },
             [](double dt)
             {
@@ -237,7 +242,6 @@ namespace Pontilus
                 if (time > 0.5)
                 {
                     animator.next();
-                    updateSceneGraphics(animation);
 
                     time = 0.0;
                 }
@@ -284,8 +288,6 @@ namespace Pontilus
                 pog.objs.push_back(&ball);
                 pog.objs.push_back(&lScore);
                 pog.objs.push_back(&rScore);
-
-                updateSceneGraphics(pog);
             },
             [](double dt)
             {
@@ -362,8 +364,6 @@ namespace Pontilus
 
                 lScoreText.text = std::to_string(lScoreNum);
                 rScoreText.text = std::to_string(rScoreNum);
-
-                updateSceneGraphics(pog);
             },
             []()
             {
@@ -402,8 +402,6 @@ namespace Pontilus
                 //s.objs.push_back(g3);
                 //s.objs.push_back(g4);
                 //s.objs.push_back(t1);
-
-                updateSceneGraphics(debug);
             },
             [](double dt)
             {

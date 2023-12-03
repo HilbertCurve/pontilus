@@ -75,6 +75,18 @@ namespace Pontilus
 
                 __pWarning("Component of type %s not found in GameObject %p.", ti.name(), this);
             }
+
+            void GameObject::update(double dt)
+            {
+                for (int i = 0; i < this->components.size(); i++)
+                {
+                    Component *c = this->components.at(i);
+                    if (int err = c->update(dt) != 0)
+                    {
+                        __pError("Update failed: error code %u\n", err);
+                    }
+                }
+            }
         }
     }
 }

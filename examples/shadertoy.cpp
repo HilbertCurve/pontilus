@@ -18,7 +18,7 @@ Engine::Scene mainScene = {
 
         graph.addComponent(r_graph);
 
-        mainScene.addObj(&graph);
+        mainScene.addObject(&graph);
 
         updateSceneGraphics(mainScene);
     },

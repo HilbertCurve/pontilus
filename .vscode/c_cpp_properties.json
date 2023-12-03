@@ -3,8 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/src",
-                "/usr/local/include/python3.11"
+                "${workspaceFolder}/src"
             ],
             "defines": [
                 "GL_GLEXT_PROTOTYPES"

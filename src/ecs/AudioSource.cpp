@@ -83,13 +83,27 @@ namespace Pontilus
             }
 
             // this function needs more comments
-            void AudioSource::updateStream()
+            int AudioSource::update(double _dt)
             {
-                if (!__pAudioCheck) return;
+                if (!__pAudioCheck) return 0;
+                if (!this->parent)
+                {
+                    __alCall(alSource3f, this->alSource(), AL_POSITION, 0.0f, 0.0f, 0.0f);
+                }
+                else
+                {
+                    auto parent = this->parent;
+                    __alCall(alSource3f, this->alSource(), AL_POSITION, parent->pos.x, parent->pos.y, parent->pos.z);
+                }
+                // TODO: velocity
+
+                
+                __alCall(alGetSourcei, this->alSource(), AL_SOURCE_STATE, &this->getState());
+
                 ALint buffersProcessed = 0;
                 __alCall(alGetSourcei, this->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
                 
-                if (buffersProcessed <= 0) return;
+                if (buffersProcessed <= 0) return 0;
 
                 while (buffersProcessed--)
                 {
@@ -100,7 +114,7 @@ namespace Pontilus
 
                     if (this->state == AL_STOPPED)
                     {
-                        return;
+                        return 0;
                     }
 
                     ALsizei dataSize = BUFFER_SIZE;
@@ -140,6 +154,7 @@ namespace Pontilus
 
                     free(data);
                 }
+                return 0;
             }
 
             void AudioSource::stop()

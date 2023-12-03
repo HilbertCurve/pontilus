@@ -7,7 +7,6 @@ namespace Pontilus
     {
         namespace ECS
         {
-            static std::vector<StateMachine *> stateMachines;
 
             void State::init(const char *name, _update callback)
             {
@@ -29,16 +28,16 @@ namespace Pontilus
                 }
 
                 this->addState(&states[0]);
-
-                stateMachines.push_back(this);
             }
 
-            void StateMachine::update(double dt)
+            int StateMachine::update(double dt)
             {
                 for (int i = 0; i < states.size(); i++)
                 {
-                    if (currentStates[i]) states[i]->callback(dt);
+                    if (currentStates[i]) states[i]->callback(dt, this->parent);
                 }
+
+                return 0;
             }
 
             int StateMachine::addState(State *state)
@@ -236,18 +235,6 @@ namespace Pontilus
                     return this->removeState(state);
                 
                 return 1;
-            }
-
-            void StateMachine::updateAll(double dt)
-            {
-                for (StateMachine *sm : stateMachines) {
-                    sm->update(dt);
-                }
-            }
-
-            namespace StateMachines
-            {
-                
             }
         }
     }

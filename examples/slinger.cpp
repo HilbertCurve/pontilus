@@ -99,7 +99,7 @@ Engine::Scene mainScene = {
         player.addComponent(r_player);
         player.addComponent(s_player);
 
-        mainScene.addObj(&player);
+        mainScene.addObject(&player);
         
         // sling
         sling.init({0.0, 8.0, 0.0}, 2, 2);
@@ -108,7 +108,7 @@ Engine::Scene mainScene = {
 
         sling.addComponent(r_sling);
 
-        mainScene.addObj(&sling);
+        mainScene.addObject(&sling);
 
         updateSceneGraphics(mainScene);
     },

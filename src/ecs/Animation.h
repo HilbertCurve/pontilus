@@ -1,4 +1,5 @@
 /* date = January 14th 2022 10:21 am */
+#pragma once
 
 #include <vector>
 
@@ -31,6 +32,8 @@ namespace Pontilus
                 bool setAnimationBounds(int start, int end);
                 bool next();
                 bool previous();
+
+                virtual int update(double dt) { return 0; }
 
                 private:
                 SpriteRenderer *spr;

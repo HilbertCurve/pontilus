@@ -65,7 +65,7 @@ class NPC : public Engine::ECS::GameObject {
         if (!timesNewRoman.filepath)
             Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 17);
 
-        if (!added) getCurrentScene()->addObj(&this->myBox);
+        if (!added) getCurrentScene()->addObject(&this->myBox);
         this->myBox.init({this->pos.x, this->pos.y + 3.0f + this->height / 2, 0.0f}, 12, 6);
         this->myBox.setText("", timesNewRoman);
     }
@@ -73,7 +73,7 @@ class NPC : public Engine::ECS::GameObject {
         if (!timesNewRoman.filepath)
             Renderer::initFont(timesNewRoman, "assets/fonts/times.ttf", 26);
 
-        if (!added) getCurrentScene()->addObj(&this->myBox);
+        if (!added) getCurrentScene()->addObject(&this->myBox);
         this->myBox.init({this->pos.x, this->pos.y + 3.0f + this->height / 2, 0.0f}, 12, 6);
         this->myBox.setText(dialog, timesNewRoman);
     }
@@ -352,9 +352,9 @@ Engine::Scene mainScene = {
         tile_placer.addComponent(r_placer);
         tile_placer.addComponent(a_placer);
 
-        mainScene.addObj(&player);
-//        mainScene.addObj(&npc);
-        mainScene.addObj(&tile_placer);
+        mainScene.addObject(&player);
+//        mainScene.addObject(&npc);
+        mainScene.addObject(&tile_placer);
 
         if (fileExists(levelFP)) {
             deserialize(levelFP);

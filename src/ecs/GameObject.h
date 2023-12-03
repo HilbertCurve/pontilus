@@ -38,6 +38,8 @@ namespace Pontilus
                 void addComponent(Component &c);
                 Component *getComponent(const std::type_info &ti);
                 void removeComponent(const std::type_info &ti);
+
+                void update(double dt);
             };
         }
     }

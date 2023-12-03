@@ -17,12 +17,9 @@ Engine::Scene mainScene = {
 
         graph.addComponent(r_graph);
 
-        mainScene.addObj(&graph);
-
-        updateSceneGraphics(mainScene);
+        mainScene.addObject(&graph);
     },
     [](double dt) {
-        updateSceneGraphics(mainScene);
     },
     []() {
 

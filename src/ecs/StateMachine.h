@@ -14,7 +14,7 @@ namespace Pontilus
         {
             class StateMachine;
 
-            typedef void (*_update)(double dt);
+            typedef void (*_update)(double dt, GameObject *parent);
             class State
             {
                 public:
@@ -36,7 +36,7 @@ namespace Pontilus
 
                 static void updateAll(double dt);
 
-                void update(double dt);
+                virtual int update(double dt);
                 int addState(State *state);
                 int addState(const char *state);
                 int removeState(State *state);
