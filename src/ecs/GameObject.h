@@ -22,6 +22,12 @@ namespace Pontilus
             class GameObject
             {
                 public:
+                GameObject() : pos{glm::vec3(0.0f, 0.0f, 0.0f)}, width{0.0f}, height{0.0f} {}
+                GameObject(glm::vec3 _pos, float _width, float _height) :
+                    pos{_pos}, width{_width}, height{_height} {}
+                
+                ~GameObject();
+
                 static int _id;
 
                 glm::vec3 pos;
@@ -35,9 +41,10 @@ namespace Pontilus
 
                 void init(glm::vec3 pos, float width, float height);
                 
-                void addComponent(Component &c);
+                void addComponent(Component *c);
                 Component *getComponent(const std::type_info &ti);
-                void removeComponent(const std::type_info &ti);
+                // returns component for you to free it at end of lifecycle
+                Component *removeComponent(const std::type_info &ti);
 
                 void update(double dt);
             };

@@ -14,6 +14,7 @@ class EnemyController : public Pontilus::Engine::ECS::StateMachine
     private:
     Pontilus::Engine::ECS::State states[1];
     public:
+    EnemyController() { this->create(); }
     void create()
     {
         Pontilus::Engine::ECS::State eControllers[] = {

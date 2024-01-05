@@ -55,6 +55,10 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "cinttypes": "cpp"
-    }
+        "cinttypes": "cpp",
+        "forward_list": "cpp",
+        "any": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.intelliSenseEngineFallback": "enabled"
 }

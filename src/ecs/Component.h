@@ -18,6 +18,7 @@ namespace Pontilus
 
                 virtual bool operator==(Component &c);
                 virtual int update(double dt) = 0;
+                virtual void clear() {};
             };
         }
     }

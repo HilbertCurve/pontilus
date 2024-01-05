@@ -3,6 +3,9 @@ FOREACH(item ${source})
   IF(${item} MATCHES "vendor/stb/*")
     LIST(REMOVE_ITEM source ${item})
   ENDIF(${item} MATCHES "vendor/stb/*")
+  IF(${item} MATCHES "vendor/json/*")
+    LIST(REMOVE_ITEM source ${item})
+  ENDIF(${item} MATCHES "vendor/json/*")
 ENDFOREACH(item)
 
 

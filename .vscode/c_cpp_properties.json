@@ -3,6 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/examples",
+                "${workspaceFolder}/examples/platformer_ext",
                 "${workspaceFolder}/src"
             ],
             "defines": [

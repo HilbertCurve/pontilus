@@ -16,7 +16,10 @@ namespace Pontilus
             class Animation : public Component
             {
                 public:
-                Animation() = default;
+                Animation(Renderer::IconMap &im, int start, int end, bool loopAtEnds)
+                {
+                    this->init(im, start, end, loopAtEnds);
+                }
 
                 // all starts and ends are inclusive
                 void init(Renderer::IconMap &im, int start, int end, bool loopAtEnds);

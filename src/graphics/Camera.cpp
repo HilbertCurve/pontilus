@@ -106,6 +106,11 @@ namespace Pontilus
             {
                 camera.rotation += glm::vec3(dpitch, dyaw, 0);
             }
+
+            void changeZoom(float dz)
+            {
+                camera.zoom += dz;
+            }
         }
     }
 }

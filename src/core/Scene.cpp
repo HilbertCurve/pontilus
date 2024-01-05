@@ -22,6 +22,7 @@ namespace Pontilus
 {
     namespace Engine
     {
+        /*
         static ECS::GameObject g1 = ECS::GameObject(); 
         static ECS::GameObject g2 = ECS::GameObject();
         static ECS::GameObject g3 = ECS::GameObject();
@@ -49,12 +50,8 @@ namespace Pontilus
         static ECS::GameObject theNoiseGenerator;
         static ECS::AudioSource theSource;
         static Audio::WAVFile *theNoise = new Audio::WAVFile();
+         */
 
-        static ECS::GameObject defaultMessage = ECS::GameObject();
-        static ECS::GameObject defaultLogo = ECS::GameObject();
-        static ECS::TextRenderer defaultText = ECS::TextRenderer();
-        static ECS::SpriteRenderer defaultIcon = ECS::SpriteRenderer();
-        static Renderer::IconMap defaultMap = Renderer::IconMap();
 
         void Scene::updateSceneGraphics()
         {
@@ -85,43 +82,25 @@ namespace Pontilus
             }
         }
 
-        void Scene::addObject(ECS::GameObject *obj)
+        Engine::ECS::GameObject &Scene::spawn()
         {
-            for (int i = 0; i < objs.size(); i++)
-            {
-                if (this->objs[i]->id == obj->id)
-                {
-                    return;
-                }
-            }
+            Engine::ECS::GameObject *obj = new Engine::ECS::GameObject();
             obj->currentScene = this;
-            this->objs.push_back(obj);
+            this->objs.emplace_back(obj);
+            return *this->objs.back();
         }
 
-        void Scene::removeObject(ECS::GameObject *obj)
+        void Scene::despawn(int id)
         {
-            for (int i = 0; i < objs.size(); i++)
+            for (int i = 0; i < this->objs.size(); i++)
             {
-                if (this->objs[i] == obj)
-                {
-                    this->objs[i]->currentScene = nullptr;
-                    this->objs.erase(objs.begin() + i);
-                    return;
-                }
-            }
-        }
-        void Scene::removeObject(int id)
-        {
-            for (int i = 0; i < objs.size(); i++)
-            {
+                ECS::GameObject *gameObject = this->objs[i];
                 if (this->objs[i]->id == id)
                 {
-                    this->objs[i]->currentScene = nullptr;
-                    this->objs.erase(objs.begin() + i);
-                    return;
+                    this->objs.erase(this->objs.begin() + i);
+                    delete gameObject;
                 }
             }
-            __pWarning("Could not remove object of id %d from scene %p.", id, this);
         }
 
         void Scene::updateObjects(double dt)
@@ -133,40 +112,9 @@ namespace Pontilus
             this->updateSceneGraphics();
         }
 
-        Scene Scenes::defaultScene = 
-        {
-            []()
-            {
-                defaultMessage.init({-30.0, 10.0, 0.0}, 40, 50);
-                defaultLogo.init({0.0, -20.0, 0.0}, 20, 16);
-                
-                Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 26);
-                Renderer::initIconMap("../assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
-
-                defaultText.init("Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().", jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f});
-
-                Renderer::Texture t = Renderer::getTexture(defaultMap, 0);
-
-                defaultIcon.init(t, {1.0f, 1.0f, 1.0f, 1.0f});
-
-                defaultMessage.addComponent(defaultText);
-                defaultLogo.addComponent(defaultIcon);
-
-                defaultScene.objs.push_back(&defaultLogo);
-                defaultScene.objs.push_back(&defaultMessage);
-            },
-            [](double dt)
-            {
-
-            },
-            []()
-            {
-
-            }
-        };
-
+        
         // tests
-
+        /*
         Scene Scenes::audioTest =
         {
             []()
@@ -186,7 +134,7 @@ namespace Pontilus
                         theSource.play(theNoise, false);
                     }
                 });
-                 */
+                 
             },
             [](double dt)
             {
@@ -211,7 +159,8 @@ namespace Pontilus
                 delete theNoise;
             }
         };
-
+*/
+/*
         Scene Scenes::animation =
         {
             []()
@@ -232,7 +181,7 @@ namespace Pontilus
                 toBeAnimated.addComponent(toBeAnimatedSpr);
                 toBeAnimated.addComponent(animator);
 
-                animation.objs.push_back(&toBeAnimated);
+                animation.objs.push_back(toBeAnimated);
             },
             [](double dt)
             {
@@ -252,7 +201,8 @@ namespace Pontilus
             }
         };
 
-
+*/
+/*
         Scene Scenes::pog = 
         {
             []()
@@ -283,11 +233,11 @@ namespace Pontilus
                 lScore.addComponent(lScoreText);
                 rScore.addComponent(rScoreText);
 
-                pog.objs.push_back(&leftPaddle);
-                pog.objs.push_back(&rightPaddle);
-                pog.objs.push_back(&ball);
-                pog.objs.push_back(&lScore);
-                pog.objs.push_back(&rScore);
+                pog.objs.push_back(leftPaddle);
+                pog.objs.push_back(rightPaddle);
+                pog.objs.push_back(ball);
+                pog.objs.push_back(lScore);
+                pog.objs.push_back(rScore);
             },
             [](double dt)
             {
@@ -370,7 +320,8 @@ namespace Pontilus
                 
             }
         };
-
+*/
+/*
         Scene Scenes::debug = 
         {
             []() 
@@ -397,8 +348,8 @@ namespace Pontilus
                 g1.addComponent(s1);
                 g2.addComponent(s2);
 
-                debug.objs.push_back(&g1);
-                debug.objs.push_back(&g2);
+                debug.objs.push_back(g1);
+                debug.objs.push_back(g2);
                 //s.objs.push_back(g3);
                 //s.objs.push_back(g4);
                 //s.objs.push_back(t1);
@@ -498,7 +449,7 @@ namespace Pontilus
                     camVelocity -= 0.3f;
                     Renderer::Camera::move(camVelocity / dt, 0, 0);
                 }
-                */
+                
 
                 //g1.toRData(quadPool, 0, Renderer::PONT_POS);
             },
@@ -507,5 +458,6 @@ namespace Pontilus
 
             }
         };
+        */
     }
 }

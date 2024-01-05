@@ -11,6 +11,13 @@ namespace Pontilus
         {
             int GameObject::_id = 0;
 
+            GameObject::~GameObject() {
+                    for (Component *c : components) {
+                        c->clear();
+                        delete c;
+                    }
+            }
+
             void GameObject::init(glm::vec3 pos, float width, float height)
             {
                 if (!id) {
@@ -23,7 +30,7 @@ namespace Pontilus
                 this->currentScene = nullptr;
             }
 
-            void GameObject::addComponent(Component &c)
+            void GameObject::addComponent(Component *c)
             {
                 for (int i = 0; i < this->components.size(); i++)
                 {
@@ -35,8 +42,8 @@ namespace Pontilus
                     }
                 }
 
-                this->components.push_back(&c);
-                c.parent = this;
+                this->components.push_back(c);
+                c->parent = this;
                 
                 if (debugMode())
                     __pMessage("Component added to gameObject %p of type %s.", this, typeid(c).name());
@@ -56,7 +63,7 @@ namespace Pontilus
                 return nullptr;
             }
 
-            void GameObject::removeComponent(const std::type_info &ti)
+            Component *GameObject::removeComponent(const std::type_info &ti)
             {
                 int i = 0;
                 for (int i = 0; i < this->components.size(); i++)
@@ -68,12 +75,13 @@ namespace Pontilus
                         ca->parent = nullptr;
                         if (debugMode())
                             __pMessage("Component removed from gameObject %p of type %s.", this, ti.name());
-                        return;
+                        return ca;
                     }
                     i++;
                 }
 
                 __pWarning("Component of type %s not found in GameObject %p.", ti.name(), this);
+                return nullptr;
             }
 
             void GameObject::update(double dt)

@@ -16,12 +16,50 @@
 #include "graphics/Texture.h"
 #include "ecs/StateMachine.h"
 #include "physics2d/Physics2DController.h"
+#include "ecs/TextRenderer.h"
+#include "ecs/SpriteRenderer.h"
 
 namespace Pontilus
 {
     static _PONTILUS_SETTINGS args = 0x0000;
 
     float resolution = 512;
+
+
+        static Engine::ECS::GameObject *defaultMessage;
+        static Engine::ECS::GameObject *defaultLogo;
+        static Engine::ECS::TextRenderer *defaultText;
+        static Engine::ECS::SpriteRenderer *defaultIcon;
+        static Renderer::IconMap defaultMap = Renderer::IconMap();
+        static Renderer::Font jetBrainsMono;
+    Engine::Scene defaultScene = 
+        {
+            []()
+            {
+                defaultMessage = &defaultScene.spawn();
+                defaultMessage->init({0.0, 0.0, 0.0}, 40, 50);
+                defaultLogo = &defaultScene.spawn();
+                defaultLogo->init({0.0, -20.0, 0.0}, 20, 16);
+                
+                Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 26);
+                Renderer::initIconMap("../assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
+                
+                Renderer::Texture t = Renderer::getTexture(defaultMap, 0);
+
+                defaultMessage->addComponent(new Engine::ECS::TextRenderer(
+                    "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
+                    jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f}));
+                defaultLogo->addComponent(new Engine::ECS::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
+            },
+            [](double dt)
+            {
+
+            },
+            []()
+            {
+
+            }
+        };
 
 
     // i'd prefer to keep this private; there are some quirks with getting and setting this variable i'd rather automate
@@ -130,7 +168,7 @@ namespace Pontilus
         Renderer::start();
         Audio::initAudio();
 
-        setCurrentScene(Engine::Scenes::defaultScene);
+        setCurrentScene(defaultScene);
 
         // say hi
         __pMessage("Hello: %s\n", glGetString(GL_VERSION));

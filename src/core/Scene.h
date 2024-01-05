@@ -27,10 +27,12 @@ namespace Pontilus
 
             void toRData(Renderer::rData &r, unsigned int rOffset);
 
-            std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>(0);
-            void addObject(ECS::GameObject *obj);
-            void removeObject(ECS::GameObject *obj);
-            void removeObject(int id);
+            std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>();
+            ECS::GameObject &spawn();
+            void despawn(int id);
+            // DEPRECATED: use spawns
+            // void addObject(ECS::GameObject obj);
+            // void removeObject(int id);
 
             void updateObjects(double dt);
 
@@ -38,17 +40,8 @@ namespace Pontilus
 
             private:
             void updateSceneGraphics();
+            void freeObjects();
         };
-
-        namespace Scenes
-        {
-            extern Scene defaultScene;
-            // tests
-            extern Scene audioTest;
-            extern Scene animation;
-            extern Scene pog;
-            extern Scene debug;
-        }
     }
 }
 

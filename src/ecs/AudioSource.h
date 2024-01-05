@@ -21,10 +21,10 @@ namespace Pontilus
                 void init();
                 void play(Audio::WAVFile &f, bool looping);
                 virtual int update(double dt);
+                virtual void clear();
                 void stop();
                 ALuint alSource();
                 ALint &getState();
-                void clear();
 
                 private:
                 ALuint source;

@@ -24,7 +24,10 @@ namespace Pontilus
             class TextRenderer : public Component, public Renderer::Renderable
             {
                 public:
-                TextRenderer() = default;
+                TextRenderer(const char *text, Renderer::Font &f, glm::vec4 color)
+                {
+                    this->init(text, f, color);
+                }
                 void init(const char *text, Renderer::Font &f, glm::vec4 color);
                 Renderer::Font *font;
                 glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -34,7 +37,7 @@ namespace Pontilus
                 int toRData(Renderer::rData &r, unsigned int rOffset);
                 void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property);
 
-                virtual int update(double dt) { return 0; }
+                virtual int update(double _dt) { return 0; }
             };
         }
     }

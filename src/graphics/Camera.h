@@ -42,6 +42,7 @@ namespace Pontilus
             void move(float dx, float dy, float dz);
             void setPosition(float x, float y, float z);
             void rotate(float dpitch, float dyaw);
+            void changeZoom(float dz);
         }
     }
 }

@@ -32,6 +32,8 @@ namespace Pontilus
                 int count;
                 std::vector<bool> currentStates;
 
+                StateMachine() = default;
+                StateMachine(State* states, int count) { this->init(states, count); }
                 void init(State *states, int count);
 
                 static void updateAll(double dt);

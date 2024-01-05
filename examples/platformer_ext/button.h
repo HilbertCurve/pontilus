@@ -8,4 +8,4 @@ class Button : public GameObject
 {
     bool toggled, highlighted;
     
-}
+};
