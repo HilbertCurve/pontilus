@@ -95,7 +95,7 @@ namespace Pontilus
             for (int i = 0; i < this->objs.size(); i++)
             {
                 ECS::GameObject *gameObject = this->objs[i];
-                if (this->objs[i]->id == id)
+                if (gameObject->id == id)
                 {
                     this->objs.erase(this->objs.begin() + i);
                     delete gameObject;
@@ -112,6 +112,13 @@ namespace Pontilus
             this->updateSceneGraphics();
         }
 
+        void Scene::freeObjects()
+        {
+            for (Engine::ECS::GameObject *obj : this->objs) {
+                delete obj;
+            }
+            this->objs.clear();
+        }
         
         // tests
         /*

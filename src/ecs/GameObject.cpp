@@ -12,27 +12,19 @@ namespace Pontilus
             int GameObject::_id = 0;
 
             GameObject::~GameObject() {
-                    for (Component *c : components) {
+                for (Component *c : components) {
+                    if (!c->isSingleton())
                         c->clear();
-                        delete c;
-                    }
-            }
 
-            void GameObject::init(glm::vec3 pos, float width, float height)
-            {
-                if (!id) {
-                    __pWarning("Initialization of GameObject %p without id.", this);
+                    delete c; // uh oh
                 }
-                this->pos = pos;
-                this->width = width;
-                this->height = height;
-                this->components.erase(components.begin(), components.end());
-                this->currentScene = nullptr;
+
+                __pMessage("GameObject of id %u deleted.", this->id);
             }
 
             void GameObject::addComponent(Component *c)
             {
-                for (int i = 0; i < this->components.size(); i++)
+                for (uint32_t i = 0; i < this->components.size(); i++)
                 {
                     Component *ca = this->components.at(i);
                     if (typeid(*ca) == typeid(c))
@@ -51,7 +43,7 @@ namespace Pontilus
 
             Component *GameObject::getComponent(const std::type_info &ti)
             {
-                for (int i = 0; i < this->components.size(); i++)
+                for (uint32_t i = 0; i < this->components.size(); i++)
                 {
                     Component &ca = *this->components.at(i);
                     if (typeid(ca) == ti)
@@ -65,12 +57,12 @@ namespace Pontilus
 
             Component *GameObject::removeComponent(const std::type_info &ti)
             {
-                int i = 0;
-                for (int i = 0; i < this->components.size(); i++)
+                for (uint32_t i = 0; i < this->components.size(); i++)
                 {
                     Component *ca = this->components.at(i);
                     if (typeid(*ca) == ti)
                     {
+                        // TODO: proper clearing!
                         this->components.erase(this->components.begin() + i);
                         ca->parent = nullptr;
                         if (debugMode())
@@ -86,7 +78,7 @@ namespace Pontilus
 
             void GameObject::update(double dt)
             {
-                for (int i = 0; i < this->components.size(); i++)
+                for (uint32_t i = 0; i < this->components.size(); i++)
                 {
                     Component *c = this->components.at(i);
                     if (int err = c->update(dt) != 0)

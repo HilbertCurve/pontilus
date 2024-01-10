@@ -7,7 +7,6 @@
 #include <ecs/StateMachine.h>
 #include <ecs/TextRenderer.h>
 #include <graphics/Camera.h>
-#include <utils/PMath.h>
 
 #include <sys/stat.h>
 

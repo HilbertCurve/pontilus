@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "graphics/rData.h"
 #include <typeinfo>
+#include "ecs/Transform.h"
 
 namespace Pontilus
 {
@@ -33,31 +34,33 @@ namespace Pontilus
 
                 int stride = rOffset * getLayoutLen(r) * 4;
 
-                glm::mat4 rotation = glm::rotate(parent->rotation.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
-                                     glm::rotate(parent->rotation.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
-                                     glm::rotate(parent->rotation.z, glm::vec3{0.0f, 0.0f, 1.0f});
-                glm::mat4 translation = glm::translate(parent->pos);
+                Transform t = *(Transform*)parent->getComponent(typeid(Transform));
+
+                glm::mat4 rotation = glm::rotate(t.rot.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
+                                     glm::rotate(t.rot.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
+                                     glm::rotate(t.rot.z, glm::vec3{0.0f, 0.0f, 1.0f});
+                glm::mat4 translation = glm::translate(t.pos);
                 for (int i = 0; i < 4; i++)
                 {
                     glm::vec3 orientation;
                     switch (i)
                     {
-                        case 0: orientation = {1.0f * parent->width, 1.0f * parent->height, 0.0f}; break;
-                        case 1: orientation = {0.0f * parent->width, 1.0f * parent->height, 0.0f}; break;
-                        case 2: orientation = {0.0f * parent->width, 0.0f * parent->height, 0.0f}; break;
-                        case 3: orientation = {1.0f * parent->width, 0.0f * parent->height, 0.0f}; break;
+                        case 0: orientation = {1.0f * t.whd.x, 1.0f * t.whd.y, 0.0f}; break;
+                        case 1: orientation = {0.0f * t.whd.x, 1.0f * t.whd.y, 0.0f}; break;
+                        case 2: orientation = {0.0f * t.whd.x, 0.0f * t.whd.y, 0.0f}; break;
+                        case 3: orientation = {1.0f * t.whd.x, 0.0f * t.whd.y, 0.0f}; break;
                     }
 
 
                     off_len result = getAttribMetaData(r, PONT_POS);
                     if (result.second >= 3 * sizeof(float))
                     {
-                        glm::vec3 t_orient = translation * rotation * glm::vec4(orientation - glm::vec3(0.5f * parent->width, 0.5f * parent->height, 0.0f), 1.0f);
+                        glm::vec3 t_orient = translation * rotation * glm::vec4(orientation - glm::vec3(0.5f * t.whd.x, 0.5f * t.whd.y, 0.0f), 1.0f);
 
                         memcpy((char *) r.data + result.first + stride, value_ptr(t_orient), 3 * sizeof(float));
                         //for (int j = 0; j < 3; j++)
                         //{
-                        //    ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&parent->pos)[j];
+                        //    ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&t.pos)[j];
                         //}
                     }
                     
@@ -74,8 +77,8 @@ namespace Pontilus
                     
                     if (result.second >= 2 * sizeof(float))
                     {
-                        orientation.x /= parent->width;
-                        orientation.y /= parent->height;
+                        orientation.x /= t.whd.x;
+                        orientation.y /= t.whd.y;
                         for (int j = 0; j < 2; j++)
                         {
                             ((float *)((char *)r.data + result.first + stride))[j] = this->tex.source == nullptr ? 0.0 : this->tex.texCoords[j + i * 2];
@@ -109,6 +112,8 @@ namespace Pontilus
 
                 int offset = rOffset * 4 * getLayoutLen(r);
                 
+                Transform t = *(Transform*)parent->getComponent(typeid(Transform));
+
                 off_len result = getAttribMetaData(r, property);
                 for (int i = 0; i < 4; i++)
                 {
@@ -116,10 +121,10 @@ namespace Pontilus
                     glm::vec3 orientation;
                     switch (i)
                     {
-                        case 0: orientation = {1.0f * parent->width, 1.0f * parent->height, 0.0f}; break;
-                        case 1: orientation = {0.0f * parent->width, 1.0f * parent->height, 0.0f}; break;
-                        case 2: orientation = {0.0f * parent->width, 0.0f * parent->height, 0.0f}; break;
-                        case 3: orientation = {1.0f * parent->width, 0.0f * parent->height, 0.0f}; break;
+                        case 0: orientation = {1.0f * t.whd.x, 1.0f * t.whd.y, 0.0f}; break;
+                        case 1: orientation = {0.0f * t.whd.x, 1.0f * t.whd.y, 0.0f}; break;
+                        case 2: orientation = {0.0f * t.whd.x, 0.0f * t.whd.y, 0.0f}; break;
+                        case 3: orientation = {1.0f * t.whd.x, 0.0f * t.whd.y, 0.0f}; break;
                     }
 
                     switch (property)
@@ -128,14 +133,14 @@ namespace Pontilus
                         {
                             if (result.second >= 3 * sizeof(float))
                             {
-                                parent->pos += orientation - glm::vec3{parent->width / 2, parent->height / 2, 0.0f};
+                                t.pos += orientation - glm::vec3{t.whd.x / 2, t.whd.y / 2, 0.0f};
 
                                 for (int j = 0; j < 3; j++)
                                 {
-                                    ((float *)((char *)r.data + result.first + offset))[j] = ((float *)&parent->pos)[j];
+                                    ((float *)((char *)r.data + result.first + offset))[j] = ((float *)&t.pos)[j];
                                 }
 
-                                parent->pos -= orientation - glm::vec3{parent->width / 2, parent->height / 2, 0.0f};
+                                t.pos -= orientation - glm::vec3{t.whd.x / 2, t.whd.y / 2, 0.0f};
                             }
                         } break;
                         case PONT_COLOR:
@@ -152,8 +157,8 @@ namespace Pontilus
                         {
                             if (result.second >= 2 * sizeof(float))
                             {
-                                orientation.x /= parent->width;
-                                orientation.y /= parent->height;
+                                orientation.x /= t.whd.x;
+                                orientation.y /= t.whd.y;
                                 for (int j = 0; j < 2; j++)
                                 {
                                     *(float *)((char *)r.data + result.first + offset) = this->tex.texCoords[j + i * 2];

@@ -1,4 +1,5 @@
 #include "ecs/TextRenderer.h"
+#include "ecs/Transform.h"
 
 namespace Pontilus
 {
@@ -21,6 +22,13 @@ namespace Pontilus
                 __pAssert(this->font != nullptr, "Text must be initialized with a font.");
 
                 int stride = rOffset * getLayoutLen(r) * 4;
+
+                Transform *transformPointer = (Transform *)this->parent->getComponent(typeid(Transform));
+                if (!transformPointer) {
+                    __pWarning("Attempt to render text without a transform; I don't know where to draw!");
+                    return 1;
+                }
+                Transform _t = *transformPointer;
 
                 // for each character in the text, add a default quad
                 glm::vec3 posAccumulate = {0.0f, 0.0f, 0.0f};
@@ -70,24 +78,24 @@ namespace Pontilus
                         float yDiff = 0;
                         if (this->mode == TextMode::CENTER_LEFT)
                         {
-                            xDiff = this->parent->width / 2.0f;
+                            xDiff = _t.whd.x / 2.0f;
                         }
-                        yDiff = this->parent->height / 2.0f;
+                        yDiff = _t.whd.y / 2.0f;
 
                         off_len result = getAttribMetaData(r, PONT_POS);
                         if (result.second >= 3 * sizeof(float))
                         {
                             // instead position by bottom corner
                             // also move everything down a bit
-                            this->parent->pos += orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
+                            _t.pos += orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
 
                             // TODO: just use memcpy, bonehead.
                             for (int k = 0; k < 3; k++)
                             {
-                                ((float *)((char *)r.data + result.first + stride))[k] = ((float *)&this->parent->pos)[k];
+                                ((float *)((char *)r.data + result.first + stride))[k] = ((float *)&_t.pos)[k];
                             }
 
-                            this->parent->pos -= orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
+                            _t.pos -= orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
                         }
                         
                         result = getAttribMetaData(r, PONT_COLOR);
@@ -147,7 +155,7 @@ namespace Pontilus
                     posAccumulate.x += g.width;
 
                     // if align is to the left
-                    if (nextWordLength + posAccumulate.x > this->parent->width && i + 1 < this->text.length() && this->text[i + 1] != ' ')
+                    if (nextWordLength + posAccumulate.x > _t.whd.x && i + 1 < this->text.length() && this->text[i + 1] != ' ')
                     {
                         posAccumulate.x = 0;
                         posAccumulate.y += lineHeight;

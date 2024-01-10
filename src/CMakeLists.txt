@@ -1,31 +1,26 @@
-file(GLOB_RECURSE source *.cpp)
-FOREACH(item ${source})
-  IF(${item} MATCHES "vendor/stb/*")
-    LIST(REMOVE_ITEM source ${item})
-  ENDIF(${item} MATCHES "vendor/stb/*")
-  IF(${item} MATCHES "vendor/json/*")
-    LIST(REMOVE_ITEM source ${item})
-  ENDIF(${item} MATCHES "vendor/json/*")
-ENDFOREACH(item)
 
+add_subdirectory(audio)
+add_subdirectory(core)
+add_subdirectory(ecs)
+add_subdirectory(graphics)
+# add_subdirectory(gui)
+add_subdirectory(library)
+add_subdirectory(math)
+add_subdirectory(model)
+add_subdirectory(physics2d)
+# add_subdirectory(postprocessing)
+add_subdirectory(utils)
+add_subdirectory(vendor)
 
-list(APPEND source "${CMAKE_SOURCE_DIR}/src/vendor/glad/gl.c")
+add_library(pontilus_src INTERFACE)
+target_link_libraries(pontilus_src INTERFACE audio core ecs graphics library math model utils vendor)
 
-file(GLOB_RECURSE header *.h)
-
-list(APPEND header "${CMAKE_SOURCE_DIR}/src/vendor/glad/gl.h")
-
-add_library(pontilus_src ${source} ${header})
-
-set_target_properties(pontilus_src PROPERTIES LINKER_LANGUAGE CXX)
-
-set_target_properties(pontilus_src PROPERTIES POSITION_INDEPENDENT_CODE True)
-
-target_include_directories(pontilus_src PUBLIC
+target_include_directories(pontilus_src INTERFACE
                            "${CMAKE_SOURCE_DIR}/src"
                            "${CMAKE_SOURCE_DIR}/src/vendor/glfw/include"
                            "${CMAKE_SOURCE_DIR}/src/vendor"
                            CMAKE_SYSTEM_INCLUDE_PATH
                            )
+
 
 

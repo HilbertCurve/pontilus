@@ -57,8 +57,14 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "forward_list": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "valarray": "cpp",
+        "unordered_set": "cpp",
+        "gl.h": "c",
+        "linux_joystick.h": "c",
+        "mappings.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
-    "C_Cpp.intelliSenseEngineFallback": "enabled"
+    "C_Cpp.intelliSenseEngineFallback": "enabled",
+    "C_Cpp.default.compilerPath": "/usr/bin/g++"
 }

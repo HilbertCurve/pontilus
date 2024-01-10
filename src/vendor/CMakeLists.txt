@@ -1,28 +1,31 @@
-file(GLOB source glfw/*.cpp glad/*.c)
-file(GLOB header glfw/*.h stb/*.h glad/*.h)
+file(GLOB_RECURSE source *.cpp)
+FOREACH(item ${source})
+  IF(${item} MATCHES "vendor/stb/*")
+    LIST(REMOVE_ITEM source ${item})
+  ENDIF(${item} MATCHES "vendor/stb/*")
+  IF(${item} MATCHES "vendor/json/*")
+    LIST(REMOVE_ITEM source ${item})
+  ENDIF(${item} MATCHES "vendor/json/*")
+ENDFOREACH(item)
 
-add_library(vendor ${source} ${header})
-find_package(nlohmann_json 3.2.0 REQUIRED)
-add_library(vendor nlohmann_json)
-target_link_libraries(foo PRIVATE nlohmann_json::nlohmann_json)
-
-set_target_properties(vendor PROPERTIES LINKER_LANGUAGE CXX)
-
-target_include_directories(
-    vendor
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
+file(
+    GLOB header
+    glfw/include/*.h
+    stb/*.h
 )
 
-target_include_directories(vendor PRIVATE
-                           "${CMAKE_SOURCE_DIR}/src"
-                           "${CMAKE_SOURCE_DIR}/src/vendor/glfw/include"
-                           "${CMAKE_SOURCE_DIR}/src/vendor/json/include"
-                           "${CMAKE_SOURCE_DIR}/src/vendor"
-                           CMAKE_SYSTEM_INCLUDE_PATH
-                           )
+list(APPEND source "${CMAKE_SOURCE_DIR}/src/vendor/glad/gl.c")
+list(APPEND header "${CMAKE_SOURCE_DIR}/src/vendor/glad/gl.h")
 
+add_subdirectory("${CMAKE_SOURCE_DIR}/src/vendor/glfw")
+
+find_package(nlohmann_json 3.2.0 REQUIRED)
+add_library(vendor ${source} ${header})
+target_link_libraries(vendor INTERFACE nlohmann_json::nlohmann_json glfw)
+
+set_target_properties(vendor PROPERTIES POSITION_INDEPENDENT_CODE True)
+set_target_properties(vendor PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(vendor INTERFACE pontilus_compile_flags)
+target_include_directories(vendor PRIVATE "${CMAKE_SOURCE_DIR}/src/vendor")
 
 install(FILES ${header} DESTINATION include)

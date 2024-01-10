@@ -26,6 +26,7 @@ Engine::Scene mainScene = {
 
 int main() {
     Pontilus::setDefaultShader("../assets/shaders/complex_graph.vert", "../assets/shaders/mandelbrot.frag");
+    Pontilus::setEcho(true);
 
     Pontilus::init();
     Pontilus::setCurrentScene(mainScene);

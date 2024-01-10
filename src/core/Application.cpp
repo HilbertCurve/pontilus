@@ -15,41 +15,37 @@
 #include "graphics/Font.h"
 #include "graphics/Texture.h"
 #include "ecs/StateMachine.h"
-#include "physics2d/Physics2DController.h"
 #include "ecs/TextRenderer.h"
 #include "ecs/SpriteRenderer.h"
+#include "ecs/Transform.h"
 
+// TODO: there really should be a single struct `Application` that holds a lot of the static stuff in this engine.
 namespace Pontilus
 {
     static _PONTILUS_SETTINGS args = 0x0000;
 
     float resolution = 512;
 
-
-        static Engine::ECS::GameObject *defaultMessage;
-        static Engine::ECS::GameObject *defaultLogo;
-        static Engine::ECS::TextRenderer *defaultText;
-        static Engine::ECS::SpriteRenderer *defaultIcon;
-        static Renderer::IconMap defaultMap = Renderer::IconMap();
-        static Renderer::Font jetBrainsMono;
     Engine::Scene defaultScene = 
         {
             []()
             {
-                defaultMessage = &defaultScene.spawn();
-                defaultMessage->init({0.0, 0.0, 0.0}, 40, 50);
-                defaultLogo = &defaultScene.spawn();
-                defaultLogo->init({0.0, -20.0, 0.0}, 20, 16);
+                static Renderer::IconMap defaultMap = Renderer::IconMap();
+                static Renderer::Font jetBrainsMono;
+                Engine::ECS::GameObject &defaultMessage = defaultScene.spawn();
+                defaultMessage.addComponent(new Engine::ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
+                Engine::ECS::GameObject &defaultLogo = defaultScene.spawn();
+                defaultLogo.addComponent(new Engine::ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
                 
                 Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 26);
                 Renderer::initIconMap("../assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
                 
                 Renderer::Texture t = Renderer::getTexture(defaultMap, 0);
 
-                defaultMessage->addComponent(new Engine::ECS::TextRenderer(
+                defaultMessage.addComponent(new Engine::ECS::TextRenderer(
                     "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
                     jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f}));
-                defaultLogo->addComponent(new Engine::ECS::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
+                defaultLogo.addComponent(new Engine::ECS::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
             },
             [](double dt)
             {
@@ -75,6 +71,7 @@ namespace Pontilus
         if (currentScene != nullptr)
         {
             currentScene->clean();
+            currentScene->freeObjects();
             currentScene->objs.clear();
         }
         
@@ -198,7 +195,7 @@ namespace Pontilus
             //TODO: fixed update for updateAll() and getCurrentScene()->update()
             getCurrentScene()->updateObjects(dt);
             getCurrentScene()->update(dt);
-            Physics2D::fixedUpdate();
+            // Physics2D::fixedUpdate();
 
             // render
             Renderer::render();
@@ -217,8 +214,11 @@ namespace Pontilus
             IO::endFrame();
         }
 
-        if (getCurrentScene())
+        if (getCurrentScene()) {
             getCurrentScene()->clean();
+            getCurrentScene()->freeObjects();
+        }
+            
         Renderer::close();
         Audio::closeAudio();
 

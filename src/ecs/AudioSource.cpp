@@ -1,4 +1,5 @@
 #include "ecs/AudioSource.h"
+#include "ecs/Transform.h"
 #include "audio/AudioMaster.h"
 
 #include <AL/al.h>
@@ -30,7 +31,7 @@ namespace Pontilus
                 return this->state;
             }
 
-            void AudioSource::play(Audio::WAVFile &f, bool looping)
+            void AudioSource::play(Audio::WAVFile &f, bool _looping)
             {
                 if (!__pAudioCheck) return;
                 if (!this->parent)
@@ -69,8 +70,8 @@ namespace Pontilus
                     }
                 }
 
-                __alCall(alSourcei, this->source, AL_LOOPING, looping);
-                this->looping = looping;
+                __alCall(alSourcei, this->source, AL_LOOPING, _looping);
+                this->looping = _looping;
                 __alCall(alSourceQueueBuffers, this->source, NUM_BUFFERS_PER_FILE, &f.buffers[0]);
 
                 this->cursor = (int) fmin(NUM_BUFFERS_PER_FILE * BUFFER_SIZE, f.dataSize);
@@ -92,8 +93,8 @@ namespace Pontilus
                 }
                 else
                 {
-                    auto parent = this->parent;
-                    __alCall(alSource3f, this->alSource(), AL_POSITION, parent->pos.x, parent->pos.y, parent->pos.z);
+                    auto _transform = (Transform*) this->parent->getComponent(typeid(Transform));
+                    __alCall(alSource3f, this->alSource(), AL_POSITION, _transform->pos.x, _transform->pos.y, _transform->pos.z);
                 }
                 // TODO: velocity
 

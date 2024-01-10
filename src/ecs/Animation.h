@@ -38,6 +38,8 @@ namespace Pontilus
 
                 virtual int update(double dt) { return 0; }
 
+                virtual ~Animation() = default;
+
                 private:
                 SpriteRenderer *spr;
                 int index = 0;

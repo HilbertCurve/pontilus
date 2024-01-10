@@ -4,9 +4,11 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/src",
                 "${workspaceFolder}/examples",
                 "${workspaceFolder}/examples/platformer_ext",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/vendor/json/include",
+                "${workspaceFolder}/src",
                 "${workspaceFolder}/src"
             ],
             "defines": [

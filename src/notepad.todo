@@ -23,6 +23,15 @@ Misc:
     Best Practices:
         [ ] const-qualify appropriate functions everywhere
         [ ] Use forward declarations instead of #includes in header files
+ ___  ___  
+|        |
+|        |  REFACTOR Pontilus::Engine::ECS to Pontilus::ECS, PLEASE!!
+|___  ___|
+
+ ___  ___ 
+|        |
+|        |  SCENES SHOULDN'T HAVE FREAKING FUNCTION POINTERS AS MEMBERS! JUST USE INHERITANCE!!!
+|___  ___|
 
 Postprocessing:
     [+] PointMap.cpp - a way to update/process points
@@ -38,10 +47,8 @@ ECS:
     [ ] Body2D.cpp - convert physics body into a component
     [ ] Separate components out of the ecs/ file and into their respective places (AudioListener into audio/, Animation into library/, etc.)
 
-UI:
-    [ ] TextRenderer.cpp - basic renderable component with a std::string field
-    [ ] TextField.cpp - a Text, but submits a key callback when focused on that updates the text inside
-    [ ] Icon.cpp - a game object with a texture handle
+UI: I personally think it should be 
+    
 
 Audio:
     [+] AudioListener.cpp - the component wrapper over the OpenAL audio listener

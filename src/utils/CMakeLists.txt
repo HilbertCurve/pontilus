@@ -3,21 +3,10 @@ file(GLOB header *.h)
 
 add_library(utils ${source} ${header})
 
+find_package(nlohmann_json 3.2.0 REQUIRED)
+set_target_properties(utils PROPERTIES POSITION_INDEPENDENT_CODE True)
 set_target_properties(utils PROPERTIES LINKER_LANGUAGE CXX)
-
-target_include_directories(
-    utils
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
-)
-
-
-target_include_directories(utils PUBLIC
-                           "${CMAKE_SOURCE_DIR}/src"
-                           "${CMAKE_SOURCE_DIR}/src/vendor/glfw/include"
-                           "${CMAKE_SOURCE_DIR}/src/vendor"
-                           CMAKE_SYSTEM_INCLUDE_PATH
-                           )
+target_link_libraries(utils pontilus_compile_flags nlohmann_json::nlohmann_json)
+target_include_directories(utils PRIVATE "${CMAKE_SOURCE_DIR}/src/vendor/json/single_include")
 
 install(FILES ${header} DESTINATION include)

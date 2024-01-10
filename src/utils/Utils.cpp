@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/glm.hpp>
-#include <nlohmann/json.hpp>
+#include <vendor/json/include/nlohmann/json.hpp>
 
 #include "graphics/Camera.h"
 #include "core/Application.h"

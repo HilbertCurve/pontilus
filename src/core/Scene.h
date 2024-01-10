@@ -21,6 +21,8 @@ namespace Pontilus
 
         struct Scene
         {
+            // SHOULD SCENE HAVE THESE????????
+            // probably not, should be inheritance. I'm fighting demons
             _init init;
             _update update;
             _clean clean;
@@ -35,12 +37,12 @@ namespace Pontilus
             // void removeObject(int id);
 
             void updateObjects(double dt);
+            void freeObjects();
 
             int numQuads = 0;
 
             private:
             void updateSceneGraphics();
-            void freeObjects();
         };
     }
 }

@@ -37,7 +37,7 @@ if (true/*echoOn()*/) {\
 }
 
 #define __pMessage(message, ...) \
-if (echoOn()) {\
+if (true/*echoOn()*/) {\
     printf("\x1B[01m\x1B[32mINFO: Message at file %s, line %d:\x1B[0m ",\
             __FILE__, __LINE__);\
     printf(message __VA_OPT__(,) __VA_ARGS__);\
@@ -87,6 +87,7 @@ namespace Pontilus
 
     nlohmann::json getJSON(const char *filepath);
 
+    // move to some math directory, or to Camera
     glm::vec3 screenToWorldCoords(const glm::vec2 screenPos);
     glm::vec3 screenToWorldSize(const glm::vec2 screenSize);
 }

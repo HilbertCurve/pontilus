@@ -15,8 +15,10 @@ namespace Pontilus
                 public:
                 static AudioListener &get();
                 virtual int update(double dt);
+                virtual bool isSingleton() { return true; }
                 private:
                 AudioListener() = default;
+                virtual ~AudioListener() = default;
             };
         }
     }

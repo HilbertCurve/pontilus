@@ -2,6 +2,7 @@
 
 #include "graphics/Renderer.h"
 #include "ecs/Component.h"
+#include "ecs/Transform.h"
 #include <glm/gtx/transform.hpp>
 #include <nlohmann/json.hpp>
 #include <string> // std::string::rfind, ::substr, ::c_str, copy constructor
@@ -68,6 +69,7 @@ namespace Pontilus
         
         static bool warned1 = false;
         static bool warned2 = false;
+        static bool warned3 = false;
         int ModelRenderer::toRData(Renderer::rData &r, unsigned int rOffset)
         {
             using namespace Renderer;
@@ -85,22 +87,28 @@ namespace Pontilus
                     __pWarning("File %s could not be opened.", binFP.c_str());
                     warned2 = true;
                 }
-                return 0;
+                return 1;
             }
 
             // fill up pos buffer
             fseek(f, posOffset, SEEK_SET);
             auto offlen = getAttribMetaData(r, PONT_POS);
             auto colorOfflen = getAttribMetaData(r, PONT_COLOR);
-            int chunkSize = (int) (posLength / posCount);
             int vertSize = getLayoutLen(r);
-            // TODO: rotation and translation can be cached with GameObject?
-            glm::mat4 rotation = glm::rotate(parent->rotation.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
-                glm::rotate(parent->rotation.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
-                glm::rotate(parent->rotation.z, glm::vec3{0.0f, 0.0f, 1.0f});
+            auto transformPointer = this->parent->getComponent(typeid(Engine::ECS::Transform));
+            if (!transformPointer) {
+                if (!warned3) {
+                    __pWarning("No transform; the monkey has no home!");
+                    warned3 = true;
+                }
+                return 2;
+            }
+            Engine::ECS::Transform t = *(Engine::ECS::Transform*)transformPointer;
+            glm::mat4 rotation = glm::rotate(t.rot.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
+                glm::rotate(t.rot.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
+                glm::rotate(t.rot.z, glm::vec3{0.0f, 0.0f, 1.0f});
             // glm::mat4 translation = glm::translate(parent->pos);
 
-            int numZero = 0;
             for (int i = 0; i < posCount; i++)
             {
                 float vertex[3];
@@ -113,7 +121,7 @@ namespace Pontilus
 
                 glmVec = rotation * glm::vec4(glmVec, 1.0f);
                 glmVec *= SCALE;
-                glmVec += parent->pos;
+                glmVec += t.pos;
 
                 memcpy(&((char *) r.data)[offlen.first + i * vertSize], (float *)&glmVec, sizeof(float) * 3);
 
