@@ -1,3 +1,5 @@
+/* date = January 10th 2024 */
+
 #pragma once
 
 #include <ecs/Component.h>
@@ -16,10 +18,10 @@ namespace Platformer
         };
         class Grounded : public PlayerState {
             public:
-            static Grounded &get() {
-                if (!_inst)
-                    _inst = new Grounded();
-                return *_inst;
+            static Grounded *get() {
+                if (!g_inst)
+                    g_inst = new Grounded();
+                return g_inst;
             }
             virtual int start();
             virtual int update(double);
@@ -27,14 +29,14 @@ namespace Platformer
             Grounded(Grounded &) = delete;
             private:
             Grounded() {}
-            static Grounded *_inst;
+            static Grounded *g_inst;
         };
         class Jumped : public PlayerState {
             public:
-            static Jumped &get() {
-                if (!_inst)
-                    _inst = new Jumped();
-                return *_inst;
+            static Jumped *get() {
+                if (!j_inst)
+                    j_inst = new Jumped();
+                return j_inst;
             }
             virtual int start();
             virtual int update(double);
@@ -42,14 +44,14 @@ namespace Platformer
             Jumped(Jumped &) = delete;
             private:
             Jumped() {}
-            static Jumped *_inst;
+            static Jumped *j_inst;
         };
         class DoubleJumped : public PlayerState {
             public:
-            static DoubleJumped &get() {
-                if (!_inst)
-                    _inst = new DoubleJumped();
-                return *_inst;
+            static DoubleJumped *get() {
+                if (!dj_inst)
+                    dj_inst = new DoubleJumped();
+                return dj_inst;
             }
             virtual int start();
             virtual int update(double);
@@ -57,7 +59,7 @@ namespace Platformer
             DoubleJumped(DoubleJumped &) = delete;
             private:
             DoubleJumped() {}
-            static DoubleJumped *_inst;
+            static DoubleJumped *dj_inst;
         };
 
         public:
@@ -68,13 +70,14 @@ namespace Platformer
         }
         Player(Player &) = delete;
         virtual int update(double);
-        int setState(PlayerState &);
+        int setState(PlayerState *);
         virtual bool isSingleton() { return true; }
         
         private:
+        void horizontalMovement();
         Player() : currentState(Grounded::get()), velocity(glm::vec3(0.0f)) { };
-        PlayerState &currentState;
+        PlayerState *currentState;
         glm::vec3 velocity;
         static Player *_inst;
-    };
+    }; // class Player
 }

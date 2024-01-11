@@ -9,7 +9,14 @@
 using namespace Pontilus::Engine::ECS;
 using namespace Pontilus::Engine;
 
-
+// next up: making player controller better: add jumping
+// then: tilemap
+// then: builder mode + saving game
+// then: enemies
+// then: interactables
+// then: levels
+// then: title
+// then: have fun!
 
 namespace Platformer
 {
