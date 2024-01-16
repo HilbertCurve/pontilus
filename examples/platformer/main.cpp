@@ -1,3 +1,4 @@
+#include "editor.h"
 #include "player.h"
 #include "tilemap.h"
 
@@ -33,8 +34,20 @@ namespace Platformer
             tilemap.addComponent(new Platformer::TileMap(2.0f, 2.0f, -1.0f));
 
             TileMap &t = *(TileMap *)tilemap.getComponent(typeid(TileMap));
-            for (int i = 0; i < 10; i++)
-                t.setTile({i, 0}, 1);
+
+            for (int x = -10; x < 10; x++) {
+                int y = 2 * x + 3;
+                t.setTile({x,y}, 1);
+            }
+            t.setTile({0,0}, 1);
+
+            ECS::GameObject &editor = primary.spawn();
+
+            editor.addComponent(new ECS::Transform({0.0, 0.0, -1.0}, {2.0, 2.0, 1.0}, {0.0, 0.0, 0.0}));
+            editor.addComponent(&Platformer::Editor::get());
+            editor.addComponent(new Renderer::SpriteRenderer({0.5, 0.5, 0.5, 1.0}));
+
+            Platformer::Editor::get().edit(t);
         },
         [](double) {
 

@@ -168,7 +168,7 @@ namespace Pontilus
         setCurrentScene(defaultScene);
 
         // say hi
-        __pMessage("Hello: %s\n", glGetString(GL_VERSION));
+        __pMessage("Hello: %s", glGetString(GL_VERSION));
     }
 
     void loop()

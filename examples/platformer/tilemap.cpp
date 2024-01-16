@@ -17,29 +17,24 @@ namespace Platformer
         this->tiles.clear();
     }
 
-    int TileMap::setTile(glm::ivec2 pos, uint32_t val) {
+    void TileMap::setTile(glm::ivec2 pos, uint32_t val) {
         for (Tile &t : this->tiles) {
             if (t.pos == pos) {
                 t.index = val;
-                return 0;
+                return;
             }
         }
 
         this->tiles.push_back(Tile {pos, val});
-
-        return 0;
     }
 
-    int TileMap::removeTile(glm::ivec2 pos) {
-
+    void TileMap::removeTile(glm::ivec2 pos) {
         for (uint32_t i = 0; i < this->tiles.size(); i++) {
             if (this->tiles[i].pos == pos) {
                 this->tiles.erase(this->tiles.begin() + i);
-                return 0;
+                break;
             }
         }
-        __pWarning("Cannot find tile! Error message please?");
-        return 1;
     }
 
     int TileMap::update(double) {

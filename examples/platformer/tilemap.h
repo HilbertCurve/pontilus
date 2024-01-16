@@ -25,14 +25,18 @@ namespace Platformer
         /**
          * This function overwrites existing tiles and creates new ones if it doesn't exist.
          */
-        int setTile(glm::ivec2 pos, uint32_t val);
+        void setTile(glm::ivec2 pos, uint32_t val);
         /**
          * Whenever this function returns a non-integer value, a debug message will
          * be printed, likely because the tile at `pos` doesn't exist.
          */
-        int removeTile(glm::ivec2 pos);
+        void removeTile(glm::ivec2 pos);
 
         virtual int update(double);
+
+        // getter
+        float width() { return tile_width; }
+        float height() { return tile_height; }
 
         private:
         struct Tile {
