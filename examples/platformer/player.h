@@ -6,7 +6,7 @@
 
 namespace Platformer
 {
-    class Player : public Pontilus::Engine::ECS::Component
+    class Player : public Pontilus::ECS::Component
     {
         // inner-class definitions, only used inside Player
         private:

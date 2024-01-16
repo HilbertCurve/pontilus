@@ -6,8 +6,8 @@
 #include <GLFW/glfw3.h>
 
 #include "core/Scene.h"
-#include "graphics/rData.h"
-#include "graphics/Font.h"
+#include "renderer/rData.h"
+#include "renderer/Font.h"
 
 namespace Pontilus
 {
@@ -26,8 +26,8 @@ namespace Pontilus
     extern Window window;
     
     // TODO: re-export stuff to make this header the public API
-    Engine::Scene *getCurrentScene();
-    void setCurrentScene(Engine::Scene &s);
+    Scene *getCurrentScene();
+    void setCurrentScene(Scene &s);
 
     void setDefaultShader(const char *vertPath, const char *fragPath);
     const char *getDefaultShader(bool oneForVert);

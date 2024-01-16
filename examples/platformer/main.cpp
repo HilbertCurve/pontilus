@@ -1,16 +1,14 @@
 #include "player.h"
+#include "tilemap.h"
 
 #include <core/Application.h>
 #include <core/Scene.h>
 #include <ecs/GameObject.h>
-#include <ecs/SpriteRenderer.h>
+#include <renderer/SpriteRenderer.h>
 #include <ecs/Transform.h>
 
-using namespace Pontilus::Engine::ECS;
-using namespace Pontilus::Engine;
+using namespace Pontilus;
 
-// next up: making player controller better: add jumping
-// then: tilemap
 // then: builder mode + saving game
 // then: enemies
 // then: interactables
@@ -22,11 +20,20 @@ namespace Platformer
 {
     static Scene primary = {
         []() {
-            GameObject &player = primary.spawn();
+            ECS::GameObject &player = primary.spawn();
 
-            player.addComponent(new Transform({0.0, 0.0, -1.0}, {4.0, 4.0, 1.0}, {0.0, 0.0, 0.0}));
+            player.addComponent(new ECS::Transform({0.0, 0.0, -1.0}, {2.0, 5.0, 1.0}, {0.0, 0.0, 0.0}));
             player.addComponent(&Platformer::Player::get());
-            player.addComponent(new SpriteRenderer({0.0, 0.0, 1.0, 1.0}));
+            player.addComponent(new Renderer::SpriteRenderer({0.0, 0.0, 1.0, 1.0}));
+
+            ECS::GameObject &tilemap = primary.spawn();
+
+            tilemap.addComponent(new ECS::Transform({0.0, 0.0, -1.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}));
+            tilemap.addComponent(new Platformer::TileMap(2.0f, 2.0f, -1.0f));
+
+            TileMap &t = *(TileMap *)tilemap.getComponent(typeid(TileMap));
+            for (int i = 0; i < 10; i++)
+                t.setTile({i, 0}, 1);
         },
         [](double) {
 

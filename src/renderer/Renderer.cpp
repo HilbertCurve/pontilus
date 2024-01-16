@@ -1,15 +1,15 @@
-#include "graphics/Renderer.h"
+#include "renderer/Renderer.h"
 
 #include <glad/gl.h>
 #include <stdio.h>
 
 #include "core/Application.h"
-#include "graphics/Shader.h"
-#include "graphics/Camera.h"
-#include "graphics/Texture.h"
-#include "graphics/Font.h"
-#include "graphics/rData.h"
-#include "graphics/Primitive.h"
+#include "renderer/Shader.h"
+#include "renderer/Camera.h"
+#include "renderer/Texture.h"
+#include "renderer/Font.h"
+#include "renderer/rData.h"
+#include "renderer/Primitive.h"
 
 namespace Pontilus
 {
@@ -231,15 +231,7 @@ namespace Pontilus
             setRData(quadPool);
 
             glBindBuffer(GL_ARRAY_BUFFER, quadPool.vbo);
-            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(*currentRData) * currentRData->vertCount, currentRData->data, GL_DYNAMIC_DRAW);
-
-            int numObjects = 0;
-
-            if (getCurrentScene() != nullptr)
-            {
-                // TODO: phase this out; rData sizes are dynamic now.
-                numObjects = getCurrentScene()->numQuads;
-            }
+            glBufferData(GL_ARRAY_BUFFER, currentRData->dataOffset, currentRData->data, GL_DYNAMIC_DRAW);
             // regenerate element buffer
             glBindVertexArray(quadPool.vao);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadPool.ebo);
@@ -276,7 +268,7 @@ namespace Pontilus
             glBindVertexArray(quadPool.vao);
             enableVertexAttribs(*currentRData);
 
-            glDrawElements(GL_TRIANGLES, numObjects * 6, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, currentRData->indexCount, GL_UNSIGNED_INT, 0);
 
             disableVertexAttribs(*currentRData);
             glBindVertexArray(0);
@@ -298,6 +290,9 @@ namespace Pontilus
                 glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
                 Renderer::unbindFont(*fontPool[i]);
             }
+
+            // reset the offset; time to reload data!
+            currentRData->dataOffset = 0;
 
             Renderer::detachShader(gameShader);
         }
@@ -363,6 +358,7 @@ namespace Pontilus
                 glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
                 Renderer::unbindFont(*fontPool[i]);
             }
+            modelPool.dataOffset = 0;
 
             Renderer::detachShader(modelShader);
         }

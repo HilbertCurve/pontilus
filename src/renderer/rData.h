@@ -4,8 +4,8 @@
 
 #include <glad/gl.h>
 
-#include "graphics/Primitive.h"
-#include "graphics/Shader.h"
+#include "renderer/Primitive.h"
+#include "renderer/Shader.h"
 #include "utils/Utils.h"
 
 namespace Pontilus
@@ -47,6 +47,8 @@ namespace Pontilus
             vAttrib *layout;
             unsigned int layoutCount;
             unsigned int vertCount;
+            // the offset in bytes one must travel to reach unused memory
+            unsigned int dataOffset = 0;
 
             // index data
             Primitive *primitive;
@@ -63,8 +65,7 @@ namespace Pontilus
         // specify how they put vertex data into an rData
         class Renderable
         {
-            virtual int toRData(Renderer::rData &r, unsigned int rOffset) = 0;
-            virtual void toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property) = 0;
+            virtual int toRData(Renderer::rData &r) = 0;
         };
 
         void initRData(rData &r, unsigned int numVerts, Primitive *p);

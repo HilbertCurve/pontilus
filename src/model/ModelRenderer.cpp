@@ -1,6 +1,6 @@
 #include "model/ModelRenderer.h"
 
-#include "graphics/Renderer.h"
+#include "renderer/Renderer.h"
 #include "ecs/Component.h"
 #include "ecs/Transform.h"
 #include <glm/gtx/transform.hpp>
@@ -95,7 +95,7 @@ namespace Pontilus
             auto offlen = getAttribMetaData(r, PONT_POS);
             auto colorOfflen = getAttribMetaData(r, PONT_COLOR);
             int vertSize = getLayoutLen(r);
-            auto transformPointer = this->parent->getComponent(typeid(Engine::ECS::Transform));
+            auto transformPointer = this->parent->getComponent(typeid(ECS::Transform));
             if (!transformPointer) {
                 if (!warned3) {
                     __pWarning("No transform; the monkey has no home!");
@@ -103,7 +103,7 @@ namespace Pontilus
                 }
                 return 2;
             }
-            Engine::ECS::Transform t = *(Engine::ECS::Transform*)transformPointer;
+            ECS::Transform t = *(ECS::Transform*)transformPointer;
             glm::mat4 rotation = glm::rotate(t.rot.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
                 glm::rotate(t.rot.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
                 glm::rotate(t.rot.z, glm::vec3{0.0f, 0.0f, 1.0f});

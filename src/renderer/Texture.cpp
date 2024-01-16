@@ -1,4 +1,4 @@
-#include "graphics/Texture.h"
+#include "renderer/Texture.h"
 
 #include <math.h>
 #include <glm/glm.hpp>
@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include "graphics/Renderer.h"
+#include "renderer/Renderer.h"
 
 namespace Pontilus
 {

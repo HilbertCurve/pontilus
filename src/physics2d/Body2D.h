@@ -4,7 +4,7 @@
 
 // #include <glm/glm.hpp>
 // #include "ecs/Component.h"
-// #include "graphics/Renderer.h"
+// #include "renderer/Renderer.h"
 
 // #define IMMOVABLE 0.0f
 

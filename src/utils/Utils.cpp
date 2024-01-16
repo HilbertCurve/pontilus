@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <vendor/json/include/nlohmann/json.hpp>
 
-#include "graphics/Camera.h"
+#include "renderer/Camera.h"
 #include "core/Application.h"
 
 namespace Pontilus

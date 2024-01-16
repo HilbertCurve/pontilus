@@ -4,7 +4,7 @@
 // #include <core/Application.h>
 // #include <ecs/GameObject.h>
 // #include <ecs/SpriteRenderer.h>
-// #include <graphics/Texture.h>
+// #include <renderer/Texture.h>
 // #include <utils/PMath.h>
 // #include <utils/Utils.h>
 

@@ -1,12 +1,12 @@
-#include "graphics/rData.h"
+#include "renderer/rData.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
 
 #include "core/Application.h"
-#include "graphics/Shader.h"
-#include "graphics/Renderer.h"
+#include "renderer/Shader.h"
+#include "renderer/Renderer.h"
 #include "utils/Utils.h"
 
 #define MAX_MESH_INDICES 1 << 14
@@ -26,6 +26,8 @@ namespace Pontilus
         // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
         void initRData(rData &r, unsigned int numVerts, Primitive *p)
         {
+            r.dataOffset = 0;
+
             r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
 
             r.layout = (vAttrib *)malloc(sizeof(vAttribDefault));
@@ -61,6 +63,7 @@ namespace Pontilus
 
         void initRData(rData &r, unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs)
         {
+            r.dataOffset = 0;
             // initialize vertex layout
             r.layoutCount = numAttribs;
 

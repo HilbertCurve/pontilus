@@ -9,14 +9,14 @@
 #include "core/Scene.h"
 #include "core/InputListener.h"
 #include "audio/AudioMaster.h"
-#include "graphics/Renderer.h"
-#include "graphics/Camera.h"
-#include "graphics/rData.h"
-#include "graphics/Font.h"
-#include "graphics/Texture.h"
-#include "ecs/StateMachine.h"
-#include "ecs/TextRenderer.h"
-#include "ecs/SpriteRenderer.h"
+#include "renderer/Renderer.h"
+#include "renderer/Camera.h"
+#include "renderer/rData.h"
+#include "renderer/Font.h"
+#include "renderer/Texture.h"
+#include "library/StateMachine.h"
+#include "renderer/TextRenderer.h"
+#include "renderer/SpriteRenderer.h"
 #include "ecs/Transform.h"
 
 // TODO: there really should be a single struct `Application` that holds a lot of the static stuff in this engine.
@@ -26,26 +26,26 @@ namespace Pontilus
 
     float resolution = 512;
 
-    Engine::Scene defaultScene = 
+    Scene defaultScene = 
         {
             []()
             {
                 static Renderer::IconMap defaultMap = Renderer::IconMap();
                 static Renderer::Font jetBrainsMono;
-                Engine::ECS::GameObject &defaultMessage = defaultScene.spawn();
-                defaultMessage.addComponent(new Engine::ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
-                Engine::ECS::GameObject &defaultLogo = defaultScene.spawn();
-                defaultLogo.addComponent(new Engine::ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
+                ECS::GameObject &defaultMessage = defaultScene.spawn();
+                defaultMessage.addComponent(new ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
+                ECS::GameObject &defaultLogo = defaultScene.spawn();
+                defaultLogo.addComponent(new ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
                 
                 Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 26);
                 Renderer::initIconMap("../assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
                 
                 Renderer::Texture t = Renderer::getTexture(defaultMap, 0);
 
-                defaultMessage.addComponent(new Engine::ECS::TextRenderer(
+                defaultMessage.addComponent(new Renderer::TextRenderer(
                     "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
                     jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f}));
-                defaultLogo.addComponent(new Engine::ECS::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
+                defaultLogo.addComponent(new Renderer::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
             },
             [](double dt)
             {
@@ -59,14 +59,14 @@ namespace Pontilus
 
 
     // i'd prefer to keep this private; there are some quirks with getting and setting this variable i'd rather automate
-    static Engine::Scene *currentScene;
+    static Scene *currentScene;
 
-    Engine::Scene *getCurrentScene()
+    Scene *getCurrentScene()
     {
         return currentScene;
     }
 
-    void setCurrentScene(Engine::Scene &s)
+    void setCurrentScene(Scene &s)
     {
         if (currentScene != nullptr)
         {

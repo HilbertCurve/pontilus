@@ -6,22 +6,19 @@
 
 namespace Pontilus
 {
-    namespace Engine
+    namespace ECS
     {
-        namespace ECS
+        class GameObject;
+
+        struct Component
         {
-            class GameObject;
+            GameObject *parent = nullptr;
 
-            struct Component
-            {
-                GameObject *parent = nullptr;
-
-                virtual bool operator==(Component &c);
-                virtual int update(double dt) = 0;
-                virtual void clear() {};
-                virtual bool isSingleton() { return false; }
-                virtual ~Component() = default;
-            };
-        }
+            virtual bool operator==(Component &c);
+            virtual int update(double dt) = 0;
+            virtual void clear() {};
+            virtual bool isSingleton() { return false; }
+            virtual ~Component() = default;
+        };
     }
 }

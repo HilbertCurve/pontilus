@@ -2,7 +2,7 @@
 add_subdirectory(audio)
 add_subdirectory(core)
 add_subdirectory(ecs)
-add_subdirectory(graphics)
+add_subdirectory(renderer)
 # add_subdirectory(gui)
 add_subdirectory(library)
 add_subdirectory(math)
@@ -13,7 +13,7 @@ add_subdirectory(utils)
 add_subdirectory(vendor)
 
 add_library(pontilus_src INTERFACE)
-target_link_libraries(pontilus_src INTERFACE audio core ecs graphics library math model utils vendor)
+target_link_libraries(pontilus_src INTERFACE audio core ecs renderer library math model utils vendor)
 
 target_include_directories(pontilus_src INTERFACE
                            "${CMAKE_SOURCE_DIR}/src"

@@ -3,7 +3,7 @@
 #pragma once
 
 #include <AL/al.h>
-#include "ecs/AudioSource.h"
+#include "audio/AudioSource.h"
 
 #define __pAudioCheck (Pontilus::Audio::hasAudioDevice)
 
@@ -14,7 +14,7 @@ namespace Pontilus
         // TODO: void getAvailableDevices();
         void initAudio();
         void updateListener();
-        void addSource(Engine::ECS::AudioSource &s);
+        void addSource(AudioSource &s);
         void updateSources();
         void closeAudio();
 

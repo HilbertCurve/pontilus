@@ -3,7 +3,7 @@
 // #include <vector>
 // #include <ecs/GameObject.h>
 // #include <ecs/SpriteRenderer.h>
-// #include <graphics/Texture.h>
+// #include <renderer/Texture.h>
 // #include <utils/Utils.h>
 
 // // This tilemap system allows for loading arrays of objects, 

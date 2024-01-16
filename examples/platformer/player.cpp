@@ -8,7 +8,7 @@ namespace Platformer
 {
     // Player singleton functions:
 
-    using namespace Pontilus::Engine::ECS;
+    using namespace Pontilus::ECS;
     int Player::setState(PlayerState *newState) {
         this->currentState->stop();
         this->currentState = newState;
@@ -73,7 +73,7 @@ namespace Platformer
     }
 
     int Player::Grounded::update(double) {
-        using namespace Pontilus::Engine::ECS;
+        using namespace Pontilus::ECS;
         // we can assume with confidence that Player's parent has a transform, as this condition was checked in Player::update()
         Player &p = Player::get();
         GameObject &g = *p.parent;
@@ -108,7 +108,7 @@ namespace Platformer
 
     // mate falls due to gravity; that's where the `double dt` comes to play; acceleration
     int Player::Jumped::update(double dt) {
-        using namespace Pontilus::Engine::ECS;
+        using namespace Pontilus::ECS;
         Player &p = Player::get();
         GameObject &o = *p.parent;
         Transform *t = (Transform *)o.getComponent(typeid(Transform));

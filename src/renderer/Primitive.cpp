@@ -1,4 +1,4 @@
-#include "graphics/Primitive.h"
+#include "renderer/Primitive.h"
 
 #include "utils/Utils.h"
 

@@ -5,7 +5,6 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/examples",
-                "${workspaceFolder}/examples/platformer_ext",
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/src/vendor/json/include",
                 "${workspaceFolder}/src",

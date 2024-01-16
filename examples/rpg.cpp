@@ -6,7 +6,7 @@
 #include <ecs/SpriteRenderer.h>
 #include <ecs/StateMachine.h>
 #include <ecs/TextRenderer.h>
-#include <graphics/Camera.h>
+#include <renderer/Camera.h>
 
 #include <sys/stat.h>
 

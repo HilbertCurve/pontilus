@@ -2,14 +2,11 @@
 
 namespace Pontilus
 {
-    namespace Engine
+    namespace ECS
     {
-        namespace ECS
+        bool Component::operator==(Component &c)
         {
-            bool Component::operator==(Component &c)
-            {
-                return typeid(*this) == typeid(c) && this == &c;
-            }
+            return typeid(*this) == typeid(c) && this == &c;
         }
     }
 }

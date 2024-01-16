@@ -319,7 +319,7 @@ typedef struct {
     ;
     Engine::ECS::GameObject *val;
 } p_GameObject;
-// graphics
+// renderer
 
 
 // module

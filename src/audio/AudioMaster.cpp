@@ -1,6 +1,6 @@
-#include "../../src/audio/AudioMaster.h"
-#include "ecs/AudioListener.h"
-#include "ecs/AudioSource.h"
+#include "audio/AudioMaster.h"
+#include "audio/AudioListener.h"
+#include "audio/AudioSource.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +16,7 @@ namespace Pontilus
         static ALCcontext *currentContext;
 
         static std::vector<WAVFile *> audioFiles;
-        static std::vector<Engine::ECS::AudioSource *> audioSources;
+        static std::vector<AudioSource *> audioSources;
 
         bool hasAudioDevice = true;
 
@@ -37,7 +37,7 @@ namespace Pontilus
             __pAssert(contextMadeCurrent, "OpenAL could not make audio context current.");
         }
 
-        void addSource(Engine::ECS::AudioSource &s)
+        void addSource(AudioSource &s)
         {
             audioSources.push_back(&s);
         }
@@ -45,7 +45,7 @@ namespace Pontilus
         void closeAudio()
         {
             if (!__pAudioCheck) return;
-            for (Engine::ECS::AudioSource *s : audioSources)
+            for (AudioSource *s : audioSources)
             {
                 s->clear();
             }

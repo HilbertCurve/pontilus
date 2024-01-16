@@ -4,46 +4,36 @@
 
 #include <vector>
 #include "ecs/GameObject.h"
-#include "graphics/rData.h"
+#include "renderer/rData.h"
 
 namespace Pontilus
 {
-    namespace Engine
+    typedef void (* _init)();
+    typedef void (* _update)(double dt);
+    typedef void (* _clean)();
+
+    namespace ECS
     {
-        typedef void (* _init)();
-        typedef void (* _update)(double dt);
-        typedef void (* _clean)();
-
-        namespace ECS
-        {
-            class GameObject;
-        }
-
-        struct Scene
-        {
-            // SHOULD SCENE HAVE THESE????????
-            // probably not, should be inheritance. I'm fighting demons
-            _init init;
-            _update update;
-            _clean clean;
-
-            void toRData(Renderer::rData &r, unsigned int rOffset);
-
-            std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>();
-            ECS::GameObject &spawn();
-            void despawn(int id);
-            // DEPRECATED: use spawns
-            // void addObject(ECS::GameObject obj);
-            // void removeObject(int id);
-
-            void updateObjects(double dt);
-            void freeObjects();
-
-            int numQuads = 0;
-
-            private:
-            void updateSceneGraphics();
-        };
+        class GameObject;
     }
+
+    struct Scene
+    {
+        // SHOULD SCENE HAVE THESE????????
+        // probably not, should be inheritance. I'm fighting demons
+        _init init;
+        _update update;
+        _clean clean;
+
+        std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>();
+        ECS::GameObject &spawn();
+        void despawn(int id);
+        // DEPRECATED: use spawns
+        // void addObject(ECS::GameObject obj);
+        // void removeObject(int id);
+
+        void updateObjects(double dt);
+        void freeObjects();
+    };
 }
 

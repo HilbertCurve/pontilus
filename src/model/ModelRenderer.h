@@ -3,14 +3,14 @@
 #pragma once
 
 #include "ecs/Component.h"
-#include "graphics/rData.h"
+#include "renderer/rData.h"
 #include <nlohmann/json.hpp>
 
 namespace Pontilus
 {
     namespace Model
     {
-        class ModelRenderer : public Engine::ECS::Component, public Renderer::Renderable
+        class ModelRenderer : public ECS::Component, public Renderer::Renderable
         {
             public:
             int toRData(Renderer::rData &r, unsigned int rOffset);

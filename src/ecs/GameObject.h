@@ -6,36 +6,33 @@
 
 #include "core/Scene.h"
 #include "ecs/Component.h"
-#include "graphics/rData.h"
-#include "graphics/Primitive.h"
-#include "graphics/Texture.h"
+#include "renderer/rData.h"
+#include "renderer/Primitive.h"
+#include "renderer/Texture.h"
 
 namespace Pontilus
 {
-    namespace Engine 
+    struct Scene;
+    namespace ECS
     {
-        struct Scene;
-        namespace ECS
+        struct Component;
+
+        class GameObject
         {
-            struct Component;
+            public:
+            ~GameObject();
+            static int _id;
+            std::vector<Component *> components = std::vector<Component *>();
+            const int id = ++_id;
+            Scene *currentScene;
+            
+            void addComponent(Component *c);
+            Component *getComponent(const std::type_info &ti);
+            // returns component for you to free it at end of lifecycle
+            Component *removeComponent(const std::type_info &ti);
 
-            class GameObject
-            {
-                public:
-                ~GameObject();
-                static int _id;
-                std::vector<Component *> components = std::vector<Component *>();
-                const int id = ++_id;
-                Engine::Scene *currentScene;
-                
-                void addComponent(Component *c);
-                Component *getComponent(const std::type_info &ti);
-                // returns component for you to free it at end of lifecycle
-                Component *removeComponent(const std::type_info &ti);
-
-                void update(double dt);
-            };
-        }
+            void update(double dt);
+        };
     }
 }
 
