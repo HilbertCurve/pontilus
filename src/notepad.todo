@@ -1,5 +1,8 @@
 Windows is hard.
 CMake makes life easier.
+But not by much on windows.
+
+I think the engine is reaching a critical point where big changes to the API should be very limited.
 
 OpenGL:
     An OpenGL program has shaders, vertex buffers, a window, a camera, mouse/keyboard callbacks, 
@@ -19,13 +22,13 @@ Misc:
     [+] rData.cpp - renderable data
     [+] Add https://github.com/kcat/openal-soft pull and install to Dockerfile
     [+] Zip together include and src directory
-    [+] Update dockerfile after refactoring
+    [ ] Update dockerfile after refactoring
     Best Practices:
         [ ] const-qualify appropriate functions everywhere
         [ ] Use forward declarations instead of #includes in header files
  ___  ___  
 |        |
-|        |  REFACTOR Pontilus::Engine::ECS to Pontilus::ECS, PLEASE!!
+|   :>   |  REFACTOR Pontilus::Engine::ECS to Pontilus::ECS, PLEASE!!
 |___  ___|
 
  ___  ___ 
@@ -45,9 +48,9 @@ ECS:
         [+] Move GameObject.color into SpriteRenderer, TextRenderer, etc.
         [+] Animation.h - a component that updates a SpriteRenderer's texture; requires the GameObject to have a SpriteRenderer
     [ ] Body2D.cpp - convert physics body into a component
-    [ ] Separate components out of the ecs/ file and into their respective places (AudioListener into audio/, Animation into library/, etc.)
+    [+] Separate components out of the ecs/ file and into their respective places (AudioListener into audio/, Animation into library/, etc.)
 
-UI: I personally think it should be 
+UI: I personally think it should be...
     
 
 Audio:
@@ -60,7 +63,7 @@ Audio:
     [ ] Audio file buffering - stream directly from the audio file
 
 AssetPool:
-    [ ] AssetPool.cpp - a way to generate audio, image, shader, font, etc. structs in one place (needed for Python)
+    [ ] AssetPool.cpp - a way to generate audio, image, shader, font, etc. structs in one place (needed for Convenience)
 
 Events:
     An event has an array of function pointers which are all called 
@@ -117,7 +120,7 @@ Pontilus Language
 
 Deployment (handling of...):
     [+] Non-existent audio drivers/devices
-    [ ] Different OpenGL versions; GLAD kinda takes care of this
+    [?] Different OpenGL versions; GLAD kinda takes care of this
     [ ] Configurable assets folder!!! Very important!
     [+] Default scene if one isn't set
 

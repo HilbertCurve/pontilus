@@ -9,6 +9,7 @@
 
 using namespace Pontilus;
 
+// next: TileMaps with textures
 // then: builder mode + saving game
 // then: enemies
 // then: interactables
