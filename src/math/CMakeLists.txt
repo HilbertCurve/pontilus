@@ -1,3 +1,12 @@
+# set project
+file(GLOB set_source set/*.cpp)
+file(GLOB set_header set/*.h)
+
+add_library(math_set ${set_source} ${set_header})
+set_target_properties(math_set PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(math_set PROPERTIES POSITION_INDEPENDENT_CODE True)
+target_link_libraries(math_set pontilus_compile_flags math_number)
+
 # geometry project
 file(GLOB geometry_source geometry/*.cpp)
 file(GLOB geometry_header geometry/*.h)
@@ -15,15 +24,6 @@ add_library(math_number ${number_source} ${number_header})
 set_target_properties(math_number PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(math_number PROPERTIES POSITION_INDEPENDENT_CODE True)
 target_link_libraries(math_number pontilus_compile_flags)
-
-# set project
-file(GLOB set_source set/*.cpp)
-file(GLOB set_header set/*.h)
-
-add_library(math_set ${set_source} ${set_header})
-set_target_properties(math_set PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(math_set PROPERTIES POSITION_INDEPENDENT_CODE True)
-target_link_libraries(math_set pontilus_compile_flags)
 
 # zipped together
 add_library(math Math.h)

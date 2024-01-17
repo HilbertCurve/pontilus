@@ -58,6 +58,19 @@ namespace Pontilus
         return *this->objs.back();
     }
 
+    ECS::GameObject &Scene::get(int id) {
+        for (int i = 0; i < this->objs.size(); i++)
+        {
+            ECS::GameObject *gameObject = this->objs[i];
+            if (gameObject->id == id)
+            {
+                return *gameObject;
+            }
+        }
+
+        __pError("Could not find GameObject of id %u.", id);
+    }
+
     void Scene::despawn(int id)
     {
         for (int i = 0; i < this->objs.size(); i++)

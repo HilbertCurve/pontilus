@@ -41,6 +41,40 @@ namespace Platformer
         return this->toRData(Pontilus::Renderer::quadPool);
     }
 
+    void TileMap::collide(const Pontilus::ECS::Transform &t, std::vector<TileMap::Tile> &out) {
+        using namespace Pontilus::ECS;
+        out = std::vector<TileMap::Tile>();
+
+        // we find all possible tiles the object could collide with
+        // start with bounds of Transform
+        glm::vec3 max3 = t.pos + t.whd / 2.0f;
+        glm::vec3 min3 = t.pos - t.whd / 2.0f;
+        // for sake of better floor detection, extend min down a bit
+        min3.y -= 0.1f;
+
+        // find outermost tile bounds, after transforming to tile space. we extend a little bit
+        // so that we only check who's centers are within the max and min
+        glm::vec3 tileWhd = glm::vec3(this->tile_width, this->tile_height, 1.0f);
+
+        max3 = glm::ceil((max3 + (tileWhd / 2.0f)) / tileWhd);
+        min3 = glm::floor((min3 - (tileWhd / 2.0f)) / tileWhd);
+
+        glm::vec2 max = glm::vec2(max3) - (1.0f / 2.0f);
+        glm::vec2 min = glm::vec2(min3) + (1.0f / 2.0f);
+
+        // with our max and min, let's loop over our tiles to see which one's are actually colliding
+        for (Tile tile : this->tiles) {
+            if (!(min.x <= tile.pos.x && tile.pos.x <= max.x)) {
+                continue;
+            }
+            if (!(min.y <= tile.pos.y && tile.pos.y <= max.y)) {
+                continue;
+            }
+
+            out.push_back(tile);
+        }
+    }
+
     int TileMap::toRData(Pontilus::Renderer::rData &r) {
         using namespace Pontilus::ECS;
         using namespace Pontilus::Renderer;

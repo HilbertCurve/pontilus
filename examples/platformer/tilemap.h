@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ecs/Component.h>
+#include <ecs/Transform.h>
 #include <renderer/rData.h>
 #include <glm/glm.hpp>
 #include <map>
@@ -19,6 +20,11 @@ namespace Platformer
     class TileMap : public Pontilus::ECS::Component, public Pontilus::Renderer::Renderable
     {
         public:
+        struct Tile {
+            glm::ivec2 pos;
+            uint32_t index;
+        };
+
         TileMap() = default;
         TileMap(float tile_width, float tile_height, float z_index);
 
@@ -34,15 +40,13 @@ namespace Platformer
 
         virtual int update(double);
 
+        void collide(const Pontilus::ECS::Transform &t, std::vector<Tile> &out);
+
         // getter
         float width() { return tile_width; }
         float height() { return tile_height; }
 
         private:
-        struct Tile {
-            glm::ivec2 pos;
-            uint32_t index;
-        };
         std::vector<Tile> tiles;
         float z_index;
         float tile_width, tile_height;

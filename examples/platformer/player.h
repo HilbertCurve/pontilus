@@ -4,6 +4,8 @@
 
 #include <ecs/Component.h>
 
+#include "tilemap.h"
+
 namespace Platformer
 {
     class Player : public Pontilus::ECS::Component
@@ -70,13 +72,19 @@ namespace Platformer
         }
         Player(Player &) = delete;
         virtual int update(double);
+        glm::vec3 &getVelocity() { return this->velocity; }
         int setState(PlayerState *);
         virtual bool isSingleton() { return true; }
+        void collideWith(TileMap &t) { this->currentTileMap = &t; }
         
         private:
-        void horizontalMovement();
+        void horizontalMovement(double dt);
         Player() : currentState(Grounded::get()), velocity(glm::vec3(0.0f)) { };
+        void registerCollision(std::vector<TileMap::Tile> &tiles);
+        uint32_t clip(std::vector<TileMap::Tile> &tiles);
+        bool hasFloor();
         PlayerState *currentState;
+        TileMap *currentTileMap;
         glm::vec3 velocity;
         static Player *_inst;
     }; // class Player

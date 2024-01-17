@@ -20,6 +20,8 @@ using namespace Pontilus;
 
 namespace Platformer
 {
+    static int playerID, tilemapID, editorID;
+
     static Scene primary = {
         []() {
             ECS::GameObject &player = primary.spawn();
@@ -34,12 +36,7 @@ namespace Platformer
             tilemap.addComponent(new Platformer::TileMap(2.0f, 2.0f, -1.0f));
 
             TileMap &t = *(TileMap *)tilemap.getComponent(typeid(TileMap));
-
-            for (int x = -10; x < 10; x++) {
-                int y = 2 * x + 3;
-                t.setTile({x,y}, 1);
-            }
-            t.setTile({0,0}, 1);
+            t.setTile({0,0},1);
 
             ECS::GameObject &editor = primary.spawn();
 
@@ -48,6 +45,11 @@ namespace Platformer
             editor.addComponent(new Renderer::SpriteRenderer({0.5, 0.5, 0.5, 1.0}));
 
             Platformer::Editor::get().edit(t);
+            Platformer::Player::get().collideWith(t);
+
+            playerID = player.id;
+            tilemapID = tilemap.id;
+            editorID = editor.id;
         },
         [](double) {
 

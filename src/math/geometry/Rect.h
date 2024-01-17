@@ -9,10 +9,12 @@ namespace Pontilus
         class Rect
         {
             public:
+            Rect() = default;
+            Rect(glm::vec2 bottom_left, glm::vec2 top_right) : _bottom_left(bottom_left), _top_right(top_right) { }
             /**
              * Checks if two `Rect`s are intersecting, including at boundary.
              */
-            bool intersects(const Rect &other);
+            Rect intersect(const Rect &other);
             glm::vec2 center();
             /**
              * Returns the position of the corner at a certain `quadrant` defined by
@@ -30,6 +32,13 @@ namespace Pontilus
              * Returns a `Rect` who's sides have been pushed outward by `bezel_width` units.
              */
             Rect bezel_out(float bezel_width);
+
+            float width();
+            float height();
+
+            glm::vec2 &bottom_left() { return _bottom_left; }
+            glm::vec2 &top_right() { return _top_right; }
+
             private:
             glm::vec2 _bottom_left;
             glm::vec2 _top_right; 

@@ -62,7 +62,14 @@
         "unordered_set": "cpp",
         "gl.h": "c",
         "linux_joystick.h": "c",
-        "mappings.h": "c"
+        "mappings.h": "c",
+        "codecvt": "cpp",
+        "csignal": "cpp",
+        "set": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp",
+        "variant": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "C_Cpp.intelliSenseEngineFallback": "enabled",

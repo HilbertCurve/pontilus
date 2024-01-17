@@ -6,17 +6,23 @@ namespace Pontilus
     namespace Math
     {
         Span Span::intersect(const Span &other) {
-            Span ret = EMPTY_SPAN;
-            if (Math::between(other._start, _start, other._end)) {
-                ret = Span {_start, other._end, _start_closed, other._end_closed};
-                if (other._start == _start && !other._start_closed)
-                ret._start_closed = false;
-            } else if (Math::between(other._start, _end, other._end)) {
-                // ret = TODO 
+            // |---| = this
+            // *---* = other
+            if (this->_start <= other._end) {
+                if (this->_start >= other._start) {
+                    return Span(this->_start, fmin(this->_end, other._end));
+                } else {
+                    return Span(other._start, fmin(this->_end, other._end));
+                }
             }
 
-            return ret;
+            return EMPTY_SPAN;
         }
+
+        float Span::length() {
+            return this->_end - this->_start;
+        }
+
         const Span Span::EMPTY_SPAN = Span();
     }
 }

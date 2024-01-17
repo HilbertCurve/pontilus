@@ -27,6 +27,7 @@ namespace Pontilus
 
         std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>();
         ECS::GameObject &spawn();
+        ECS::GameObject &get(int id);
         void despawn(int id);
         // DEPRECATED: use spawns
         // void addObject(ECS::GameObject obj);
