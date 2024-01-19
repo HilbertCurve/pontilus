@@ -80,26 +80,26 @@ namespace Pontilus
             {
                 camera.position += glm::vec3(dx, dy, dz);
 
-                for (int i = 0; i < 4; i++)
-                {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        ((float *)fullWindowQuad.data)[i * 7 + j] += glm::vec3(dx, dy, dz)[j];
-                    }
-                }
+                // for (int i = 0; i < 4; i++)
+                // {
+                //     for (int j = 0; j < 3; j++)
+                //     {
+                //         ((float *)fullWindowQuad.data)[i * 7 + j] += glm::vec3(dx, dy, dz)[j];
+                //     }
+                // }
             }
 
             void setPosition(float x, float y, float z)
             {
                 camera.position = glm::vec3{x, y, z};
 
-                for (int i = 0; i < 4; i++)
-                {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        ((float *)fullWindowQuad.data)[i * 7 + j] = glm::vec3(x, y, z)[j];
-                    }
-                }
+                // for (int i = 0; i < 4; i++)
+                // {
+                //     for (int j = 0; j < 3; j++)
+                //     {
+                //         ((float *)fullWindowQuad.data)[i * 7 + j] = glm::vec3(x, y, z)[j];
+                //     }
+                // }
             }
 
             void rotate(float dpitch, float dyaw)

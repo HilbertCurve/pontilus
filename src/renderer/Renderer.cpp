@@ -15,138 +15,15 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        // quad pool:
-        Renderer::rData quadPool = {};
 
-        Renderer::rData modelPool = {};
-        Renderer::vAttrib modelPoolAttribs[3] =
-        {
-            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 },
-            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 },
-            { Renderer::PONT_OTHER, Renderer::PONT_FLOAT, 3 }
-        };
-
-        // debug line pool:
-        Renderer::rData linePool = {};
-        Renderer::vAttrib linePoolAttribs[2] = 
-        {
-            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 },
-            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 }
-        };
-
-        // fullScreenQuad
-        Renderer::rData fullWindowQuad = {};
-        Renderer::vAttrib fullWindowQuadAttribs[2] = 
-        {
-            { Renderer::PONT_POS, Renderer::PONT_FLOAT, 3 },
-            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 }
-        };
-
-        static void initQuads()
-        {
-            Renderer::initRData(quadPool, 40000, &Primitives::QUAD);
-            Renderer::initRData(modelPool, 4000, &Primitives::MESH, modelPoolAttribs, 3);
-
-            Renderer::initRData(fullWindowQuad, 4, &Primitives::QUAD, fullWindowQuadAttribs, 2);
-            glm::vec3 orientation;
-
-            for (int i = 0; i < 4; i++)
-            {
-                float r = Renderer::Camera::projectionWidth/2;
-                float u = Renderer::Camera::projectionHeight/2;
-                switch (i)
-                {
-                    case 0: orientation = { r,  u, 0.0f}; break;
-                    case 1: orientation = {-r,  u, 0.0f}; break;
-                    case 2: orientation = {-r, -u, 0.0f}; break;
-                    case 3: orientation = { r, -u, 0.0f}; break;
-                }
-                for (int j = 0; j < 3; j++)
-                {
-                    ((float *)fullWindowQuad.data)[i * 7 + j] = orientation[j];
-                }
-
-                for (int j = 0; j < 4; j++)
-                {
-                    ((float *)fullWindowQuad.data)[i * 7 + j + 3] = 0.00f;
-                }
-            }
-        }
-
-        static void initLines()
-        {
-            Renderer::initRData(linePool, 1000, &Primitives::LINE, linePoolAttribs, 2);
-        }
-
-        static void cleanQuads()
-        {
-            free(quadPool.data);
-            free(quadPool.layout);
-        }
-
-        static void cleanLines()
-        {
-            free(linePool.data);
-            free(linePool.layout);
-        }
-
-        // pointLight pool
-        Renderer::rData pointLightPool = {};
-        static Renderer::vAttrib pointLightAttributes[3] = 
-        {
-            { Renderer::PONT_POS,   Renderer::PONT_FLOAT, 3 },
-            { Renderer::PONT_COLOR, Renderer::PONT_FLOAT, 4 },
-            { Renderer::PONT_OTHER, Renderer::PONT_FLOAT, 1 }
-        };
-
-        static void initPointLights()
-        {
-            Renderer::initRData(pointLightPool, 16, &Primitives::NONE, pointLightAttributes, 3);
-        }
-
-        static void cleanPointLights()
-        {
-            free(pointLightPool.data);
-            free(pointLightPool.layout);
-        }
-
-        // Texture pool:
-        Renderer::IconMap *iconPool[8];
-        int iconPoolStackPointer = 0;
-
-        static void initTexPool()
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                iconPool[i] = nullptr;
-            }
-        }
-
-        static void cleanTexPool()
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                iconPool[i] = nullptr;
-            }
-        }
-
-        Renderer::Font *fontPool[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-        int fontPoolStackPointer = 0;
-
-        static Renderer::rData *currentRData;
-
-        static const GLint texSlots[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-
+/*
         Renderer::Shader gameShader;
         Renderer::Shader modelShader;
         Renderer::Shader postShader;
         Renderer::Shader debugShader;
+*/
 
-        static void setRData(Renderer::rData &r)
-        {
-            currentRData = &r;
-        }
-
+        // these are private functions, only for renderer code
         static void enableVertexAttribs(Renderer::rData &r)
         {
             u_int64_t propOffset = 0;
@@ -155,7 +32,7 @@ namespace Pontilus
                 int propertyLen = r.layout[i].count;
                 Renderer::vPropType type = r.layout[i].type;
 
-                glVertexAttribPointer(i, propertyLen, GL_FLOAT, false, getLayoutLen(r), (void *)propOffset);
+                glVertexAttribPointer(i, propertyLen, GL_FLOAT, false, r.getLayoutLen(), (void *)propOffset);
                 glEnableVertexAttribArray(i);
 
                 propOffset += propertyLen * Renderer::getVTypeLen(type);
@@ -185,282 +62,189 @@ namespace Pontilus
                     GL_DYNAMIC_DRAW);
         }
 
-        void start()
+        RendererController *RendererController::inst = nullptr;
+
+        RendererController::RendererController() {
+            this->renderTargets.clear();
+            this->registerTarget(40000, &Primitives::QUAD, std::string("../assets/") + "shaders/default.vert", std::string("../assets/") + "shaders/default.frag");
+            this->registerTarget(4000, &Primitives::MESH, std::string("../assets/") + "shaders/model.vert", std::string("../assets/") + "shaders/model.frag");
+            this->registerTarget(400, &Primitives::LINE, std::string("../assets/") + "shaders/debug.vert", std::string("../assets/") + "shaders/debug.frag");
+            this->registerTarget(4, &Primitives::QUAD, std::string("../assets/") + "shaders/post.vert", std::string("../assets/") + "shaders/post.frag");
+
+            this->iconMapIDs.clear();
+            this->fontIDs.clear();
+        }
+
+        size_t RendererController::registerTarget(
+            size_t vertCount,
+            Primitive *prim,
+            std::string vertPath,
+            std::string fragPath)
         {
-            initQuads();
-            initPointLights();
-            initLines();
-            initTexPool();
+            static size_t id = 0;
+            id++;
 
-            glGenBuffers(1, &fullWindowQuad.vbo);
-            glGenBuffers(1, &linePool.vbo);
+            rData *d = new rData(vertCount, prim);
+            Shader *s = new Shader(vertPath, fragPath);
 
-            glGenBuffers(1, &fullWindowQuad.ebo);
-            glGenBuffers(1, &linePool.ebo);
+            this->preRender(*d, *s);
 
+            this->renderTargets.push_back(std::make_tuple(d, s, id));
+            return id;
+        }
+
+        RendererController::Target RendererController::getTarget(size_t id) {
+            for (auto target : renderTargets) {
+                if (std::get<2>(target) == id) {
+                    return target;
+                }
+            }
+
+            __pWarning("Render target of id %lu not found.", id);
+            return std::make_tuple(nullptr, nullptr, 0);
+        }
+
+        void RendererController::unregisterTarget(size_t id) {
+            for (size_t i = 0; i < renderTargets.size(); i++) {
+                if (std::get<2>(renderTargets[i]) == id) {
+                    renderTargets.erase(renderTargets.begin() + i);
+                    return;
+                }
+            }
+
+            __pWarning("Render target of id %lu not found.", id);
+        }
+
+        void RendererController::registerIconMap(IconMap &im) {
+            this->iconMapIDs.push_back(im.id());
+        }
+
+        void RendererController::registerFont(Font &f) {
+            this->fontIDs.push_back(f.id());
+        }
+
+        void RendererController::start() {
+            for (auto &target : renderTargets) {
+                this->preRender(*std::get<0>(target), *std::get<1>(target));
+            }
+        }
+
+        void RendererController::render() {
+            for (auto &target : renderTargets) {
+                this->render(*std::get<0>(target), *std::get<1>(target));
+            }
+        }
+
+        void RendererController::close() {
+            for (auto &target : renderTargets) {
+                std::get<1>(target)->detach();
+
+                delete std::get<0>(target);
+                delete std::get<1>(target);
+            }
+
+            this->iconMapIDs.clear();
+            this->fontIDs.clear();
+            this->renderTargets.clear();
+        }
+
+        void RendererController::preRender(rData &buffer, Shader &shader)
+        {
+            glGenBuffers(1, &buffer.vbo);
+            glGenBuffers(1, &buffer.ebo);
+            
             // GLint elementIndices[] = {3, 2, 0, 0, 2, 1};
 
-            glGenVertexArrays(1, &fullWindowQuad.vao);
-            glGenVertexArrays(1, &linePool.ebo);
+            glGenVertexArrays(1, &buffer.vao);
 
-            glBindVertexArray(fullWindowQuad.vao);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fullWindowQuad.ebo);
+            glBindVertexArray(buffer.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
-                    fullWindowQuad.indexCount * sizeof(unsigned int), 
-                    fullWindowQuad.indices, 
+                    buffer.indexCount * sizeof(unsigned int), 
+                    buffer.indices, 
                     GL_DYNAMIC_DRAW);
 
-            glBindVertexArray(linePool.ebo);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linePool.ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                    linePool.indexCount * sizeof(unsigned int),
-                    linePool.indices,
-                    GL_DYNAMIC_DRAW);
+            initRDataGLCaps(buffer);
 
-            initRDataGLCaps(quadPool);
-            initRDataGLCaps(modelPool);
-
+            /*
             gameShader = initShader(getDefaultShader(true), getDefaultShader(false));
             modelShader = initShader("../assets/shaders/model.vert", "../assets/shaders/model.frag");
             postShader = initShader("../assets/shaders/post.vert", "../assets/shaders/post.frag");
             debugShader = initShader("../assets/shaders/debug.vert", "../assets/shaders/debug.frag");
+            */
         }
 
-        void render()
-        {
-            setRData(quadPool);
+        static const int texSlots[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 
-            glBindBuffer(GL_ARRAY_BUFFER, quadPool.vbo);
-            glBufferData(GL_ARRAY_BUFFER, currentRData->dataOffset, currentRData->data, GL_DYNAMIC_DRAW);
+        void RendererController::render(rData &buffer, Shader &shader)
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo);
+            glBufferData(GL_ARRAY_BUFFER, buffer.dataOffset, buffer.data, GL_DYNAMIC_DRAW);
             // regenerate element buffer
-            glBindVertexArray(quadPool.vao);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadPool.ebo);
+            glBindVertexArray(buffer.vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                    quadPool.indexCount * sizeof(unsigned int),
-                    quadPool.indices,
+                    buffer.indexCount * sizeof(unsigned int),
+                    buffer.indices,
                     GL_DYNAMIC_DRAW);
 
-            Renderer::attachShader(gameShader);
+            shader.attach();
             // default shader uniforms
-            Renderer::uploadMat4(gameShader, "uProjection", Camera::getProjection());
-            Renderer::uploadMat4(gameShader, "uView", Camera::getView());
-            Renderer::uploadIntArr(gameShader, "uTextures", texSlots, 16);
-            Renderer::uploadFloat(gameShader, "uTime", (float)glfwGetTime());
 
-            for (int i = 0; i < 8; i++)
+            // TODO: make these members of shader
+            shader.uploadMat4("uProjection", Camera::getProjection());
+            shader.uploadMat4("uView", Camera::getView());
+            shader.uploadIntArr("uTextures", texSlots, 16);
+            shader.uploadFloat("uTime", (float)glfwGetTime());
+
+            for (GLuint id : this->iconMapIDs)
             {
-                if (iconPool[i] == nullptr || iconPool[i]->texID == 0.0f)
+                if (id == 0.0f)
                     continue;
 
-                glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
-                Renderer::bindIconMap(*iconPool[i]);
+                glActiveTexture(GL_TEXTURE0 + id);
+                glBindTexture(GL_TEXTURE_2D, id);
             }
 
-            for (int i = 0; i < 8; i++)
+            for (GLuint id : this->fontIDs)
             {
-                if (fontPool[i] == nullptr || fontPool[i]->texID == 0.0f)
+                if (id == 0.0f)
                     continue;
 
-                glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
-                Renderer::bindFont(*fontPool[i]);
+                glActiveTexture(GL_TEXTURE0 + id);
+                glBindTexture(GL_TEXTURE_2D, id);
             }
 
-            glBindVertexArray(quadPool.vao);
-            enableVertexAttribs(*currentRData);
+            glBindVertexArray(buffer.vao);
+            enableVertexAttribs(buffer);
 
-            glDrawElements(GL_TRIANGLES, currentRData->indexCount, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, buffer.indexCount, GL_UNSIGNED_INT, 0);
 
-            disableVertexAttribs(*currentRData);
+            disableVertexAttribs(buffer);
             glBindVertexArray(0);
 
-            for (int i = 0; i < 8; i++)
+            for (GLuint id : this->iconMapIDs)
             {
-                if (iconPool[i] == nullptr || iconPool[i]->texID == 0.0f)
+                if (id == 0.0f)
                     continue;
 
-                glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
-                Renderer::unbindIconMap(*iconPool[i]);
+                glActiveTexture(GL_TEXTURE0 + id);
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
 
-            for (int i = 0; i < 8; i++)
+            for (GLuint id : this->fontIDs)
             {
-                if (fontPool[i] == nullptr || fontPool[i]->texID == 0.0f)
+                if (id == 0.0f)
                     continue;
 
-                glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
-                Renderer::unbindFont(*fontPool[i]);
+                glActiveTexture(GL_TEXTURE0 + id);
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
 
             // reset the offset; time to reload data!
-            currentRData->dataOffset = 0;
+            buffer.dataOffset = 0;
 
-            Renderer::detachShader(gameShader);
-        }
-
-        void modelRender()
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, modelPool.vbo);
-            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(modelPool) * modelPool.vertCount, modelPool.data, GL_DYNAMIC_DRAW);
-
-            // regenerate element buffer
-            glBindVertexArray(modelPool.vao);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, modelPool.ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                    modelPool.indexCount * sizeof(unsigned int),
-                    modelPool.indices,
-                    GL_DYNAMIC_DRAW);
-
-            Renderer::attachShader(modelShader);
-            // default shader uniforms
-            Renderer::uploadMat4(modelShader, "uProjection", Camera::getProjection());
-            Renderer::uploadMat4(modelShader, "uView", Camera::getView());
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (iconPool[i] == nullptr || iconPool[i]->texID == 0.0f)
-                    continue;
-
-                glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
-                Renderer::bindIconMap(*iconPool[i]);
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (fontPool[i] == nullptr || fontPool[i]->texID == 0.0f)
-                    continue;
-
-                glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
-                Renderer::bindFont(*fontPool[i]);
-            }
-
-            glBindVertexArray(modelPool.vao);
-            enableVertexAttribs(modelPool);
-
-            glDrawElements(GL_TRIANGLES, modelPool.indexCount, GL_UNSIGNED_INT, 0);
-
-            disableVertexAttribs(modelPool);
-            glBindVertexArray(0);
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (iconPool[i] == nullptr || iconPool[i]->texID == 0.0f)
-                    continue;
-
-                glActiveTexture(GL_TEXTURE0 + iconPool[i]->texID);
-                Renderer::unbindIconMap(*iconPool[i]);
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (fontPool[i] == nullptr || fontPool[i]->texID == 0.0f)
-                    continue;
-
-                glActiveTexture(GL_TEXTURE0 + fontPool[i]->texID);
-                Renderer::unbindFont(*fontPool[i]);
-            }
-            modelPool.dataOffset = 0;
-
-            Renderer::detachShader(modelShader);
-        }
-
-        void postRender()
-        {
-            setRData(fullWindowQuad);
-            glBindBuffer(GL_ARRAY_BUFFER, fullWindowQuad.vbo);
-            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(fullWindowQuad) * fullWindowQuad.vertCount, fullWindowQuad.data, GL_DYNAMIC_DRAW);
-
-            glBindVertexArray(fullWindowQuad.vao);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fullWindowQuad.ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
-                    fullWindowQuad.indexCount * sizeof(unsigned int), 
-                    fullWindowQuad.indices, 
-                    GL_DYNAMIC_DRAW);
-
-            Renderer::attachShader(postShader);
-
-            float lightPos[4 * 3];
-            float lightColor[4 * 4];
-            float lightIntensity[4 * 1];
-
-            for (int i = 0; i < 4; i++)
-            {
-                // position
-                for (int j = 0; j < 3; j++)
-                {
-                    lightPos[i * 3 + j] = ((float *)pointLightPool.data)[i * 8 + j];
-                }
-
-                // color
-                for (int j = 0; j < 4; j++)
-                {
-                    lightColor[i * 4 + j] = ((float *)pointLightPool.data)[i * 8 + j + 3];
-                }
-
-                // intensity
-                lightIntensity[i] = ((float *)pointLightPool.data)[i * 8 + 7];
-            }
-
-            // printf("%f\n", lightIntensity[0]);
-
-            Renderer::uploadMat4(postShader, "uProjection", Camera::getProjection());
-            Renderer::uploadMat4(postShader, "uView", Camera::getView());
-            Renderer::uploadVec2Arr(postShader, "uCameraPos", (float *)&Camera::getPosition(), 2);
-            // printf("%f\n", Renderer::Camera::getPosition().x);
-
-            Renderer::uploadVec3Arr(postShader, "uLightPos", lightPos, 3 * 4);
-            Renderer::uploadVec4Arr(postShader, "uLightColor", lightColor, 4 * 4);
-            Renderer::uploadFloatArr(postShader, "uLightIntensity", lightIntensity, 4);
-
-            // there's probably an alternative here that I could use involving matrices, but oh well
-            Renderer::uploadVec2Arr(postShader, "uResolution", &resolution, 1);
-
-            glBindVertexArray(fullWindowQuad.vbo);
-            enableVertexAttribs(*currentRData);
-
-            glDrawElements(GL_TRIANGLES, 1 * 6, GL_UNSIGNED_INT, 0);
-
-            disableVertexAttribs(*currentRData);
-            glBindVertexArray(0);
-
-            Renderer::detachShader(postShader);
-        }
-
-        void debugRender()
-        {
-            setRData(linePool);
-
-            glBindBuffer(GL_ARRAY_BUFFER, linePool.vbo);
-            glBufferData(GL_ARRAY_BUFFER, getLayoutLen(linePool) * linePool.vertCount, linePool.data, GL_DYNAMIC_DRAW);
-
-            glBindVertexArray(linePool.ebo);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linePool.ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                    linePool.indexCount * sizeof(unsigned int),
-                    linePool.indices,
-                    GL_DYNAMIC_DRAW);
-
-            Renderer::attachShader(debugShader);
-
-            Renderer::uploadMat4(debugShader, "uProjection", Camera::getProjection());
-            Renderer::uploadMat4(debugShader, "uView", Camera::getView());
-
-            glBindVertexArray(linePool.vbo);
-            enableVertexAttribs(*currentRData);
-
-            glDrawElements(GL_LINES_ADJACENCY, 1 * 6, GL_UNSIGNED_INT, 0);
-
-            disableVertexAttribs(*currentRData);
-            glBindVertexArray(0);
-
-            Renderer::detachShader(debugShader);
-        }
-
-        void close()
-        {
-            cleanQuads();
-            cleanPointLights();
-            cleanLines();
-            cleanTexPool();
+            shader.detach();
         }
     }
 }

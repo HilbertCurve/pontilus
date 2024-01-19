@@ -38,7 +38,9 @@ namespace Platformer
     }
 
     int TileMap::update(double) {
-        return this->toRData(Pontilus::Renderer::quadPool);
+        auto quadTarget = Pontilus::Renderer::RendererController::get().getTarget(1);
+
+        return this->toRData(*std::get<0>(quadTarget));
     }
 
     void TileMap::collide(const Pontilus::ECS::Transform &t, std::vector<TileMap::Tile> &out) {
@@ -49,8 +51,6 @@ namespace Platformer
         // start with bounds of Transform
         glm::vec3 max3 = t.pos + t.whd / 2.0f;
         glm::vec3 min3 = t.pos - t.whd / 2.0f;
-        // for sake of better floor detection, extend min down a bit
-        min3.y -= 0.1f;
 
         // find outermost tile bounds, after transforming to tile space. we extend a little bit
         // so that we only check who's centers are within the max and min
@@ -111,7 +111,7 @@ namespace Platformer
 
             for (int i = 0; i < 4; i++)
                 {
-                    off_len result = getAttribMetaData(r, PONT_POS);
+                    auto result = r.getAttribMetaData(PONT_POS);
                     if (result.second >= 3 * sizeof(float))
                     {
                         memcpy((char *) r.data + result.first + stride, value_ptr(corners[i]), 3 * sizeof(float));
@@ -121,7 +121,7 @@ namespace Platformer
                         //}
                     }
                     
-                    result = getAttribMetaData(r, PONT_COLOR);
+                    result = r.getAttribMetaData(PONT_COLOR);
                     if (result.second >= 4 * sizeof(float))
                     {
                         for (int j = 0; j < 4; j++)
@@ -130,7 +130,7 @@ namespace Platformer
                         }             
                     }
 
-                    result = getAttribMetaData(r, PONT_TEXCOORD);
+                    result = r.getAttribMetaData(PONT_TEXCOORD);
                     
                     if (result.second >= 2 * sizeof(float))
                     {
@@ -143,7 +143,7 @@ namespace Platformer
                         }
                     }
 
-                    result = getAttribMetaData(r, PONT_TEXID);
+                    result = r.getAttribMetaData(PONT_TEXID);
                     if (result.second == 1 * sizeof(float)) // I'd be very confused if there was more than one texID.
                     {
                         /*
@@ -158,7 +158,7 @@ namespace Platformer
                         */
                        *(float *)((char *)r.data + result.first + stride) = 0.0f;
                     }
-                    stride += getLayoutLen(r);
+                    stride += r.getLayoutLen();
                 }
 
                 r.isDirty = true;

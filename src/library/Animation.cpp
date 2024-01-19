@@ -10,7 +10,7 @@ namespace Pontilus
 
             for (int i = start; i <= end; i++)
             {
-                this->textures.push_back(Renderer::getTexture(im, i));
+                this->textures.push_back(im.getTexture(i));
             }
         }
 
@@ -28,7 +28,7 @@ namespace Pontilus
         {
             for (int i = start; i <= end; i++)
             {
-                this->textures.push_back(Renderer::getTexture(im, i));
+                this->textures.push_back(im.getTexture(i));
             }
         }
 

@@ -21,15 +21,15 @@ namespace Pontilus
         static const char *defaultVert = "../assets/shaders/default.vert";
         static const char *defaultFrag = "../assets/shaders/default.frag";
 
-        Shader initShader(const char *vertPath, const char *fragPath)
+        Shader::Shader(std::string vertPath, std::string fragPath)
         {
             // read vertex shader source
-            FILE *vertFile = fopen(vertPath, "rb");
+            FILE *vertFile = fopen(vertPath.c_str(), "rb");
             int vertFilesize = 0;
 
             if (vertFile == nullptr)
             {
-                __pError("Could not open \"%s\".\n", vertPath);
+                __pError("Could not open \"%s\".\n", vertPath.c_str());
                 exit(-1);
             }
 
@@ -44,12 +44,12 @@ namespace Pontilus
             fclose(vertFile);
 
             // read fragment shader source
-            FILE *fragFile = fopen(fragPath, "rb");
+            FILE *fragFile = fopen(fragPath.c_str(), "rb");
             int fragFilesize = 0;
 
             if (fragFile == nullptr)
             {
-                __pError("Could not open \"%s\".\n", fragPath);
+                __pError("Could not open \"%s\".\n", fragPath.c_str());
                 exit(-1);
             }
 
@@ -63,15 +63,8 @@ namespace Pontilus
 
             fclose(fragFile);
 
-            Shader shader;
-            shader.vertexID = glCreateShader(GL_VERTEX_SHADER);
-            shader.fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
-
-            shader.vertexSource = vertCode;
-            shader.fragmentSource = fragCode;
-
-            shader.vertPath = vertPath;
-            shader.fragPath = fragPath;
+            this->vertexID = glCreateShader(GL_VERTEX_SHADER);
+            this->fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
 
             GLint result = GL_FALSE;
             int infoLogLength;
@@ -79,103 +72,104 @@ namespace Pontilus
             // Compile Vertex Shader
             if (debugMode())
             {
-                printf("Compiling vertex shader: %s\n", shader.vertPath);
+                printf("Compiling vertex shader: %s\n", vertPath.c_str());
             }
-            glShaderSource(shader.vertexID, 1, &shader.vertexSource, &vertFilesize);
-            glCompileShader(shader.vertexID);
+            const char *vertPtr = &vertCode[0];
+            glShaderSource(this->vertexID, 1, &vertPtr, &vertFilesize);
+            glCompileShader(this->vertexID);
 
             // Check Vertex Shader
-            glGetShaderiv(shader.vertexID, GL_COMPILE_STATUS, &result);
-            glGetShaderiv(shader.vertexID, GL_INFO_LOG_LENGTH, &infoLogLength);
+            glGetShaderiv(this->vertexID, GL_COMPILE_STATUS, &result);
+            glGetShaderiv(this->vertexID, GL_INFO_LOG_LENGTH, &infoLogLength);
             if (infoLogLength > 0)
             {
                 std::vector<char> vertexShaderErrorMessage(infoLogLength + 1);
-                glGetShaderInfoLog(shader.vertexID, infoLogLength, NULL, &vertexShaderErrorMessage[0]);
+                glGetShaderInfoLog(this->vertexID, infoLogLength, NULL, &vertexShaderErrorMessage[0]);
                 printf("%s\n", &vertexShaderErrorMessage[0]);
             }
 
             // compile fragment shader
             if (debugMode())
             {
-                printf("Compiling fragment shader: %s\n", shader.fragPath);
+                printf("Compiling fragment shader: %s\n", fragPath.c_str());
             }
-            glShaderSource(shader.fragmentID, 1, &shader.fragmentSource, &fragFilesize);
-            glCompileShader(shader.fragmentID);
+            const char *fragPtr = &fragCode[0];
+            glShaderSource(this->fragmentID, 1, &fragPtr, &fragFilesize);
+            glCompileShader(this->fragmentID);
 
             // check fragment shadieur
-            glGetShaderiv(shader.fragmentID, GL_COMPILE_STATUS, &result);
-            glGetShaderiv(shader.fragmentID, GL_INFO_LOG_LENGTH, &infoLogLength);
+            glGetShaderiv(this->fragmentID, GL_COMPILE_STATUS, &result);
+            glGetShaderiv(this->fragmentID, GL_INFO_LOG_LENGTH, &infoLogLength);
             if (infoLogLength > 0)
             {
                 std::vector<char> fragmentShaderErrorMessage(infoLogLength + 1);
-                glGetShaderInfoLog(shader.fragmentID, infoLogLength, NULL, &fragmentShaderErrorMessage[0]);
+                glGetShaderInfoLog(this->fragmentID, infoLogLength, NULL, &fragmentShaderErrorMessage[0]);
                 printf("%s\n", &fragmentShaderErrorMessage[0]);
             }
 
             // link to program
-            shader.shaderProgramID = glCreateProgram();
-            glAttachShader(shader.shaderProgramID, shader.vertexID);
-            glAttachShader(shader.shaderProgramID, shader.fragmentID);
-            glLinkProgram(shader.shaderProgramID);
+            this->shaderProgramID = glCreateProgram();
+            glAttachShader(this->shaderProgramID, this->vertexID);
+            glAttachShader(this->shaderProgramID, this->fragmentID);
+            glLinkProgram(this->shaderProgramID);
 
             // check linking
-            glGetShaderiv(shader.shaderProgramID, GL_LINK_STATUS, &result);
-            glGetShaderiv(shader.shaderProgramID, GL_INFO_LOG_LENGTH, &infoLogLength);
+            glGetShaderiv(this->shaderProgramID, GL_LINK_STATUS, &result);
+            glGetShaderiv(this->shaderProgramID, GL_INFO_LOG_LENGTH, &infoLogLength);
             if (infoLogLength > 0)
             {
                 std::vector<char> shaderLinkingErrorMessage(infoLogLength + 1);
-                glGetShaderInfoLog(shader.shaderProgramID, infoLogLength, NULL, &shaderLinkingErrorMessage[0]);
+                glGetShaderInfoLog(this->shaderProgramID, infoLogLength, NULL, &shaderLinkingErrorMessage[0]);
                 printf("%s\n", &shaderLinkingErrorMessage[0]);
             }
-
-            return shader;
         }
 
-        void attachShader(Shader &s)
+        void Shader::attach()
         {
             // link shader to program
-            glUseProgram(s.shaderProgramID);
-            s.beingUsed = true;
+            glUseProgram(this->shaderProgramID);
+            this->beingUsed = true;
         }
 
-        void detachShader(Shader &s)
+        void Shader::detach()
         {
             // unlink shader from program
             glUseProgram(0);
-            s.beingUsed = false;
+            this->beingUsed = false;
         }
 
-        void deleteShader(Shader &s)
+        Shader::~Shader()
         {
-            // TODO: implement deletion
+            // TODO: implement deletion??
 
-            glDeleteShader(s.vertexID);
-            glDeleteShader(s.fragmentID);
+
+            glDeleteShader(this->vertexID);
+            glDeleteShader(this->fragmentID);
         }
 
-        void uploadMat4(Shader &s, const char *name, const glm::mat4 &data)
+        void Shader::uploadMat4(const char *name, const glm::mat4 &data)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
 
             glUniformMatrix4fv(varLocation, 1, GL_FALSE, glm::value_ptr(data));
         }
 
-        void uploadFloat(Shader &s, const char *name, const float &data)
+        void Shader::uploadFloat(const char *name, const float &data)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
 
             glUniform1fv(varLocation, 1, &data);
         }
         
-        void uploadInt(Shader &s, const char *name, const int data)
+        void Shader::uploadInt(const char *name, const int data)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
 
             glUniform1i(varLocation, data);
         }
@@ -184,47 +178,47 @@ namespace Pontilus
          * Note: data is the array in question, count is the number of elements in the array to upload.
          *
          */
-        void uploadIntArr(Shader &s, const char *name, const int *data, int count)
+        void Shader::uploadIntArr(const char *name, const int *data, int count)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
 
             glUniform1iv(varLocation, count, data);
         }
 
-        void uploadFloatArr(Shader &s, const char *name, float *arr, int count)
+        void Shader::uploadFloatArr(const char *name, float *arr, int count)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
             
             glUniform1fv(varLocation, count, arr);
         }
 
-        void uploadVec2Arr(Shader &s, const char *name, float *arr, int count)
+        void Shader::uploadVec2Arr(const char *name, float *arr, int count)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
             
             glUniform2fv(varLocation, count, arr);
         }
 
-        void uploadVec3Arr(Shader &s, const char *name, float *arr, int count)
+        void Shader::uploadVec3Arr(const char *name, float *arr, int count)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
             
             glUniform3fv(varLocation, count, arr);
         }
 
-        void uploadVec4Arr(Shader &s, const char *name, float *arr, int count)
+        void Shader::uploadVec4Arr(const char *name, float *arr, int count)
         {
-            GLint varLocation = glGetUniformLocation(s.shaderProgramID, name);
-            if (!s.beingUsed)
-                attachShader(s);
+            GLint varLocation = glGetUniformLocation(this->shaderProgramID, name);
+            if (!this->beingUsed)
+                this->attach();
             
             glUniform4fv(varLocation, count, arr);
         }

@@ -4,6 +4,7 @@
 
 #include "ecs/Component.h"
 #include "renderer/rData.h"
+#include "renderer/Texture.h"
 
 namespace Pontilus
 {
@@ -12,13 +13,13 @@ namespace Pontilus
         class SpriteRenderer : public ECS::Component, public Renderer::Renderable
         {
             public:
-            SpriteRenderer() { this->init({nullptr}, glm::vec4(1.0, 1.0, 1.0, 1.0)); }
-            SpriteRenderer(Renderer::Texture t, glm::vec4 color) { this->init(t, color); }
-            SpriteRenderer(glm::vec4 color) { this->init({nullptr}, color); }
+            SpriteRenderer() { this->init(IconMap::emptyTexture(), glm::vec4(1.0, 1.0, 1.0, 1.0)); }
+            SpriteRenderer(Renderer::Texture t, glm::vec4 c) { this->init(t, c); }
+            SpriteRenderer(glm::vec4 c) { this->init(IconMap::emptyTexture(), c); }
             void init(Renderer::Texture t, glm::vec4 color);
 
-            Renderer::Texture tex = {nullptr, {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
-            glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+            Renderer::Texture tex;
+            glm::vec4 color;
             bool visible = true;
             void setVisible(bool v);
             int toRData(Renderer::rData &r);

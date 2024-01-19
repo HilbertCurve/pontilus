@@ -3,6 +3,7 @@
 #include <ecs/Component.h>
 #include <ecs/Transform.h>
 #include <renderer/rData.h>
+#include <renderer/Texture.h>
 #include <glm/glm.hpp>
 #include <map>
 
@@ -11,7 +12,7 @@ namespace Platformer
     /**
      * You may be asking: what is a TileMap?
      * Internally, it's a map from RxR -> Tile, where Tile is the set of possible tiles
-     * a TileMap can have. We include
+     * a TileMap can have.
      * Externally, it's a bunch of rectangles rendered to the screen. You can check if a certain shape
      * is colliding with the map and act accordingly.
      * Unlike with the Player, it makes sense that you can have multiple TileMaps. One for background, one
@@ -51,6 +52,7 @@ namespace Platformer
         float z_index;
         float tile_width, tile_height;
         bool errMsgPrinted;
+        Pontilus::Renderer::IconMap *im;
         virtual int toRData(Pontilus::Renderer::rData &r);
     };
 }

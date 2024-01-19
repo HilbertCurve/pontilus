@@ -26,6 +26,10 @@ Misc:
     Best Practices:
         [ ] const-qualify appropriate functions everywhere
         [ ] Use forward declarations instead of #includes in header files
+    Refactoring: Use classes and normal C++ things in:
+        [ ] Renderer
+        [ ] Audio
+        [ ] Scenes
  ___  ___  
 |        |
 |   :>   |  REFACTOR Pontilus::Engine::ECS to Pontilus::ECS, PLEASE!!

@@ -8,15 +8,7 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        struct IconMap
-        {
-            const char *filepath;
-            GLuint texID;
-            int width, height;
-            int textureWidth, textureHeight;
-            int padding;
-            bool beingUsed;
-        };
+        class IconMap;
 
         struct Texture
         {
@@ -24,11 +16,23 @@ namespace Pontilus
             float texCoords[8];
         };
 
-        void initIconMap(const char *filepath, IconMap &tex, int textureWidth, int textureHeight, int padding);
+        class IconMap
+        {
+            public:
+            IconMap(const char *filepath, int textureWidth, int textureHeight, int padding);
 
-        void bindIconMap(IconMap &t);
-        void unbindIconMap(IconMap &t);
+            Texture getTexture(int index);
+            static Texture emptyTexture();
 
-        Texture getTexture(IconMap &im, int index);
+            GLuint id() { return texID; }
+
+            private:
+
+            const char *filepath;
+            GLuint texID;
+            int width, height;
+            int textureWidth, textureHeight;
+            int padding;
+        };
     }
 }

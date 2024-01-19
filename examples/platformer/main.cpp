@@ -26,7 +26,7 @@ namespace Platformer
         []() {
             ECS::GameObject &player = primary.spawn();
 
-            player.addComponent(new ECS::Transform({0.0, 0.0, -1.0}, {2.0, 5.0, 1.0}, {0.0, 0.0, 0.0}));
+            player.addComponent(new ECS::Transform({0.0, 2.0, -1.0}, {2.0, 4.0, 1.0}, {0.0, 0.0, 0.0}));
             player.addComponent(&Platformer::Player::get());
             player.addComponent(new Renderer::SpriteRenderer({0.0, 0.0, 1.0, 1.0}));
 
@@ -37,6 +37,7 @@ namespace Platformer
 
             TileMap &t = *(TileMap *)tilemap.getComponent(typeid(TileMap));
             t.setTile({0,0},1);
+            t.setTile({0,-1},1);
 
             ECS::GameObject &editor = primary.spawn();
 

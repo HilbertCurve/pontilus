@@ -24,114 +24,113 @@ namespace Pontilus
                 /*{PONT_OTHER, PONT_FLOAT, 3}*/};
 
         // IMPORTANT!!! Keep the initialization of fields EXACTLY in this order.
-        void initRData(rData &r, unsigned int numVerts, Primitive *p)
+
+        rData::rData() {
+            *this = rData(0, &Primitives::NONE);
+        }
+
+        rData::rData(unsigned int numVerts, Primitive *p)
         {
-            r.dataOffset = 0;
+            this->dataOffset = 0;
 
-            r.layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
+            this->layoutCount = sizeof(vAttribDefault) / sizeof(vAttrib);
 
-            r.layout = (vAttrib *)malloc(sizeof(vAttribDefault));
-            for (unsigned int i = 0; i < r.layoutCount; i++)
+            this->layout = (vAttrib *)malloc(sizeof(vAttribDefault));
+            for (unsigned int i = 0; i < this->layoutCount; i++)
             {
-                r.layout[i] = vAttribDefault[i];
+                this->layout[i] = vAttribDefault[i];
             }
 
-            r.data = malloc(getLayoutLen(r) * numVerts);
-            r.vertCount = numVerts;
+            this->data = malloc(this->getLayoutLen() * numVerts);
+            this->vertCount = numVerts;
 
-            r.primitive = p;
+            this->primitive = p;
             if (p == &Primitives::NONE)
             {
-                r.indexCount = 0;
+                this->indexCount = 0;
                 return;
             }
             if (p == &Primitives::MESH)
             {
-                r.indexCount = 0;
+                this->indexCount = 0;
                 // TODO: memory efficiency and resizeable rData
-                r.indices = (int *)malloc(MAX_MESH_INDICES);
+                this->indices = (int *)malloc(MAX_MESH_INDICES);
                 return;
             }
-            int iPerElement = r.primitive->elementSize;
-            r.indexCount = ceil(numVerts / r.primitive->vertexCount) * iPerElement;
-            r.indices = (int *)malloc(r.indexCount * sizeof(unsigned int));
+            int iPerElement = this->primitive->elementSize;
+            this->indexCount = ceil(numVerts / this->primitive->vertexCount) * iPerElement;
+            this->indices = (int *)malloc(this->indexCount * sizeof(unsigned int));
 
             for (int i = 0; i < ceil(numVerts / iPerElement); i++) {
-                r.primitive->generateIndices(r.indices, i);
+                this->primitive->generateIndices(this->indices, i);
             }
         }
 
-        void initRData(rData &r, unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs)
+        rData::rData(unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs)
         {
-            r.dataOffset = 0;
+            this->dataOffset = 0;
             // initialize vertex layout
-            r.layoutCount = numAttribs;
+            this->layoutCount = numAttribs;
 
-            r.layout = (vAttrib *)malloc(sizeof(vAttrib) * r.layoutCount);
-            for (unsigned int i = 0; i < r.layoutCount; i++)
+            this->layout = (vAttrib *)malloc(sizeof(vAttrib) * this->layoutCount);
+            for (unsigned int i = 0; i < this->layoutCount; i++)
             {
-                r.layout[i] = attribs[i];
+                this->layout[i] = attribs[i];
             }
 
-            r.data = malloc(getLayoutLen(r) * numVerts);
+            this->data = malloc(this->getLayoutLen() * numVerts);
 
-            r.vertCount = numVerts;
+            this->vertCount = numVerts;
 
             // initialize index buffer & fill it up
-            r.primitive = p;
+            this->primitive = p;
             if (p == &Primitives::NONE)
             {
-                r.indexCount = 0;
+                this->indexCount = 0;
                 return;
             }
             if (p == &Primitives::MESH)
             {
-                r.indexCount = 0;
+                this->indexCount = 0;
                 // TODO: memory efficiency and resizeable rData
-                r.indices = (int *)malloc(MAX_MESH_INDICES);
+                this->indices = (int *)malloc(MAX_MESH_INDICES);
                 return;
             }
-            int iPerElement = r.primitive->elementSize;
-            r.indexCount = ceil(numVerts / r.primitive->vertexCount) * iPerElement;
-            r.indices = (int *)malloc(r.indexCount * sizeof(unsigned int));
+            int iPerElement = this->primitive->elementSize;
+            this->indexCount = ceil(numVerts / this->primitive->vertexCount) * iPerElement;
+            this->indices = (int *)malloc(this->indexCount * sizeof(unsigned int));
 
             for (int i = 0; i < ceil(numVerts / iPerElement); i++) {
-                r.primitive->generateIndices(r.indices, i);
+                this->primitive->generateIndices(this->indices, i);
             }
         }
 
-        void initRDataByShader(rData &r, Renderer::Shader &s)
-        {
-            // Waiting on Shader.h's todo to be completed.
-            __pError("Function `initRDataByShader` not implemented yet.")
-        }
-
-        void resizeRData(rData &r, unsigned int newNumVerts)
+        void rData::resize(unsigned int newNumVerts)
         {
             // ensure r has been initialized
             // every rData should have a layout
-            __pAssert(r.layoutCount == 0, "Attempted to resize uninitialized rData.");
+            __pAssert(this->layoutCount == 0, "Attempted to resize uninitialized rData.");
 
-            r.data = realloc(r.data, getLayoutLen(r) * newNumVerts);
+            this->data = realloc(this->data, this->getLayoutLen() * newNumVerts);
 
-            if (r.primitive == &Primitives::NONE) return;
-            int iPerElement = r.primitive->elementSize;
-            r.indices = (int *) realloc(r.indices, ceil(newNumVerts / iPerElement) * iPerElement * sizeof(unsigned int));
+            if (this->primitive == &Primitives::NONE) return;
+            int iPerElement = this->primitive->elementSize;
+            this->indices = (int *) realloc(this->indices, ceil(newNumVerts / iPerElement) * iPerElement * sizeof(unsigned int));
 
             for (int i = 0; i < ceil(newNumVerts / iPerElement); i++)
             {
-                r.primitive->generateIndices(r.indices, i);
+                this->primitive->generateIndices(this->indices, i);
             }
 
-            r.vertCount = newNumVerts;
+            this->vertCount = newNumVerts;
         }
 
-        void clearRData(rData &r)
+        void rData::clear()
         {
-            free(r.data);
-            free(r.indices);
+            free(this->data);
+            free(this->indices);
 
-            r.vertCount = 0;
+            this->vertCount = 0;
         }
 
         int getVTypeLen(vPropType p)
@@ -158,42 +157,42 @@ namespace Pontilus
             return len;
         }
 
-        int getLayoutLen(rData &r)
+        int rData::getLayoutLen()
         {
             int len = 0;
-            for (unsigned int i = 0; i < r.layoutCount; i++)
+            for (unsigned int i = 0; i < this->layoutCount; i++)
             {
-                len += getVTypeLen(r.layout[i].type) * r.layout[i].count;
+                len += getVTypeLen(this->layout[i].type) * this->layout[i].count;
             }
 
             return len;
         }
 
         // this should, theoretically, return the pointer to a place in the rData and the size of that attribute.
-        off_len getAttribMetaData(rData &r, vProp p)
+        rData::off_len rData::getAttribMetaData(vProp p)
         {
             off_len result = {0, p};
 
             int offsetInBytes = 0;
 
-            for (int i = 0; i < r.layoutCount; i++)
+            for (int i = 0; i < this->layoutCount; i++)
             {
-                if (r.layout[i].prop == p)
+                if (this->layout[i].prop == p)
                 {
 
-                    int attribTypeSize = getVTypeLen(r.layout[i].type);
+                    int attribTypeSize = getVTypeLen(this->layout[i].type);
 
                     result.first = offsetInBytes;
-                    result.second = attribTypeSize * r.layout[i].count;
+                    result.second = attribTypeSize * this->layout[i].count;
                     return result;
                 }
                 else
                 {
-                    offsetInBytes += r.layout[i].count * getVTypeLen(r.layout[i].type);
+                    offsetInBytes += this->layout[i].count * getVTypeLen(this->layout[i].type);
                 }
             }
 
-            fprintf(stderr, "rData Layout Size: %d\n", r.layoutCount);
+            fprintf(stderr, "rData Layout Size: %d\n", this->layoutCount);
             /*
 
             // if you've gotten to this point, you've either specified an illegal
@@ -204,22 +203,22 @@ namespace Pontilus
             exit(-1);
         }
 
-        void printRData(rData &r)
+        void rData::print()
         {
-            printRData(r, r.vertCount);
+            this->print(this->vertCount);
         }
 
-        void printRData(rData &r, unsigned int numVerts)
+        void rData::print(unsigned int numVerts)
         {
-            printf("rData at %p: \033[31mPosition\033[0m, \033[32mColor\033[0m, \033[33mTex Coord\033[0m, \033[34mTex ID\033[0m, \033[35mOther\033[0m\n{\n    ", &r);
+            printf("rData at %p: \033[31mPosition\033[0m, \033[32mColor\033[0m, \033[33mTex Coord\033[0m, \033[34mTex ID\033[0m, \033[35mOther\033[0m\n{\n    ", this);
 
             int stride = 0;
             for (int i = 0; i < numVerts; i++)
             {
-                for (int j = 0; j < r.layoutCount; j++)
+                for (int j = 0; j < this->layoutCount; j++)
                 {
                     // set color of text
-                    switch (r.layout[j].prop)
+                    switch (this->layout[j].prop)
                     {
                         case PONT_POS:
                         {
@@ -243,41 +242,41 @@ namespace Pontilus
                         } break;
                     }
 
-                    off_len result = getAttribMetaData(r, r.layout[j].prop);
-                    switch (r.layout[j].type)
+                    off_len result = rData::getAttribMetaData(this->layout[j].prop);
+                    switch (this->layout[j].type)
                     {
                     case PONT_SHORT:
                     {
-                        for (int k = 0; k < r.layout[j].count; k++)
+                        for (int k = 0; k < this->layout[j].count; k++)
                         {
-                            printf("%3d, ", ((short *)((char *)r.data + result.first + stride))[k]);
+                            printf("%3d, ", ((short *)((char *)this->data + result.first + stride))[k]);
                         }
                         printf("\033[0m");
                     }
                     break;
                     case PONT_INT:
                     {
-                        for (int k = 0; k < r.layout[j].count; k++)
+                        for (int k = 0; k < this->layout[j].count; k++)
                         {
-                            printf("%3d, ", ((int *)((char *)r.data + result.first + stride))[k]);
+                            printf("%3d, ", ((int *)((char *)this->data + result.first + stride))[k]);
                         }
                         printf("\033[0m");
                     }
                     break;
                     case PONT_UINT:
                     {
-                        for (int k = 0; k < r.layout[j].count; k++)
+                        for (int k = 0; k < this->layout[j].count; k++)
                         {
-                            printf("%3d, ", ((unsigned int *)((char *)r.data + result.first + stride))[k]);
+                            printf("%3d, ", ((unsigned int *)((char *)this->data + result.first + stride))[k]);
                         }
                         printf("\033[0m");
                     }
                     break;
                     case PONT_FLOAT:
                     {
-                        for (int k = 0; k < r.layout[j].count; k++)
+                        for (int k = 0; k < this->layout[j].count; k++)
                         {
-                            printf("%1.2f, ", ((float *)((char *)r.data + result.first + stride))[k]);
+                            printf("%1.2f, ", ((float *)((char *)this->data + result.first + stride))[k]);
                         }
                         printf("\033[0m");
                     }
@@ -285,7 +284,7 @@ namespace Pontilus
                     }
                 }
                 printf("\n    ");
-                stride += getLayoutLen(r);
+                stride += this->getLayoutLen();
             }
             printf("\b\b\b\b}\n");
         }

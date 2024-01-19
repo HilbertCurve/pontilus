@@ -46,7 +46,7 @@ namespace Pontilus
                     continue;
                 }
 
-                Glyph g = getGlyph(*this->font, c);
+                Glyph g = this->font->get(c);
 
                 ////////          ////////
                 // Insertion into rData //
@@ -80,7 +80,7 @@ namespace Pontilus
                     }
                     yDiff = _t.whd.y / 2.0f;
 
-                    off_len result = getAttribMetaData(r, PONT_POS);
+                    rData::off_len result = r.getAttribMetaData(PONT_POS);
                     if (result.second >= 3 * sizeof(float))
                     {
                         // instead position by bottom corner
@@ -96,7 +96,7 @@ namespace Pontilus
                         _t.pos -= orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
                     }
                     
-                    result = getAttribMetaData(r, PONT_COLOR);
+                    result = r.getAttribMetaData(PONT_COLOR);
                     if (result.second >= 4 * sizeof(float))
                     {
                         for (int k = 0; k < 4; k++)
@@ -105,7 +105,7 @@ namespace Pontilus
                         }
                     }
 
-                    result = getAttribMetaData(r, PONT_TEXCOORD);
+                    result = r.getAttribMetaData(PONT_TEXCOORD);
                     if (result.second >= 2 * sizeof(float))
                     {
                         for (int k = 0; k < 2; k++)
@@ -114,7 +114,7 @@ namespace Pontilus
                         }
                     }
 
-                    result = getAttribMetaData(r, PONT_TEXID);
+                    result = r.getAttribMetaData(PONT_TEXID);
                     if (result.second == 1 * sizeof(float)) // I'd be very confused if there was more than one texID.
                     {
                         if (this->font == nullptr)
@@ -123,10 +123,10 @@ namespace Pontilus
                         }
                         else
                         {
-                            *(float *)((char *)r.data + result.first + stride) = this->font->texID;
+                            *(float *)((char *)r.data + result.first + stride) = this->font->id();
                         }
                     }
-                    stride += getLayoutLen(r);
+                    stride += r.getLayoutLen();
                 }
 
                 ////////                                   ////////
@@ -144,7 +144,7 @@ namespace Pontilus
                         while (curr != ' ' && next < this->text.length())
                         {
                             curr = this->text.at(next);
-                            nextWordLength += getGlyph(*this->font, curr).width;
+                            nextWordLength += this->font->get(curr).width;
                             next++;
                         }
                     }

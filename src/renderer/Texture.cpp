@@ -13,13 +13,11 @@ namespace Pontilus
     namespace Renderer
     {
         // If width or height is zero, texture widths or heights are the full dimension of the texture
-        void initIconMap(const char *filepath, IconMap &im, int textureWidth, int textureHeight, int padding)
-        {
-            im.filepath = filepath;
-            im.texID = iconPoolStackPointer;
+        IconMap::IconMap(const char *filepath, int textureWidth, int textureHeight, int padding) {
+            this->filepath = filepath;
 
-            glGenTextures(1, &(im.texID));
-            glBindTexture(GL_TEXTURE_2D, im.texID);
+            glGenTextures(1, &(this->texID));
+            glBindTexture(GL_TEXTURE_2D, this->texID);
 
             // Set texture parameters
             // Repeat image in both directions
@@ -39,8 +37,8 @@ namespace Pontilus
 
             if (image != nullptr)
             {
-                im.width = *width;
-                im.height = *height;
+                this->width = *width;
+                this->height = *height;
 
                 if (*channels == 3)
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
@@ -59,57 +57,43 @@ namespace Pontilus
             }
 
             stbi_image_free(image);
-            im.width = *width;
-            im.height = *height;
+            this->width = *width;
+            this->height = *height;
 
             if (debugMode())
             {
                 printf("Rendering Image: %s\nWidth: %d\nHeight: %d\nNumber of Channels: %d\n", filepath, *width, *height, *channels);
-                printf("texID: %d\n\n", im.texID);
+                printf("texID: %d\n\n", this->texID);
             }
 
-            iconPool[iconPoolStackPointer] = &im;
-            iconPoolStackPointer++;
-
-            im.textureWidth = textureWidth == 0 ? im.width : textureWidth;
-            im.textureHeight = textureHeight == 0 ? im.height : textureHeight;
-            im.padding = padding;
+            this->textureWidth = textureWidth == 0 ? this->width : textureWidth;
+            this->textureHeight = textureHeight == 0 ? this->height : textureHeight;
+            this->padding = padding;
 
             delete width;
             delete height;
             delete channels;
+
+            RendererController::get().registerIconMap(*this);
         }
 
-        void bindIconMap(IconMap &t)
-        {
-            glBindTexture(GL_TEXTURE_2D, t.texID);
-            t.beingUsed = true;
-        }
-
-        void unbindIconMap(IconMap &t)
-        {
-            glBindTexture(GL_TEXTURE_2D, 0);
-            t.beingUsed = false;
-        }
-
-        Texture getTexture(IconMap &im, int index)
-        {
+        Texture IconMap::getTexture(int index) {
             // NOTE: TEXCOORDS GO FROM 0.0 TO 1.0!!!
             Texture tex = {};
-            tex.source = &im;
+            tex.source = this;
             // get offset from top
-            int pixelsFromTop = std::floor(index * im.textureWidth / im.width) * (im.textureHeight + im.padding);
+            int pixelsFromTop = std::floor(index * this->textureWidth / this->width) * (this->textureHeight + this->padding);
             // get offset from left
-            int pixelsFromLeft = (index * im.textureWidth + im.padding) % im.width;
+            int pixelsFromLeft = (index * this->textureWidth + this->padding) % this->width;
             
             glm::vec2 pos1 = {pixelsFromLeft, pixelsFromTop};
-            glm::vec2 pos2 = {pixelsFromLeft + im.textureWidth, pixelsFromTop + im.textureHeight};
+            glm::vec2 pos2 = {pixelsFromLeft + this->textureWidth, pixelsFromTop + this->textureHeight};
 
-            pos1.y = im.height - pos1.y;
-            pos1 /= glm::vec2{im.width, im.height};
+            pos1.y = this->height - pos1.y;
+            pos1 /= glm::vec2{this->width, this->height};
 
-            pos2.y = im.height - pos2.y;
-            pos2 /= glm::vec2{im.width, im.height};
+            pos2.y = this->height - pos2.y;
+            pos2 /= glm::vec2{this->width, this->height};
 
             // insert texcoords
             float coords[] = 
@@ -126,6 +110,10 @@ namespace Pontilus
             }
 
             return tex;
+        }
+
+        Texture IconMap::emptyTexture() {
+            return Texture{nullptr, {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
         }
     }
 }

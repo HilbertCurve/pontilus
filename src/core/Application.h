@@ -15,6 +15,8 @@ namespace Pontilus
 
     extern float resolution;
 
+    extern std::string ASSET_PATH;
+
     struct Window
     {
         int width;

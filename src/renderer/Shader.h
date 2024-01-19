@@ -9,42 +9,43 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <string>
 
 namespace Pontilus
 {
     namespace Renderer
     {
 
-        struct Shader
+        class Shader
         {
             GLuint vertexID;
             GLuint fragmentID;
-            const char *vertexSource;
-            const char *fragmentSource;
-            const char *vertPath;
-            const char *fragPath;
 
             GLuint shaderProgramID;
 
             bool beingUsed;
 
+            public:
+            GLuint id() { return shaderProgramID; }
+
+            void uploadMat4(const char *name, const glm::mat4 &data);
+            void uploadFloat(const char *name, const float &data);
+            void uploadInt(const char *name, const int data);
+            void uploadIntArr(const char *name, const int *data, int count);
+            void uploadFloatArr(const char *name, float *arr, int count);
+            void uploadVec2Arr(const char *name, float *arr, int count);
+            void uploadVec3Arr(const char *name, float *arr, int count);
+            void uploadVec4Arr(const char *name, float *arr, int count);
+
+            void attach();
+            void detach();
+
+            Shader() = default;
+            Shader(std::string vertPath, std::string fragPath);
+            ~Shader();
+
             // TODO: include layout information
         };
-
-        Shader initShader(const char *vertPath, const char *fragPath);
-
-        void uploadMat4(Shader &s, const char *name, const glm::mat4 &data);
-        void uploadFloat(Shader &s, const char *name, const float &data);
-        void uploadInt(Shader &s, const char *name, const int data);
-        void uploadIntArr(Shader &s, const char *name, const int *data, int count);
-        void uploadFloatArr(Shader &s, const char *name, float *arr, int count);
-        void uploadVec2Arr(Shader &s, const char *name, float *arr, int count);
-        void uploadVec3Arr(Shader &s, const char *name, float *arr, int count);
-        void uploadVec4Arr(Shader &s, const char *name, float *arr, int count);
-
-        void attachShader(Shader &s);
-        void detachShader(Shader &s);
-        void deleteShader(Shader &s);
 
         void setDefaultShader(const char *vertPath, const char *fragPath);
         const char *getDefaultShader(bool oneForVert);

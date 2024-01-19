@@ -25,7 +25,9 @@ namespace Pontilus
         }
 
         int SpriteRenderer::update(double) {
-            this->toRData(Renderer::quadPool);
+            auto quadTarget = Renderer::RendererController::get().getTarget(1);
+
+            return this->toRData(*std::get<0>(quadTarget));
         }
 
         int SpriteRenderer::toRData(rData &r)
@@ -54,7 +56,7 @@ namespace Pontilus
                 }
 
 
-                off_len result = getAttribMetaData(r, PONT_POS);
+                rData::off_len result = r.getAttribMetaData(PONT_POS);
                 if (result.second >= 3 * sizeof(float))
                 {
                     glm::vec3 t_orient = translation * rotation * glm::vec4(orientation - glm::vec3(0.5f * t.whd.x, 0.5f * t.whd.y, 0.0f), 1.0f);
@@ -66,7 +68,7 @@ namespace Pontilus
                     //}
                 }
                 
-                result = getAttribMetaData(r, PONT_COLOR);
+                result = r.getAttribMetaData(PONT_COLOR);
                 if (result.second >= 4 * sizeof(float))
                 {
                     for (int j = 0; j < 4; j++)
@@ -75,7 +77,7 @@ namespace Pontilus
                     }             
                 }
 
-                result = getAttribMetaData(r, PONT_TEXCOORD);
+                result = r.getAttribMetaData(PONT_TEXCOORD);
                 
                 if (result.second >= 2 * sizeof(float))
                 {
@@ -87,7 +89,7 @@ namespace Pontilus
                     }
                 }
 
-                result = getAttribMetaData(r, PONT_TEXID);
+                result = r.getAttribMetaData(PONT_TEXID);
                 if (result.second == 1 * sizeof(float)) // I'd be very confused if there was more than one texID.
                 {
                     if (this->tex.source == nullptr)
@@ -96,10 +98,10 @@ namespace Pontilus
                     }
                     else
                     {
-                        *(float *)((char *)r.data + result.first + stride) = this->tex.source == nullptr ? 0.0 : this->tex.source->texID;
+                        *(float *)((char *)r.data + result.first + stride) = this->tex.source == nullptr ? 0.0 : this->tex.source->id();
                     }
                 }
-                stride += getLayoutLen(r);
+                stride += r.getLayoutLen();
             }
 
             r.isDirty = true;

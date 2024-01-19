@@ -26,21 +26,20 @@ namespace Pontilus
 
     float resolution = 512;
 
+    std::string ASSET_PATH = "../assets/";
+
     Scene defaultScene = 
         {
             []()
             {
-                static Renderer::IconMap defaultMap = Renderer::IconMap();
-                static Renderer::Font jetBrainsMono;
+                static Renderer::IconMap defaultMap = Renderer::IconMap("../assets/textures/ghostSwole.png", 675, 570, 0);
+                static Renderer::Font jetBrainsMono = Renderer::Font("../assets/fonts/JetBrainsMono-Medium.ttf", 26);
                 ECS::GameObject &defaultMessage = defaultScene.spawn();
                 defaultMessage.addComponent(new ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
                 ECS::GameObject &defaultLogo = defaultScene.spawn();
                 defaultLogo.addComponent(new ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
-                
-                Renderer::initFont(jetBrainsMono, "../assets/fonts/JetBrainsMono-Medium.ttf", 26);
-                Renderer::initIconMap("../assets/textures/ghostSwole.png", defaultMap, 675, 570, 0);
-                
-                Renderer::Texture t = Renderer::getTexture(defaultMap, 0);
+
+                Renderer::Texture t = defaultMap.getTexture(0);
 
                 defaultMessage.addComponent(new Renderer::TextRenderer(
                     "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
@@ -162,7 +161,7 @@ namespace Pontilus
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        Renderer::start();
+        Renderer::RendererController::get().start();
         Audio::initAudio();
 
         setCurrentScene(defaultScene);
@@ -198,9 +197,7 @@ namespace Pontilus
             // Physics2D::fixedUpdate();
 
             // render
-            Renderer::render();
-            Renderer::modelRender();
-            Renderer::postRender();
+            Renderer::RendererController::get().render();
 
             // swap buffers (makes things smoother)
             glfwSwapBuffers(window.ptr);
@@ -219,7 +216,7 @@ namespace Pontilus
             getCurrentScene()->freeObjects();
         }
             
-        Renderer::close();
+        Renderer::RendererController::get().close();
         Audio::closeAudio();
 
         glfwDestroyWindow(window.ptr);

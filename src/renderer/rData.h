@@ -42,6 +42,27 @@ namespace Pontilus
          */
         struct rData
         {
+            rData();
+            rData(unsigned int numVerts, Primitive *p);
+            rData(unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs);
+            ~rData() { this->clear(); }
+
+            void clear();
+
+            void resize(unsigned int newNumVerts);
+
+            void print();
+            void print(unsigned int numVerts);
+
+            int getLayoutLen();
+            typedef Pair<size_t, size_t> off_len;
+            off_len getAttribMetaData(vProp p);
+
+            /**
+             * Gets the pointer to the first instance of r's vertex attribute property p.
+             */
+            void *getAttribPointer(rData &r, vProp p);
+
             // vertex data
             void *data;
             vAttrib *layout;
@@ -68,26 +89,7 @@ namespace Pontilus
             virtual int toRData(Renderer::rData &r) = 0;
         };
 
-        void initRData(rData &r, unsigned int numVerts, Primitive *p);
-        void initRData(rData &r, unsigned int numVerts, Primitive *p, vAttrib *attribs, unsigned int numAttribs); // I'd love to know how to do typed variadic arguments without templates, but I guess not right now 
-        void initRDataByShader(rData &r, Renderer::Shader &s);
-        void clearRData(rData &r);
-
-        void resizeRData(rData &r, unsigned int newNumVerts);
-
         int getVTypeLen(vPropType p);
-        int getLayoutLen(rData &r);
-
-        void printRData(rData &r);
-        void printRData(rData &r, unsigned int numVerts);
-
-        typedef Pair<int, int> off_len;
-        off_len getAttribMetaData(rData &r, vProp p);
-
-        /**
-         * Gets the pointer to the first instance of r's vertex attribute property p.
-         */
-        void *getAttribPointer(rData &r, vProp p);
     }
 }
 

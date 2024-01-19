@@ -23,10 +23,8 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        void initFont(Font &f, const char *fontname, unsigned int fontSize)
+        Font::Font(const char *fontname, unsigned int fontSize)
         {
-            f.texID = fontPoolStackPointer + 8;
-
             /* Load font (. ttf) file */
 
             File fontFile;
@@ -39,7 +37,7 @@ namespace Pontilus
                 __pError("Font loading failed for font %s.", fontname);
             }
 
-            f.info = info;
+            this->info = info;
 
             const int bitmap_w = _PONTILUS_FONT_TEX_WIDTH;
             const int bitmap_h = _PONTILUS_FONT_TEX_HEIGHT;
@@ -50,7 +48,7 @@ namespace Pontilus
                 bitmap[i] = 0;
             }
 
-            f.fontSize = fontSize;
+            this->fontSize = fontSize;
             float pixels = fontSize;
             float scale = stbtt_ScaleForPixelHeight(&info, pixels); /* scale = pixels / (ascent - descent) */
 
@@ -61,11 +59,11 @@ namespace Pontilus
              * lineGap: The distance between two fonts;
              * The line spacing is: ascent - descent + lineGap.
              */
-            stbtt_GetFontVMetrics(&info, &f.ascent, &f.descent, &f.lineGap);
+            stbtt_GetFontVMetrics(&info, &this->ascent, &this->descent, &this->lineGap);
 
             /* Adjust word height according to zoom */
-            f.ascent = roundf(f.ascent * scale);
-            f.descent = roundf(f.descent * scale);
+            this->ascent = roundf(this->ascent * scale);
+            this->descent = roundf(this->descent * scale);
 
             /* Generate font texture */
             int x = 0, y = 0, advanceWidth = 0, leftSideBearing = 0, h;
@@ -97,7 +95,7 @@ namespace Pontilus
                 stbtt_GetCodepointBitmapBox(&info, (char)i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
                 /* Calculate the y of the bitmap (different characters have different heights) */
-                h = f.ascent + c_y1 + y;
+                h = this->ascent + c_y1 + y;
 
                 /* Render character */
                 int byteOffset = x + roundf(leftSideBearing * scale) + (h * bitmap_w);
@@ -132,13 +130,13 @@ namespace Pontilus
                 }
 
                 // at this point it's ready as an opengl texture
-                memcpy((void *) f.glyphs[i - 32].texCoords, texcoords, 8 * sizeof(float));
+                memcpy((void *) this->glyphs[i - 32].texCoords, texcoords, 8 * sizeof(float));
 
-                f.glyphs[i - 32].width = widthAndHeight.x;
-                f.glyphs[i - 32].height = widthAndHeight.y;
-                f.glyphs[i - 32].descent = screenToWorldSize(glm::vec2{0.0f, c_y2}).y;
+                this->glyphs[i - 32].width = widthAndHeight.x;
+                this->glyphs[i - 32].height = widthAndHeight.y;
+                this->glyphs[i - 32].descent = screenToWorldSize(glm::vec2{0.0f, c_y2}).y;
 
-                f.glyphs[i - 32].parent = &f;
+                this->glyphs[i - 32].parent = this;
 
                 /* Adjust x */
                 x += roundf(advanceWidth * scale) + padding;
@@ -147,18 +145,13 @@ namespace Pontilus
             /*
             stbtt_BakeFontBitmap((unsigned char *) fontFile.buffer, 0, 64.0, bitmap,
                                  512, 512, 32, 96,
-                                 f.characters);
+                                 this->characters);
                                 */
-            
-            ///* Save the bitmap data to the 1-channel png image */
-            std::string fontpath = "assets/fonts/bin/" + std::string(fontname).substr(0, std::string(fontname).length() - 4) + ".png";
-            stbi_write_png("assets/fonts/bin/test.png", 512, 512, 1, bitmap, 512);
 
             // at this point we can use bitmap as a gl texture
-            unsigned int id = f.texID;
-            glGenTextures(1, &(f.texID));
-            glBindTexture(GL_TEXTURE_2D, f.texID);
-
+            unsigned int id = this->texID;
+            glGenTextures(1, &(this->texID));
+            glBindTexture(GL_TEXTURE_2D, this->texID);
             
             // flip bitmap, because opengl
             unsigned char *newBitmap = (unsigned char *) malloc(bitmap_w * bitmap_h);
@@ -182,26 +175,13 @@ namespace Pontilus
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            fontPool[fontPoolStackPointer] = &f;
-            fontPoolStackPointer++;
-
             free(bitmap);
             free(newBitmap);
+
+            RendererController::get().registerFont(*this);
         }
 
-        void bindFont(Font &f)
-        {
-            glBindTexture(GL_TEXTURE_2D, f.texID);
-            f.beingUsed = true;
-        }
-
-        void unbindFont(Font &f)
-        {
-            glBindTexture(GL_TEXTURE_2D, 0);
-            f.beingUsed = false;
-        }
-
-        Glyph getGlyph(const Font &f, const char c)
+        Glyph Font::get(const char c)
         {
             /*
             Glyph ret;
@@ -211,7 +191,7 @@ namespace Pontilus
             stbtt_aligned_quad q;
             // i don't really NEED these too much; all positioning is handled by the camera
             float dummyx = 0, dummyy = 0;
-            stbtt_GetBakedQuad(f.characters, 512, 512, c - 32, &dummyx, &dummyy, &q, true);
+            stbtt_GetBakedQuad(this->characters, 512, 512, c - 32, &dummyx, &dummyy, &q, true);
 
             float texcoords[] =
                 {
@@ -225,22 +205,22 @@ namespace Pontilus
 
             glm::vec2 widthAndHeight = c != ' ' ? 
                 screenToWorldSize(glm::vec2{q.x1 - q.x0, q.y1 - q.y0}) : 
-                screenToWorldSize(glm::vec2{f.fontSize, 0.0f});
+                screenToWorldSize(glm::vec2{this->fontSize, 0.0f});
             ret.width = widthAndHeight.x;
             ret.height = widthAndHeight.y;
 
-            static glm::vec2 sWidthAndHeight = screenToWorldSize(glm::vec2{f.fontSize / 2, 0.0f});
+            static glm::vec2 sWidthAndHeight = screenToWorldSize(glm::vec2{this->fontSize / 2, 0.0f});
 
             // TODO: I don't know how to get the space character info, so I'm using '!' as a replacement.
-            static Glyph space = { &f, {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, f.glyphs[0].width, f.glyphs[0].height };
+            static Glyph space = { &f, {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, this->glyphs[0].width, this->glyphs[0].height };
             */
             
             if (c < 32 || c > 127)
             {
-                return f.glyphs[0];
+                return this->glyphs[0];
             }
 
-            return f.glyphs[c - 32];
+            return this->glyphs[c - 32];
         }
     }
 }

@@ -92,9 +92,9 @@ namespace Pontilus
 
             // fill up pos buffer
             fseek(f, posOffset, SEEK_SET);
-            auto offlen = getAttribMetaData(r, PONT_POS);
-            auto colorOfflen = getAttribMetaData(r, PONT_COLOR);
-            int vertSize = getLayoutLen(r);
+            auto offlen = r.getAttribMetaData(PONT_POS);
+            auto colorOfflen = r.getAttribMetaData(PONT_COLOR);
+            int vertSize = r.getLayoutLen();
             auto transformPointer = this->parent->getComponent(typeid(ECS::Transform));
             if (!transformPointer) {
                 if (!warned3) {
@@ -131,7 +131,7 @@ namespace Pontilus
             }
 
             fseek(f, normalOffset, SEEK_SET);
-            auto normalOfflen = getAttribMetaData(r, PONT_OTHER);
+            auto normalOfflen = r.getAttribMetaData(PONT_OTHER);
 
             for (int i = 0; i < normalCount; i++)
             {

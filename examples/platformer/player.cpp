@@ -72,8 +72,8 @@ namespace Platformer
 
         // let's make a transform, call it foot. it's a small rectangle underneath the player
         Transform playerFoot = Transform (
-            glm::vec3(tPlayer.pos.x, tPlayer.pos.y - tPlayer.whd.y / 2.0f - 0.1f, 1.0f),
-            glm::vec3(tPlayer.whd.x, 0.05f, 1.0f),
+            glm::vec3(tPlayer.pos.x, tPlayer.pos.y - tPlayer.whd.y / 2.0f - 0.02f, 1.0f),
+            glm::vec3(tPlayer.whd.x, 0.01f, 1.0f),
             glm::vec3(0.0f)
         );
 
@@ -91,7 +91,6 @@ namespace Platformer
         glm::vec2 playerPos = glm::vec2(transform.pos);
         glm::vec2 toTileEnd = glm::vec2(this->currentTileMap->width(), this->currentTileMap->height()) / 2.0f;
 
-
         bool hasUp = false, hasDown = false, hasLeft = false, hasRight = false;
 
         for (auto tile : tiles) {
@@ -103,30 +102,23 @@ namespace Platformer
 
             Rect intersection = playerRect.intersect(tileRect);
 
-            if (intersection.width() * intersection.height() <= 0.0005f) {
-                // no point in dealing with marginal intersections
-                continue;
-            }
-
-            if (intersection.width() < 0.03f && intersection.height() < 0.03f) {
-                // tiny corners are also passable
-                continue;
-            }
+            bool noStop = false;
 
             if (intersection.width() < intersection.height()) {
                 // we have a horizontal collision
-                this->velocity.x = 0.0f;
 
                 if (intersection.center().x < transform.pos.x) {
                     // we have an intersection to the left
                     hasLeft = true;
                     // start at center of collision, move out to edge of collision, then move out so edge of player meets edge of collision
-                    transform.pos.x = tile.pos.x * toTileEnd.x * 2.0f + toTileEnd.x + transform.whd.x / 2.0f;
+                    if (!noStop)
+                        transform.pos.x = tile.pos.x * toTileEnd.x * 2.0f + toTileEnd.x + transform.whd.x / 2.0f;
                     continue;
                 } else {
                     // we have an intersection to the right
                     hasRight = true;
-                    transform.pos.x = tile.pos.x * toTileEnd.x * 2.0f - toTileEnd.x - transform.whd.x / 2.0f;
+                    if (!noStop)
+                        transform.pos.x = tile.pos.x * toTileEnd.x * 2.0f - toTileEnd.x - transform.whd.x / 2.0f;
                     continue;
                 }
             } else {
@@ -134,14 +126,18 @@ namespace Platformer
                 if (intersection.center().y <= transform.pos.y && this->velocity.y < 0.0f) {
                     // we have a floor collision
                     hasDown = true;
-                    this->velocity.y = 0.0f;
-                    transform.pos.y = tile.pos.y * toTileEnd.y * 2.0f + toTileEnd.y + transform.whd.y / 2.0f;
+
+                    if (!noStop) {
+                        transform.pos.y = tile.pos.y * toTileEnd.y * 2.0f + toTileEnd.y + transform.whd.y / 2.0f;
+                    }
                     continue;
                 } else if (intersection.center().y > transform.pos.y && this->velocity.y >= 0.0f) {
                     // we have a ceiling collision
                     hasUp = true;
-                    this->velocity.y = -0.01f;
-                    transform.pos.y = tile.pos.y * toTileEnd.y * 2.0f - toTileEnd.y - transform.whd.y / 2.0f;
+
+                    if (!noStop) {
+                        transform.pos.y = tile.pos.y * toTileEnd.y * 2.0f - toTileEnd.y - transform.whd.y / 2.0f;
+                    }
                     continue;
                 }
             }
@@ -184,7 +180,6 @@ namespace Platformer
         using namespace Pontilus::ECS;
         // we can assume with confidence that Player's parent has a transform, as this condition was checked in Player::update()
         Player &p = Player::get();
-        __pMessage("Grounded");
 
         p.horizontalMovement(dt);
         std::vector<TileMap::Tile> tiles;
@@ -229,8 +224,6 @@ namespace Platformer
         using namespace Pontilus::ECS;
         Player &p = Player::get();
 
-        __pMessage("Jumped");
-
         p.velocity.y -= GRAVITY * dt;
         p.horizontalMovement(dt);
         std::vector<TileMap::Tile> tiles;
@@ -243,10 +236,6 @@ namespace Platformer
         } else {
             pspr->color = {0.0, 1.0, 0.0, 1.0};
         }
-
-        uint32_t dirs = p.clip(tiles);
-
-        __pMessage("%u", dirs);
 
         if (p.hasFloor()) {
             p.setState(Grounded::get());
