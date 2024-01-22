@@ -39,7 +39,7 @@ namespace Pontilus
                 ECS::GameObject &defaultLogo = defaultScene.spawn();
                 defaultLogo.addComponent(new ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
 
-                Renderer::Texture t = defaultMap.getTexture(0);
+                Renderer::Texture t = defaultMap.get(0);
 
                 defaultMessage.addComponent(new Renderer::TextRenderer(
                     "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",

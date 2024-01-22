@@ -6,15 +6,24 @@
 
 namespace Platformer
 {
+    using namespace Pontilus::Renderer;
     TileMap::TileMap(float _tile_width, float _tile_height, float _z_index) {
         this->tile_width = _tile_width;
         this->tile_height = _tile_height;
 
         this->z_index = _z_index;
 
+        // error message is used for toRData, to let user know there isn't a transform
+        // attached to the tilemap's parent
         this->errMsgPrinted = false;
 
         this->tiles.clear();
+        this->im = nullptr;
+    }
+
+    TileMap::~TileMap() {
+        if (this->im)
+            delete this->im;
     }
 
     void TileMap::setTile(glm::ivec2 pos, uint32_t val) {
@@ -37,8 +46,16 @@ namespace Platformer
         }
     }
 
+    void TileMap::setTextures(std::string source, uint32_t width, uint32_t height, uint32_t padding) {
+        if (this->im) {
+            delete this->im;
+        }
+
+        this->im = new IconMap(source.c_str(), width, height, padding);
+    }
+
     int TileMap::update(double) {
-        auto quadTarget = Pontilus::Renderer::RendererController::get().getTarget(1);
+        auto quadTarget = RendererController::get().getTarget(1);
 
         return this->toRData(*std::get<0>(quadTarget));
     }
@@ -75,9 +92,8 @@ namespace Platformer
         }
     }
 
-    int TileMap::toRData(Pontilus::Renderer::rData &r) {
+    int TileMap::toRData(rData &r) {
         using namespace Pontilus::ECS;
-        using namespace Pontilus::Renderer;
 
         Transform *tptr = (Transform *)this->parent->getComponent(typeid(Transform));
         Transform t;
@@ -109,6 +125,7 @@ namespace Platformer
                 coords + to_corner * glm::vec3(1.0, -1.0, 1.0)
             };
 
+            Texture texture = this->im ? this->im->get(tile.index) : IconMap::emptyTexture();
             for (int i = 0; i < 4; i++)
                 {
                     auto result = r.getAttribMetaData(PONT_POS);
@@ -131,33 +148,23 @@ namespace Platformer
                     }
 
                     result = r.getAttribMetaData(PONT_TEXCOORD);
-                    
                     if (result.second >= 2 * sizeof(float))
                     {
                         //orientation.x /= t.whd.x;
                         //orientation.y /= t.whd.y;
                         for (int j = 0; j < 2; j++)
                         {
-                            //((float *)((char *)r.data + result.first + stride))[j] = this->tex.source == nullptr ? 0.0 : this->tex.texCoords[j + i * 2];
-                            ((float *)((char *)r.data + result.first + stride))[j] = 0.0f;
+                            ((float *)((char *)r.data + result.first + stride))[j] = texture.source == nullptr ? 0.0 : texture.texCoords[j + i * 2];
+                            //((float *)((char *)r.data + result.first + stride))[j] = 0.0f;
                         }
                     }
 
                     result = r.getAttribMetaData(PONT_TEXID);
                     if (result.second == 1 * sizeof(float)) // I'd be very confused if there was more than one texID.
                     {
-                        /*
-                        if (this->tex.source == nullptr)
-                        {
-                            *(float *)((char *)r.data + result.first + stride) = 0.0f;
-                        }
-                        else
-                        {
-                            *(float *)((char *)r.data + result.first + stride) = this->tex.source == nullptr ? 0.0 : this->tex.source->texID;
-                        }
-                        */
-                       *(float *)((char *)r.data + result.first + stride) = 0.0f;
+                        *(float *)((char *)r.data + result.first + stride) = texture.source == nullptr ? 0.0 : texture.source->id();
                     }
+
                     stride += r.getLayoutLen();
                 }
 

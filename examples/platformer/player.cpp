@@ -147,10 +147,10 @@ namespace Platformer
     }
 
     // a bunch of parameters I'll tweak with:
-    static float WALK_VELOCITY = 16.0;
-    static float JUMP_VELOCITY = 25.0;
-    static float FRICTION = 30.0;
-    static float GRAVITY = 50.0; // physics :D
+    const float WALK_VELOCITY = 16.0;
+    const float JUMP_VELOCITY = 50.0;
+    const float FRICTION = 30.0;
+    const float GRAVITY = 100.0; // physics :D
 
 
     int Player::Grounded::start() {

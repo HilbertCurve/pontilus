@@ -28,6 +28,7 @@ namespace Platformer
 
         TileMap() = default;
         TileMap(float tile_width, float tile_height, float z_index);
+        ~TileMap();
 
         /**
          * This function overwrites existing tiles and creates new ones if it doesn't exist.
@@ -38,6 +39,8 @@ namespace Platformer
          * be printed, likely because the tile at `pos` doesn't exist.
          */
         void removeTile(glm::ivec2 pos);
+
+        void setTextures(std::string filepath, uint32_t width, uint32_t height, uint32_t padding);
 
         virtual int update(double);
 

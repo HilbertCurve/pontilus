@@ -23,10 +23,10 @@ namespace Pontilus
             // Repeat image in both directions
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            // When stretching the image, pixelate
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            // When shrinking an image, pixelate
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            // When stretching the image, interpolate
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            // When shrinking an image, interpolate
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             GLint *width = new int;
             GLint *height = new int;
@@ -77,7 +77,7 @@ namespace Pontilus
             RendererController::get().registerIconMap(*this);
         }
 
-        Texture IconMap::getTexture(int index) {
+        Texture IconMap::get(int index) {
             // NOTE: TEXCOORDS GO FROM 0.0 TO 1.0!!!
             Texture tex = {};
             tex.source = this;

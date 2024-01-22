@@ -21,7 +21,7 @@ namespace Pontilus
             public:
             IconMap(const char *filepath, int textureWidth, int textureHeight, int padding);
 
-            Texture getTexture(int index);
+            Texture get(int index);
             static Texture emptyTexture();
 
             GLuint id() { return texID; }

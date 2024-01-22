@@ -48,6 +48,6 @@ namespace Platformer
 
     void Editor::edit(TileMap &t) {
         this->currentTileMap = &t;
-        this->valToInsert = 1;
+        this->valToInsert = 0;
     }
 }

@@ -36,8 +36,9 @@ namespace Platformer
             tilemap.addComponent(new Platformer::TileMap(2.0f, 2.0f, -1.0f));
 
             TileMap &t = *(TileMap *)tilemap.getComponent(typeid(TileMap));
-            t.setTile({0,0},1);
-            t.setTile({0,-1},1);
+            t.setTile({0,0},0);
+            t.setTile({0,-1},0);
+            t.setTextures("../assets/textures/tilemap1.png", 16, 16, 0);
 
             ECS::GameObject &editor = primary.spawn();
 

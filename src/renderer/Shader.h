@@ -15,7 +15,6 @@ namespace Pontilus
 {
     namespace Renderer
     {
-
         class Shader
         {
             GLuint vertexID;
