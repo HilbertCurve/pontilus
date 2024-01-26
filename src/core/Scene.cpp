@@ -59,7 +59,7 @@ namespace Pontilus
     }
 
     ECS::GameObject &Scene::get(int id) {
-        for (int i = 0; i < this->objs.size(); i++)
+        for (size_t i = 0; i < this->objs.size(); i++)
         {
             ECS::GameObject *gameObject = this->objs[i];
             if (gameObject->id == id)
@@ -73,7 +73,7 @@ namespace Pontilus
 
     void Scene::despawn(int id)
     {
-        for (int i = 0; i < this->objs.size(); i++)
+        for (size_t i = 0; i < this->objs.size(); i++)
         {
             ECS::GameObject *gameObject = this->objs[i];
             if (gameObject->id == id)
@@ -86,7 +86,7 @@ namespace Pontilus
 
     void Scene::updateObjects(double dt)
     {
-        for (int i = 0; i < this->objs.size(); i++)
+        for (size_t i = 0; i < this->objs.size(); i++)
         {
             this->objs.at(i)->update(dt);
         }
@@ -112,7 +112,6 @@ namespace Pontilus
 
             theNoiseGenerator.init({0.0f, 0.0f, 0.0f}, 0.0f, 0.0f);
             theNoiseGenerator.addComponent(theSource);
-            /*
             IO::submitKeyCallback([](int key, int action)
             {
                 if (key == GLFW_KEY_SPACE && action != GLFW_RELEASE)
@@ -343,7 +342,6 @@ namespace Pontilus
         },
         [](double dt)
         {
-            /*
             static bool keyIsPressed0 = false;
             static bool keyIsPressed1 = false;
             static bool atRestY = false;

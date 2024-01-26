@@ -4,9 +4,9 @@ namespace Pontilus
 {
     namespace Library
     {
-        void Animation::init(Renderer::IconMap &im, int start, int end, bool loopAtEnds) 
+        void Animation::init(Renderer::IconMap &im, int start, int end, bool loop) 
         {
-            this->loopAtEnds = loopAtEnds;
+            this->loopAtEnds = loop;
 
             for (int i = start; i <= end; i++)
             {
@@ -14,9 +14,9 @@ namespace Pontilus
             }
         }
 
-        void Animation::addTexture(Renderer::Texture &t, int index)
+        void Animation::addTexture(Renderer::Texture &t, int idx)
         {
-            this->textures.insert(this->textures.begin() + index, t);
+            this->textures.insert(this->textures.begin() + idx, t);
         }
 
         void Animation::pushTexture(Renderer::Texture &t)
@@ -32,9 +32,9 @@ namespace Pontilus
             }
         }
 
-        void Animation::removeTexture(int index)
+        void Animation::removeTexture(int idx)
         {
-            this->textures.erase(this->textures.begin() + index, this->textures.begin() + index + 1);
+            this->textures.erase(this->textures.begin() + idx, this->textures.begin() + idx + 1);
         }
 
         void Animation::removeTextures(int start, int end)

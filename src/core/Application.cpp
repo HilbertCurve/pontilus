@@ -22,66 +22,34 @@
 // TODO: there really should be a single struct `Application` that holds a lot of the static stuff in this engine.
 namespace Pontilus
 {
-    static _PONTILUS_SETTINGS args = 0x0000;
-
-    float resolution = 512;
-
-    std::string ASSET_PATH = "../assets/";
-
     Scene defaultScene = 
-        {
-            []()
-            {
-                static Renderer::IconMap defaultMap = Renderer::IconMap("../assets/textures/ghostSwole.png", 675, 570, 0);
-                static Renderer::Font jetBrainsMono = Renderer::Font("../assets/fonts/JetBrainsMono-Medium.ttf", 26);
-                ECS::GameObject &defaultMessage = defaultScene.spawn();
-                defaultMessage.addComponent(new ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
-                ECS::GameObject &defaultLogo = defaultScene.spawn();
-                defaultLogo.addComponent(new ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
-
-                Renderer::Texture t = defaultMap.get(0);
-
-                defaultMessage.addComponent(new Renderer::TextRenderer(
-                    "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
-                    jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f}));
-                defaultLogo.addComponent(new Renderer::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
-            },
-            [](double dt)
-            {
-
-            },
-            []()
-            {
-
-            }
-        };
-
-
-    // i'd prefer to keep this private; there are some quirks with getting and setting this variable i'd rather automate
-    static Scene *currentScene;
-
-    Scene *getCurrentScene()
     {
-        return currentScene;
-    }
-
-    void setCurrentScene(Scene &s)
-    {
-        if (currentScene != nullptr)
+        []()
         {
-            currentScene->clean();
-            currentScene->freeObjects();
-            currentScene->objs.clear();
+            static Renderer::IconMap defaultMap = Renderer::IconMap("../assets/textures/ghostSwole.png", 675, 570, 0);
+            static Renderer::Font jetBrainsMono = Renderer::Font("../assets/fonts/JetBrainsMono-Medium.ttf", 26);
+            ECS::GameObject &defaultMessage = defaultScene.spawn();
+            defaultMessage.addComponent(new ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
+            ECS::GameObject &defaultLogo = defaultScene.spawn();
+            defaultLogo.addComponent(new ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
+
+            Renderer::Texture t = defaultMap.get(0);
+
+            defaultMessage.addComponent(new Renderer::TextRenderer(
+                "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
+                jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f}));
+            defaultLogo.addComponent(new Renderer::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
+        },
+        [](double dt)
+        {
+
+        },
+        []()
+        {
+
         }
-        
-        currentScene = &s;
-        __pAssert(currentScene->init, "New scene doesn't have init function set.");
-        __pAssert(currentScene->update, "New scene doesn't have update function set.")
-        __pAssert(currentScene->clean, "New scene doesn't have clean function set.")
-        currentScene->init();
-    }
+    };
 
-    Window window{800, 600, "Test", nullptr};
     GLuint glProgramID;
     
     static void printError(int error, const char *description)
@@ -90,22 +58,149 @@ namespace Pontilus
         fputs("\n", stderr);
     }
 
-    _PONTILUS_SETTINGS *getArgs()
-    {
-        return &args;
-    }
-
-    void setDefaultShader(const char *vertPath, const char *fragPath)
-    {
-        Renderer::setDefaultShader(vertPath, fragPath);
-    }
-
-    const char *getDefaultShader(bool oneForVert)
-    {
-        return Renderer::getDefaultShader(oneForVert);
-    }
+    size_t Window::_id = 0;
     
-    void init()
+    Window::Window() {
+        this->id = _id++;
+        this->width = 800; // default width
+        this->height = 600; // default height
+        this->title = std::string("Unnamed Window");
+
+        this->ptr = glfwCreateWindow(this->width, this->height, this->title.c_str(), NULL, NULL);
+        __pAssert(this->ptr, "Could not initialize GLFW window.");
+        
+        glfwMakeContextCurrent(this->ptr);
+
+        // v-sync
+        glfwSwapInterval(1);
+
+        // setup callbacks
+        glfwSetWindowSizeCallback(this->ptr, 
+            [](GLFWwindow *r, int newWidth, int newHeight)
+            {
+                Window &w = Application::get()->getWindowByGLFW(r);
+                w.setWidth(newWidth);
+                w.setHeight(newHeight);
+                glViewport(0, 0, w.getWidth(), w.getHeight());
+            });
+        
+        glfwSetCursorPosCallback(this->ptr, IO::mousePosCallback);
+        glfwSetScrollCallback(this->ptr, IO::mouseScrollCallback);
+        glfwSetMouseButtonCallback(this->ptr, IO::mouseButtonCallback);
+
+        glfwSetKeyCallback(this->ptr, IO::keyPressedCallback);
+
+        // make the window visible
+        glfwShowWindow(this->ptr);
+
+        this->scene = nullptr;
+        this->isClosing = false;
+
+        this->renderTargetIDs.push_back(Renderer::RendererController::QUAD_TARGET);
+        this->renderTargetIDs.push_back(Renderer::RendererController::MESH_TARGET);
+        this->renderTargetIDs.push_back(Renderer::RendererController::LINE_TARGET);
+        this->renderTargetIDs.push_back(Renderer::RendererController::FULL_WINDOW_TARGET);
+    }
+
+    void Window::setTitle(std::string &t) {
+        this->title = std::string(t);
+
+        glfwSetWindowTitle(this->ptr, this->title.c_str());
+    }
+
+    void Window::update(double dt) {
+        if (!glfwWindowShouldClose(this->ptr)) {
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+            // set default background
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            // poll events
+            glfwPollEvents();
+
+            // update engines
+            //TODO: fixed update for updateAll() and getCurrentScene()->update()
+            this->scene->updateObjects(dt);
+            this->scene->update(dt);
+            // Physics2D::fixedUpdate();
+
+            // render
+            for (size_t rID : this->renderTargetIDs)
+                Renderer::RendererController::get().render(rID, this->camera);
+
+            // swap buffers (makes things smoother)
+            glfwSwapBuffers(this->ptr);
+        } else {
+            this->isClosing = true;
+        }
+    }
+
+    Window::~Window() {
+        if (this->scene) {
+            this->scene->clean();
+            this->scene->freeObjects();
+            this->scene->setUsed(false);
+        }
+
+        glfwDestroyWindow(this->ptr);
+    }
+
+    void Window::setScene(Scene &s) {
+        if (this->scene != nullptr)
+        {
+            this->scene->clean();
+            this->scene->freeObjects();
+            this->scene->setUsed(false);
+        }
+
+        if (!s.isUsed()) {
+            this->scene = &s;
+            __pAssert(this->scene->init, "New scene doesn't have init function set.");
+            __pAssert(this->scene->update, "New scene doesn't have update function set.")
+            __pAssert(this->scene->clean, "New scene doesn't have clean function set.")
+            this->scene->init();
+            this->scene->setUsed(true);
+            return;
+        }
+
+        __pError("Cannot set scene to window of ID %lu; scene is already used!", this->id);
+    }
+
+    Application *Application::inst = nullptr;
+
+    Application *Application::get() {
+        if (!inst) {
+            inst = new Application();
+            inst->init();
+        }
+
+        return inst;
+    }
+
+    Application::Application() {
+    }
+
+    Window &Application::getWindow(size_t id) {
+        for (auto window : this->windows) {
+            if (window->getID() == id) {
+                return *window;
+            }
+        }
+
+        __pError("Cannot find window of id %lu in application.", id);
+    }
+
+    Window &Application::getWindowByGLFW(GLFWwindow *ptr) {
+        for (auto window : this->windows) {
+            if (ptr == window->getGLFW()) {
+                return *window;
+            }
+        }
+
+        __pError("Cannot get window of GLFW pointer %p; is there a dangling GLFW context??", ptr);
+    }
+
+    void Application::init()
     {
         glfwSetErrorCallback(printError);
 
@@ -122,32 +217,10 @@ namespace Pontilus
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
         
         // Initialize the window
-        window.ptr = glfwCreateWindow(window.width, window.height, window.title, NULL, NULL);
         
-        __pAssert(window.ptr, "Could not initialize GLFW window.");
+        this->windows.push_back(new Window());
 
-        glfwMakeContextCurrent(window.ptr);
-
-        // v-sync
-        glfwSwapInterval(1);
-
-        // setup callbacks
-        glfwSetWindowSizeCallback(window.ptr, [](GLFWwindow *r, int newWidth, int newHeight)
-                                  {
-                                      window.width = newWidth;
-                                      window.height = newHeight;
-                                      glViewport(0, 0, window.width, window.height);
-                                      Renderer::Camera::updateProjection();
-                                  });
-        
-        glfwSetCursorPosCallback(window.ptr, IO::mousePosCallback);
-        glfwSetScrollCallback(window.ptr, IO::mouseScrollCallback);
-        glfwSetMouseButtonCallback(window.ptr, IO::mouseButtonCallback);
-
-        glfwSetKeyCallback(window.ptr, IO::keyPressedCallback);
-
-        // make the window visible
-        glfwShowWindow(window.ptr);
+        Window *primary = this->windows[0];
 
         // initialize opengl backend
         if (!gladLoadGL((GLADloadfunc) glfwGetProcAddress))
@@ -156,7 +229,7 @@ namespace Pontilus
             return;
         }
 
-        glViewport(0, 0, window.width, window.height);
+        glViewport(0, 0, primary->getWidth(), primary->getHeight());
         // transparency stuff
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -164,62 +237,48 @@ namespace Pontilus
         Renderer::RendererController::get().start();
         Audio::initAudio();
 
-        setCurrentScene(defaultScene);
+        primary->setScene(defaultScene);
 
         // say hi
         __pMessage("Hello: %s", glGetString(GL_VERSION));
     }
 
-    void loop()
+    void Application::run()
     {
         // might use these sometime
         double t1;
         double t2;
-        double dt = 0.0f;
         double highestdt = 0.016f;
         double lowestdt = 0.016f;
-        while (!glfwWindowShouldClose(window.ptr))
+        while (!this->windows.empty())
         {
             t1 = glfwGetTime();
 
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            for (auto window : this->windows) {
+                window->update(dt);
+            }
 
-            // set default background
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            // poll events
-            glfwPollEvents();
-
-            // update engines
-            //TODO: fixed update for updateAll() and getCurrentScene()->update()
-            getCurrentScene()->updateObjects(dt);
-            getCurrentScene()->update(dt);
-            // Physics2D::fixedUpdate();
-
-            // render
-            Renderer::RendererController::get().render();
-
-            // swap buffers (makes things smoother)
-            glfwSwapBuffers(window.ptr);
+            for (size_t i = 0; i < this->windows.size(); i++) {
+                Window *w = this->windows[i];
+                if (w->closing()) {
+                    delete w;
+                    this->windows.erase(this->windows.begin() + i);
+                    i--;
+                }
+            }
 
             // framerate calculations
             t2 = glfwGetTime();
-            dt = t2 - t1;
+            this->dt = t2 - t1;
             highestdt = highestdt > dt ? highestdt : dt;
             lowestdt = lowestdt < dt ? lowestdt : dt;
 
             IO::endFrame();
         }
-
-        if (getCurrentScene()) {
-            getCurrentScene()->clean();
-            getCurrentScene()->freeObjects();
-        }
             
         Renderer::RendererController::get().close();
         Audio::closeAudio();
 
-        glfwDestroyWindow(window.ptr);
         glLinkProgram(0);
         glfwTerminate();
     }

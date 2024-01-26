@@ -14,7 +14,7 @@ namespace Pontilus
                 if (!c->isSingleton())
                     c->clear();
 
-                delete c; // uh oh
+                delete c;
             }
 
             __pMessage("GameObject of id %u deleted.", this->id);
@@ -35,7 +35,7 @@ namespace Pontilus
             this->components.push_back(c);
             c->parent = this;
             
-            if (debugMode())
+            //if (debugMode())
                 __pMessage("Component added to gameObject %p of type %s.", this, typeid(c).name());
         }
 
@@ -63,7 +63,7 @@ namespace Pontilus
                     // TODO: proper clearing!
                     this->components.erase(this->components.begin() + i);
                     ca->parent = nullptr;
-                    if (debugMode())
+                    //if (debugMode())
                         __pMessage("Component removed from gameObject %p of type %s.", this, ti.name());
                     return ca;
                 }

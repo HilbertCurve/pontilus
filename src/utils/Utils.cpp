@@ -81,10 +81,12 @@ namespace Pontilus
     {
         vec4 v = {screenPos, 0.0f, 1.0f};
 
-        v -= vec4{window.width / 2, window.height / 2, 0.0f, 0.0f};
-        v /= vec4{window.width / 2, -window.height / 2, 1.0f, 1.0f};
+        Window &window = Application::get()->getMainWindow();
+
+        v -= vec4{window.getWidth() / 2, window.getHeight() / 2, 0.0f, 0.0f};
+        v /= vec4{window.getWidth() / 2, -window.getHeight() / 2, 1.0f, 1.0f};
         
-        v = inverse(Renderer::Camera::getView()) * inverse(Renderer::Camera::getProjection()) * v;
+        v = inverse(window.getCamera().getView()) * inverse(window.getCamera().getProjection()) * v;
 
         return {v.x, v.y, v.z};
     }
@@ -92,29 +94,16 @@ namespace Pontilus
     vec3 screenToWorldSize(const vec2 screenSize)
     {
         vec4 v = {screenSize, 0.0f, 1.0f};
+
+        Window &window = Application::get()->getMainWindow();
         // pretend that 0, 0 in screen space is 0, 0 in world space
 
-        v /= vec4{window.width / 2, -window.height / 2, 1.0f, 1.0f};
+        v /= vec4{window.getWidth() / 2, -window.getHeight() / 2, 1.0f, 1.0f};
 
-        v = inverse(Renderer::Camera::getView()) * inverse(Renderer::Camera::getProjection()) * v;
+        v = inverse(window.getCamera().getView()) * inverse(window.getCamera().getProjection()) * v;
 
-        v -= vec4(Renderer::Camera::getPosition(), 0.0f);
+        v -= vec4(window.getCamera().getPosition(), 0.0f);
 
         return {v.x, v.y, 0.0f};
-    }
-
-    bool debugMode()
-    {
-        return (*getArgs() & 0x0001) == 1;
-    }
-
-    bool echoOn()
-    {
-        return (*getArgs() & 0x0002) == 1;
-    }
-
-    void setEcho(bool on)
-    {
-        *getArgs() ^= on << 1;
     }
 }

@@ -63,8 +63,8 @@ namespace Platformer
 }
 
 int main() {
-    Pontilus::init();
-    Pontilus::setCurrentScene(Platformer::primary);
-    Pontilus::loop();
+    Pontilus::Application *app = Pontilus::Application::get();
+    app->getMainWindow().setScene(Platformer::primary);
+    app->run();
     return 0;
 }

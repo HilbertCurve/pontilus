@@ -17,15 +17,17 @@ namespace Pontilus
         class GameObject;
     }
 
-    struct Scene
+    class Scene
     {
+
+        public:
+        Scene() = default;
+        Scene(_init i, _update u, _clean c) : init(i), update(u), clean(c) { this->used = false; };
         // SHOULD SCENE HAVE THESE????????
         // probably not, should be inheritance. I'm fighting demons
         _init init;
         _update update;
         _clean clean;
-
-        std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>();
         ECS::GameObject &spawn();
         ECS::GameObject &get(int id);
         void despawn(int id);
@@ -35,6 +37,13 @@ namespace Pontilus
 
         void updateObjects(double dt);
         void freeObjects();
+
+        bool isUsed() { return this->used; }
+        void setUsed(bool _used) { this->used = _used; }
+
+        private:
+        std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>();
+        bool used = false;
     };
 }
 

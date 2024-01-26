@@ -55,11 +55,7 @@ if (!(x))\
 }
 
 namespace Pontilus
-{
-    bool debugMode();
-    bool echoOn();
-    void setEcho(bool on);
-    
+{   
     typedef int8_t byte;
 
     /**

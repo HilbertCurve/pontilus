@@ -60,12 +60,6 @@ namespace Pontilus
             this->width = *width;
             this->height = *height;
 
-            if (debugMode())
-            {
-                printf("Rendering Image: %s\nWidth: %d\nHeight: %d\nNumber of Channels: %d\n", filepath, *width, *height, *channels);
-                printf("texID: %d\n\n", this->texID);
-            }
-
             this->textureWidth = textureWidth == 0 ? this->width : textureWidth;
             this->textureHeight = textureHeight == 0 ? this->height : textureHeight;
             this->padding = padding;

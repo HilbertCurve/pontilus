@@ -64,8 +64,15 @@ namespace Pontilus
 
         RendererController *RendererController::inst = nullptr;
 
+        const size_t RendererController::QUAD_TARGET = 1;
+        const size_t RendererController::MESH_TARGET = 2;
+        const size_t RendererController::LINE_TARGET = 3;
+        const size_t RendererController::FULL_WINDOW_TARGET = 4;
+
         RendererController::RendererController() {
             this->renderTargets.clear();
+
+            // IMPORTANT: keep these targets in exactly this order; we want to keep parity with static render target ids
             this->registerTarget(40000, &Primitives::QUAD, std::string("../assets/") + "shaders/default.vert", std::string("../assets/") + "shaders/default.frag");
             this->registerTarget(4000, &Primitives::MESH, std::string("../assets/") + "shaders/model.vert", std::string("../assets/") + "shaders/model.frag");
             this->registerTarget(400, &Primitives::LINE, std::string("../assets/") + "shaders/debug.vert", std::string("../assets/") + "shaders/debug.frag");
@@ -129,12 +136,6 @@ namespace Pontilus
             }
         }
 
-        void RendererController::render() {
-            for (auto &target : renderTargets) {
-                this->render(*std::get<0>(target), *std::get<1>(target));
-            }
-        }
-
         void RendererController::close() {
             for (auto &target : renderTargets) {
                 std::get<1>(target)->detach();
@@ -176,8 +177,11 @@ namespace Pontilus
 
         static const int texSlots[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 
-        void RendererController::render(rData &buffer, Shader &shader)
+        void RendererController::render(size_t targetID, Camera &camera)
         {
+            auto full = this->getTarget(targetID);
+            auto &buffer = *std::get<0>(full);
+            auto &shader = *std::get<1>(full);
             glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo);
             glBufferData(GL_ARRAY_BUFFER, buffer.dataOffset, buffer.data, GL_DYNAMIC_DRAW);
             // regenerate element buffer
@@ -192,8 +196,8 @@ namespace Pontilus
             // default shader uniforms
 
             // TODO: make these members of shader
-            shader.uploadMat4("uProjection", Camera::getProjection());
-            shader.uploadMat4("uView", Camera::getView());
+            shader.uploadMat4("uProjection", camera.getProjection());
+            shader.uploadMat4("uView", camera.getView());
             shader.uploadIntArr("uTextures", texSlots, 16);
             shader.uploadFloat("uTime", (float)glfwGetTime());
 

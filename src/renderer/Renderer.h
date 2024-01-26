@@ -7,6 +7,7 @@
 #include "renderer/Texture.h"
 #include "renderer/Font.h"
 #include "renderer/Shader.h"
+#include "renderer/Camera.h"
 
 #include <vector>
 #include <tuple>
@@ -26,6 +27,11 @@ namespace Pontilus
             public:
             typedef std::tuple<rData *, Shader *, size_t> Target;
 
+            static const size_t QUAD_TARGET;
+            static const size_t MESH_TARGET;
+            static const size_t LINE_TARGET;
+            static const size_t FULL_WINDOW_TARGET;
+
             RendererController(RendererController &other) = delete;
 
             void registerIconMap(IconMap &im);
@@ -40,7 +46,7 @@ namespace Pontilus
 
             // these should only be used with Application.cpp
             void start();
-            void render();
+            void render(size_t targetID, Camera &camera);
             void close();
 
             static RendererController &get() {
@@ -58,7 +64,6 @@ namespace Pontilus
 
             private:
             void preRender(rData &buffer, Shader &shader);
-            void render(rData &buffer, Shader &shader);
             RendererController();
 
             std::vector<GLuint> iconMapIDs;
