@@ -57,6 +57,7 @@ namespace Pontilus
             int getLayoutLen();
             typedef Pair<size_t, size_t> off_len;
             off_len getAttribMetaData(vProp p);
+            void generateIndices();
 
             /**
              * Gets the pointer to the first instance of r's vertex attribute property p.

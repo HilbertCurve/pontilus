@@ -114,15 +114,17 @@ namespace Pontilus
             this->data = realloc(this->data, this->getLayoutLen() * newNumVerts);
 
             if (this->primitive == &Primitives::NONE) return;
-            int iPerElement = this->primitive->elementSize;
-            this->indices = (int *) realloc(this->indices, ceil(newNumVerts / iPerElement) * iPerElement * sizeof(unsigned int));
-
-            for (int i = 0; i < ceil(newNumVerts / iPerElement); i++)
-            {
-                this->primitive->generateIndices(this->indices, i);
-            }
+            this->generateIndices();
 
             this->vertCount = newNumVerts;
+        }
+
+        void rData::generateIndices() {
+            if (this->primitive->elementSize != 0) {
+                for (int i = 0; i < ceil(this->vertCount / this->primitive->elementSize); i++) {
+                    this->primitive->generateIndices(this->indices, i);
+                }
+            }
         }
 
         void rData::clear()

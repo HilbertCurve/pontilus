@@ -95,6 +95,7 @@ namespace Pontilus
 
         this->scene = nullptr;
         this->isClosing = false;
+        this->camera = Renderer::Camera();
 
         this->renderTargetIDs.push_back(Renderer::RendererController::QUAD_TARGET);
         this->renderTargetIDs.push_back(Renderer::RendererController::MESH_TARGET);

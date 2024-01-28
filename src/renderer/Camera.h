@@ -22,7 +22,7 @@ namespace Pontilus
             float fov = 90; // is this necessary? i'd like to implement it at some point.
             float zoom = 15;
 
-            float width, height;
+            float width = 80, height = 60;
 
             CameraMode mode;
 
@@ -30,7 +30,7 @@ namespace Pontilus
             glm::mat4 view;
 
             public:
-            Camera() = default;
+            Camera();
             Camera(CameraMode m);
 
             glm::mat4 &getProjection();

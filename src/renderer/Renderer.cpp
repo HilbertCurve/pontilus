@@ -180,11 +180,12 @@ namespace Pontilus
         void RendererController::render(size_t targetID, Camera &camera)
         {
             auto full = this->getTarget(targetID);
-            auto &buffer = *std::get<0>(full);
-            auto &shader = *std::get<1>(full);
+            rData &buffer = *std::get<0>(full);
+            Shader &shader = *std::get<1>(full);
             glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo);
             glBufferData(GL_ARRAY_BUFFER, buffer.dataOffset, buffer.data, GL_DYNAMIC_DRAW);
             // regenerate element buffer
+            buffer.generateIndices();
             glBindVertexArray(buffer.vao);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,

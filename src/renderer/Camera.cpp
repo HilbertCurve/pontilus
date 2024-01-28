@@ -9,6 +9,12 @@ namespace Pontilus
 {
     namespace Renderer
     {
+        Camera::Camera() {
+            this->mode = CameraMode::ORTHOGONAL;
+            this->width = 80;
+            this->height = 60;
+        }
+
         Camera::Camera(Camera::CameraMode m) {
             this->mode = m;
             this->width = 80;
@@ -23,10 +29,10 @@ namespace Pontilus
             }
             else if (mode == CameraMode::ORTHOGONAL)
             {
-                float left = -width / 20;
+                float left = -width / 2;
                 float right = -left;
 
-                float down = -height / 20;
+                float down = -height / 2;
                 float up = -down;
 
                 projection = glm::ortho(left, right, down, up, -10.0f, 100.0f);

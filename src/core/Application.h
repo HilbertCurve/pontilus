@@ -76,7 +76,7 @@ namespace Pontilus
         void init();
         void removeWindow(size_t id);
         std::vector<Window *> windows;
-        bool printDebug, cameraOrthogonal;
+        bool printDebug;
         double dt;
 
         Application();
