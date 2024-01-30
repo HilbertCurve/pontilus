@@ -22,33 +22,33 @@
 // TODO: there really should be a single struct `Application` that holds a lot of the static stuff in this engine.
 namespace Pontilus
 {
-    Scene defaultScene = 
-    {
-        []()
-        {
-            static Renderer::IconMap defaultMap = Renderer::IconMap("../assets/textures/ghostSwole.png", 675, 570, 0);
-            static Renderer::Font jetBrainsMono = Renderer::Font("../assets/fonts/JetBrainsMono-Medium.ttf", 26);
-            ECS::GameObject &defaultMessage = defaultScene.spawn();
-            defaultMessage.addComponent(new ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
-            ECS::GameObject &defaultLogo = defaultScene.spawn();
-            defaultLogo.addComponent(new ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
+    // Scene defaultScene = 
+    // {
+    //     []()
+    //     {
+    //         static Renderer::IconMap defaultMap = Renderer::IconMap("../assets/textures/ghostSwole.png", 675, 570, 0);
+    //         static Renderer::Font jetBrainsMono = Renderer::Font("../assets/fonts/JetBrainsMono-Medium.ttf", 26);
+    //         ECS::GameObject &defaultMessage = defaultScene.spawn();
+    //         defaultMessage.addComponent(new ECS::Transform{{0.0, 0.0, 0.0}, {40.0, 50.0, 1.0}, {0.0, 0.0, 0.0}});
+    //         ECS::GameObject &defaultLogo = defaultScene.spawn();
+    //         defaultLogo.addComponent(new ECS::Transform{{0.0, -20.0, 0.0}, {20.0, 16.0, 1.0}, {0.0, 0.0, 0.0}});
 
-            Renderer::Texture t = defaultMap.get(0);
+    //         Renderer::Texture t = defaultMap.get(0);
 
-            defaultMessage.addComponent(new Renderer::TextRenderer(
-                "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
-                jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f}));
-            defaultLogo.addComponent(new Renderer::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
-        },
-        [](double dt)
-        {
+    //         defaultMessage.addComponent(new Renderer::TextRenderer(
+    //             "Whoops! The Scene hasn't been specified yet. Make sure to call pontilus.set_scene(s) before pontilus.loop().",
+    //             jetBrainsMono, {1.0f, 1.0f, 1.0f, 1.0f}));
+    //         defaultLogo.addComponent(new Renderer::SpriteRenderer(t, {1.0f, 1.0f, 1.0f, 1.0f}));
+    //     },
+    //     [](double dt)
+    //     {
 
-        },
-        []()
-        {
+    //     },
+    //     []()
+    //     {
 
-        }
-    };
+    //     }
+    // };
 
     GLuint glProgramID;
     
@@ -121,6 +121,9 @@ namespace Pontilus
 
             // update engines
             //TODO: fixed update for updateAll() and getCurrentScene()->update()
+            if (!this->scene) {
+                __pError("No scene set for window!");
+            }
             this->scene->updateObjects(dt);
             this->scene->update(dt);
             // Physics2D::fixedUpdate();
@@ -237,8 +240,6 @@ namespace Pontilus
 
         Renderer::RendererController::get().start();
         Audio::initAudio();
-
-        primary->setScene(defaultScene);
 
         // say hi
         __pMessage("Hello: %s", glGetString(GL_VERSION));

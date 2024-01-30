@@ -25,9 +25,9 @@ namespace Pontilus
             for (uint32_t i = 0; i < this->components.size(); i++)
             {
                 Component *ca = this->components.at(i);
-                if (typeid(*ca) == typeid(c))
+                if (typeid(*ca) == typeid(*c))
                 {
-                    __pWarning("Component of type %s already in GameObject %p.", typeid(c).name(), this);
+                    __pWarning("Component of type %s already in GameObject %p.", typeid(*c).name(), this);
                     return;
                 }
             }
@@ -36,7 +36,7 @@ namespace Pontilus
             c->parent = this;
             
             //if (debugMode())
-                __pMessage("Component added to gameObject %p of type %s.", this, typeid(c).name());
+                __pMessage("Component added to GameObject of id %i of type %s.", this->id, typeid(*c).name());
         }
 
         Component *GameObject::getComponent(const std::type_info &ti)

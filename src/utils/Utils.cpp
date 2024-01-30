@@ -84,7 +84,8 @@ namespace Pontilus
         Window &window = Application::get()->getMainWindow();
 
         v -= vec4{window.getWidth() / 2, window.getHeight() / 2, 0.0f, 0.0f};
-        v /= vec4{window.getWidth() / 2, -window.getHeight() / 2, 1.0f, 1.0f};
+        v /= vec4{window.getWidth() / 2.0f, window.getHeight() / 2.0f, 1.0f, 1.0f};
+        v.y = -v.y;
         
         v = inverse(window.getCamera().getView()) * inverse(window.getCamera().getProjection()) * v;
 

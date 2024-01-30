@@ -31,6 +31,8 @@ namespace Platformer
             __pWarning("Can only update the player if parent GameObject has a Transform!");
             return 1;
         }
+        // update player's position:
+        tptr->pos += p.velocity * (float) dt;
         // here's how I want this player to be controlled:
         // first, the player will be a different kind of state machine. Not the standard one.
         // code for responding to user input should be in state machine code.
@@ -40,8 +42,6 @@ namespace Platformer
         // The goal right now is to get it to move.
         this->currentState->update(dt);
 
-        // update player's position:
-        tptr->pos += p.velocity * (float) dt;
         
         return 0;
     }
@@ -104,38 +104,45 @@ namespace Platformer
 
             bool noStop = false;
 
+            if (intersection.width() * intersection.height() < 0.01f) {
+                noStop = true;
+            }
+
             if (intersection.width() < intersection.height()) {
                 // we have a horizontal collision
 
                 if (intersection.center().x < transform.pos.x) {
                     // we have an intersection to the left
-                    hasLeft = true;
                     // start at center of collision, move out to edge of collision, then move out so edge of player meets edge of collision
-                    if (!noStop)
+                    if (!noStop) {
+                        hasLeft = true;
                         transform.pos.x = tile.pos.x * toTileEnd.x * 2.0f + toTileEnd.x + transform.whd.x / 2.0f;
+                    }
+                        
                     continue;
                 } else {
                     // we have an intersection to the right
-                    hasRight = true;
-                    if (!noStop)
+                    if (!noStop) {
+                        hasRight = true;
                         transform.pos.x = tile.pos.x * toTileEnd.x * 2.0f - toTileEnd.x - transform.whd.x / 2.0f;
+                    }
                     continue;
                 }
             } else {
                 // we have a vertical collision; change velocity in special way
                 if (intersection.center().y <= transform.pos.y && this->velocity.y < 0.0f) {
                     // we have a floor collision
-                    hasDown = true;
 
                     if (!noStop) {
+                        hasDown = true;
                         transform.pos.y = tile.pos.y * toTileEnd.y * 2.0f + toTileEnd.y + transform.whd.y / 2.0f;
                     }
                     continue;
                 } else if (intersection.center().y > transform.pos.y && this->velocity.y >= 0.0f) {
                     // we have a ceiling collision
-                    hasUp = true;
 
                     if (!noStop) {
+                        hasUp = true;
                         transform.pos.y = tile.pos.y * toTileEnd.y * 2.0f - toTileEnd.y - transform.whd.y / 2.0f;
                     }
                     continue;
@@ -148,14 +155,13 @@ namespace Platformer
 
     // a bunch of parameters I'll tweak with:
     const float WALK_VELOCITY = 16.0;
-    const float JUMP_VELOCITY = 50.0;
+    const float JUMP_VELOCITY = 30.0;
     const float FRICTION = 30.0;
     const float GRAVITY = 100.0; // physics :D
 
 
     int Player::Grounded::start() {
         // while grounded, we should have no residual velocity in y direction
-        Player::get().velocity.y = 0.0;
 
         return 0;
     }
@@ -163,9 +169,9 @@ namespace Platformer
     void Player::horizontalMovement(double dt) {
         // movement time!
         if (Pontilus::IO::isKeyPressed(GLFW_KEY_A)) {
-            this->velocity.x -= WALK_VELOCITY * dt;
+            this->velocity.x = -WALK_VELOCITY;
         } else if (Pontilus::IO::isKeyPressed(GLFW_KEY_D)) {
-            this->velocity.x += WALK_VELOCITY * dt;
+            this->velocity.x = WALK_VELOCITY;
         } else {
             if (this->velocity.x < -0.1f)
                 this->velocity.x += FRICTION * dt;
@@ -178,6 +184,7 @@ namespace Platformer
 
     int Player::Grounded::update(double dt) {
         using namespace Pontilus::ECS;
+        Player::get().velocity.y = 0.0;
         // we can assume with confidence that Player's parent has a transform, as this condition was checked in Player::update()
         Player &p = Player::get();
 
@@ -193,13 +200,13 @@ namespace Platformer
             pspr->color = {0.0, 1.0, 0.0, 1.0};
         }
 
-        p.clip(tiles);
+        uint32_t dirs = p.clip(tiles);
 
         if (Pontilus::IO::isKeyPressed(GLFW_KEY_SPACE)) {
             p.velocity.y = JUMP_VELOCITY;
         }
 
-        if (!(p.hasFloor())) {
+        if (!(dirs & 0b0100)) {
             p.setState(Jumped::get());
             return 0;
         }
@@ -235,6 +242,11 @@ namespace Platformer
             pspr->color = {0.0, 0.0, 1.0, 1.0};
         } else {
             pspr->color = {0.0, 1.0, 0.0, 1.0};
+        }
+
+        uint32_t dirs = p.clip(tiles);
+        if (dirs & 0b0100) {
+            p.velocity.y = 0.0f;
         }
 
         if (p.hasFloor()) {
