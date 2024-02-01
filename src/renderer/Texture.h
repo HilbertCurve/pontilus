@@ -19,6 +19,7 @@ namespace Pontilus
         class IconMap
         {
             public:
+            IconMap() = default;
             IconMap(const char *filepath, int textureWidth, int textureHeight, int padding);
 
             Texture get(int index);

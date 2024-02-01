@@ -22,11 +22,13 @@ namespace Platformer
 {
     static int playerID, tilemapID, editorID;
 
+    static Renderer::IconMap itemmap = Renderer::IconMap();
     static Scene primary = {
         []() {
+            itemmap = Renderer::IconMap("../examples/platformer/assets/item_tilemap.png", 32, 32, 0);
             ECS::GameObject &player = primary.spawn();
 
-            player.addComponent(new ECS::Transform({0.0, 2.0, -1.0}, {2.0, 4.0, 1.0}, {0.0, 0.0, 0.0}));
+            player.addComponent(new ECS::Transform({0.0, 2.0, 1.0}, {2.0, 4.0, 1.0}, {0.0, 0.0, 0.0}));
             player.addComponent(&Platformer::Player::get());
             player.addComponent(new Renderer::SpriteRenderer({0.0, 0.0, 1.0, 1.0}));
 
@@ -44,7 +46,15 @@ namespace Platformer
 
             editor.addComponent(new ECS::Transform({0.0, 0.0, -1.0}, {2.0, 2.0, 1.0}, {0.0, 0.0, 0.0}));
             editor.addComponent(&Platformer::Editor::get());
-            editor.addComponent(new Renderer::SpriteRenderer({0.5, 0.5, 0.5, 1.0}));
+            editor.addComponent(new Renderer::SpriteRenderer({1.0, 1.0, 1.0, 1.0}));
+
+            ECS::GameObject &cherry = primary.spawn();
+            ECS::GameObject &heart = primary.spawn();
+
+            cherry.addComponent(new ECS::Transform({3.0f, 3.0f, 1.0f}, {3.0, 3.0, 1.0}, {0.0, 0.0, 0.0}));
+            cherry.addComponent(new Renderer::SpriteRenderer(itemmap.get(0), {1.0, 1.0, 1.0, 1.0}));
+            heart.addComponent(new ECS::Transform({-3.0f, 3.0f, 1.0f}, {3.0, 3.0, 1.0}, {0.0, 0.0, 0.0}));
+            heart.addComponent(new Renderer::SpriteRenderer(itemmap.get(1), {1.0, 1.0, 1.0, 1.0}));
 
             Platformer::Editor::get().edit(t);
             Platformer::Player::get().collideWith(t);

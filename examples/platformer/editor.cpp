@@ -2,13 +2,16 @@
 
 #include <core/InputListener.h>
 #include <ecs/Transform.h>
+#include <renderer/SpriteRenderer.h>
 
 namespace Platformer
 {
     Editor *Editor::_inst = nullptr;
 
-    int Editor::update(double) {
+    int Editor::update(double dt) {
         using namespace Pontilus;
+        static double totaltime = 0.0f;
+        totaltime += dt;
         // the Editor needs a transform to know where to draw itself
         ECS::Transform *tptr = (ECS::Transform *)this->parent->getComponent(typeid(ECS::Transform));
         if (!tptr) {
@@ -42,6 +45,13 @@ namespace Platformer
             glm::ivec2 tilePos = glm::ivec2((int) roundPos.x / roundWidth, (int) roundPos.y / roundHeight);
             this->currentTileMap->removeTile(tilePos);
         }
+
+
+        // debug
+
+        Renderer::SpriteRenderer *sptr =  (Renderer::SpriteRenderer *)this->parent->getComponent(typeid(Renderer::SpriteRenderer));
+
+        sptr->color.a = fabs(sin(totaltime));
 
         return 0;
     }

@@ -97,6 +97,7 @@ namespace Pontilus
         this->isClosing = false;
         this->camera = Renderer::Camera();
 
+
         this->renderTargetIDs.push_back(Renderer::RendererController::QUAD_TARGET);
         this->renderTargetIDs.push_back(Renderer::RendererController::MESH_TARGET);
         this->renderTargetIDs.push_back(Renderer::RendererController::LINE_TARGET);
@@ -111,7 +112,7 @@ namespace Pontilus
 
     void Window::update(double dt) {
         if (!glfwWindowShouldClose(this->ptr)) {
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
             // set default background
             glClear(GL_COLOR_BUFFER_BIT);
@@ -224,19 +225,15 @@ namespace Pontilus
         
         this->windows.push_back(new Window());
 
-        Window *primary = this->windows[0];
-
         // initialize opengl backend
         if (!gladLoadGL((GLADloadfunc) glfwGetProcAddress))
         {
-            printf("Failed to initialize OpenGL context\n");
-            return;
+            __pError("Failed to initialize OpenGL context");
         }
-
-        glViewport(0, 0, primary->getWidth(), primary->getHeight());
         // transparency stuff
         glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
         Renderer::RendererController::get().start();
         Audio::initAudio();
