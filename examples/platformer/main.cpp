@@ -1,6 +1,7 @@
 #include "editor.h"
 #include "player.h"
 #include "tilemap.h"
+#include "item.h"
 
 #include <core/Application.h>
 #include <core/Scene.h>
@@ -10,7 +11,7 @@
 
 using namespace Pontilus;
 
-// next: TileMaps with textures
+// next: idk do stuff
 // then: builder mode + saving game
 // then: enemies
 // then: interactables
@@ -53,6 +54,7 @@ namespace Platformer
 
             cherry.addComponent(new ECS::Transform({3.0f, 3.0f, 1.0f}, {3.0, 3.0, 1.0}, {0.0, 0.0, 0.0}));
             cherry.addComponent(new Renderer::SpriteRenderer(itemmap.get(0), {1.0, 1.0, 1.0, 1.0}));
+            //cherry.addComponent(new Item());
             heart.addComponent(new ECS::Transform({-3.0f, 3.0f, 1.0f}, {3.0, 3.0, 1.0}, {0.0, 0.0, 0.0}));
             heart.addComponent(new Renderer::SpriteRenderer(itemmap.get(1), {1.0, 1.0, 1.0, 1.0}));
 
