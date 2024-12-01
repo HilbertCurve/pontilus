@@ -18,3 +18,5 @@ cmake --build .
 ```
 
 This was built on a Linux machine, and might not run on a Windows one. With CMake, it may be easier to create a Windows-working version. If you happen to do so, send in a pull request! I'd be happy to work with you to expand this project to others.
+
+Furthermore, some extra details are needed to figure out dependency pulling and installations for building... I don't expect this to be a huge problem for distributing binaries, but oh well.

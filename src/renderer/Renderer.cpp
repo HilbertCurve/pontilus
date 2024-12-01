@@ -107,7 +107,7 @@ namespace Pontilus
                 }
             }
 
-            __pWarning("Render target of id %lu not found.", id);
+            _pWarning("Render target of id %lu not found.", id);
             return std::make_tuple(nullptr, nullptr, 0);
         }
 
@@ -119,7 +119,7 @@ namespace Pontilus
                 }
             }
 
-            __pWarning("Render target of id %lu not found.", id);
+            _pWarning("Render target of id %lu not found.", id);
         }
 
         void RendererController::registerIconMap(IconMap &im) {

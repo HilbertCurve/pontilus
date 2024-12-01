@@ -2,7 +2,7 @@
 
 #include <core/Application.h>
 #include <core/Scene.h>
-#include <ecs/GameObject.h>
+#include <ecs/Entity.h>
 #include <ecs/SpriteRenderer.h>
 
 using namespace Pontilus;

@@ -100,7 +100,7 @@ namespace Platformer
         if (!tptr) {
             // it's safe to just create a transform at the point 0, 0
             if (!this->errMsgPrinted) {
-                __pMessage("TileMap doesn't have a Transform, so creating one at origin.");
+                _pMessage("TileMap doesn't have a Transform, so creating one at origin.");
                 this->errMsgPrinted = true;
             }
             t = Transform(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f));

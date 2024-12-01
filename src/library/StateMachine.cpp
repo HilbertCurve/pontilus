@@ -41,7 +41,7 @@ namespace Pontilus
         {
             if (!state)
             {
-                __pWarning("Cannot add null state to a StateMachine.");
+                _pWarning("Cannot add null state to a StateMachine.");
                 return 0;
             }
 
@@ -62,9 +62,9 @@ namespace Pontilus
             else
             {
                 if (state->name) {
-                    __pWarning("Attempt at adding illegal state %s to StateMachine %p.", state->name, this);
+                    _pWarning("Attempt at adding illegal state %s to StateMachine %p.", state->name, this);
                 } else {
-                    __pWarning("Attempt at adding illegal anonymous state %p to StateMachine %p.", state, this);
+                    _pWarning("Attempt at adding illegal anonymous state %p to StateMachine %p.", state, this);
                 }
                 return 0;
             }
@@ -94,7 +94,7 @@ namespace Pontilus
             }
             else
             {
-                __pWarning("Attempt at adding illegal state %s to StateMachine %p.", state, this);
+                _pWarning("Attempt at adding illegal state %s to StateMachine %p.", state, this);
                 return 0;
             }
         }
@@ -121,12 +121,12 @@ namespace Pontilus
             {
                 if (state->name)
                 {
-                    __pWarning("Attempt at removing state %s from StateMachine %p.", state->name, this);
+                    _pWarning("Attempt at removing state %s from StateMachine %p.", state->name, this);
                     return 0;
                 }
                 else
                 {
-                    __pWarning("Attempt at removing anonymous state %p from StateMachine %p.", state, this);
+                    _pWarning("Attempt at removing anonymous state %p from StateMachine %p.", state, this);
                     return 0;
                 }
             }
@@ -153,7 +153,7 @@ namespace Pontilus
             }
             else
             {
-                __pWarning("Attempt at removing illegal state %s from StateMachine %p.", state, this);
+                _pWarning("Attempt at removing illegal state %s from StateMachine %p.", state, this);
                 return 0;
             }
         }

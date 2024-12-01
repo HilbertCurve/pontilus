@@ -52,7 +52,7 @@ namespace Pontilus
                 }};
             Primitive NONE = Primitive{0, 0, 0, [](int *elements, int location)
                 {
-                    __pWarning("rData with NONE primitive attempted to be buffered.");
+                    _pWarning("rData with NONE primitive attempted to be buffered.");
                 }};
         }
     }

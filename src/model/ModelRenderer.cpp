@@ -3,7 +3,8 @@
 #include "renderer/Renderer.h"
 #include "ecs/Component.h"
 #include "ecs/Transform.h"
-#include <glm/gtx/transform.hpp>
+//#include <glm/gtx/transform.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <nlohmann/json.hpp>
 #include <string> // std::string::rfind, ::substr, ::c_str, copy constructor
 #include <stdlib.h> // random
@@ -75,7 +76,7 @@ namespace Pontilus
             using namespace Renderer;
             if (rOffset && !warned1)
             {
-                __pWarning("rOffset unused in model rendering due to complex index buffers.");
+                _pWarning("rOffset unused in model rendering due to complex index buffers.");
                 warned1 = true;
             }
 
@@ -84,7 +85,7 @@ namespace Pontilus
             {
                 if (!warned2)
                 {
-                    __pWarning("File %s could not be opened.", binFP.c_str());
+                    _pWarning("File %s could not be opened.", binFP.c_str());
                     warned2 = true;
                 }
                 return 1;
@@ -98,15 +99,16 @@ namespace Pontilus
             auto transformPointer = this->parent->getComponent(typeid(ECS::Transform));
             if (!transformPointer) {
                 if (!warned3) {
-                    __pWarning("No transform; the monkey has no home!");
+                    _pWarning("No transform; the monkey has no home!");
                     warned3 = true;
                 }
                 return 2;
             }
             ECS::Transform t = *(ECS::Transform*)transformPointer;
-            glm::mat4 rotation = glm::rotate(t.rot.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
-                glm::rotate(t.rot.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
-                glm::rotate(t.rot.z, glm::vec3{0.0f, 0.0f, 1.0f});
+            constexpr auto ident = glm::identity<glm::mat4>();
+            glm::mat4 rotation = rotate(ident, t.rot.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
+                rotate(ident, t.rot.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
+                rotate(ident, t.rot.z, glm::vec3{0.0f, 0.0f, 1.0f});
             // glm::mat4 translation = glm::translate(parent->pos);
 
             for (int i = 0; i < posCount; i++)
@@ -159,7 +161,7 @@ namespace Pontilus
 
                 memcpy((char *) r.indices + sizeof(int)*i + r.indexCount, &intChunk, sizeof(int));
 
-                __pAssert(intChunk < (unsigned int) posLength, "Index out of bounds at i=%d.", i);
+                _pAssert(intChunk < (unsigned int) posLength, "Index out of bounds at i=%d.", i);
             }
 
             fclose(f);
@@ -171,7 +173,7 @@ namespace Pontilus
 
         void ModelRenderer::toRData(Renderer::rData &r, unsigned int rOffset, Renderer::vProp property)
         {
-            __pWarning("Function `toRData(Renderer::rData, unsigned int, Renderer::vProp)` not implemented yet.");
+            _pWarning("Function `toRData(Renderer::rData, unsigned int, Renderer::vProp)` not implemented yet.");
         }
     }
 }

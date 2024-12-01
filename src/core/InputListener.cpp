@@ -83,7 +83,7 @@ namespace Pontilus
                 }
             }
 
-            __pWarning("Could not submit button callback; maximum size reached!");
+            _pWarning("Could not submit button callback; maximum size reached!");
             return bc.id;
         }
 
@@ -102,7 +102,7 @@ namespace Pontilus
                 }
             }
 
-            __pWarning("Could not submit scroll callback; maximum size reached!");
+            _pWarning("Could not submit scroll callback; maximum size reached!");
             return sc.id;
         }
 
@@ -117,7 +117,7 @@ namespace Pontilus
                 }
             }
 
-            __pMessage("Button callback id: %d doesn't exist.", id);
+            _pMessage("Button callback id: %d doesn't exist.", id);
         }
 
         void removeScrollCallback(int id)
@@ -131,7 +131,7 @@ namespace Pontilus
                 }
             }
 
-            __pMessage("Scroll callback id: %d doesn't exist.", id);
+            _pMessage("Scroll callback id: %d doesn't exist.", id);
         }
 
         void endFrame()
@@ -185,7 +185,7 @@ namespace Pontilus
                 }
             }
 
-            __pWarning("Could not submit key callback; maximum size reached!")
+            _pWarning("Could not submit key callback; maximum size reached!")
             return kc.id;
         }
 
@@ -201,7 +201,7 @@ namespace Pontilus
                 }
             }
 
-            __pMessage("Key callback id: %d doesn't exist.", id);
+            _pMessage("Key callback id: %d doesn't exist.", id);
         }
 
         //***********************************************
@@ -212,7 +212,7 @@ namespace Pontilus
         {
             if (button >= NUM_MOUSE_BUTTONS || button < 0)
             {
-                __pWarning("Tried to access illegal mouse button %d.", button);
+                _pWarning("Tried to access illegal mouse button %d.", button);
                 return false;
             }
             return instance.core._m.buttonsPressed[button];
@@ -240,7 +240,7 @@ namespace Pontilus
         {
             if (key >= NUM_KEYS || key < 0)
             {
-                __pWarning("Tried to access illegal key %d.", key);
+                _pWarning("Tried to access illegal key %d.", key);
                 return false;
             }
             return instance.core._k.keysPressed[key];

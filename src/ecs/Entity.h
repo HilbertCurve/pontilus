@@ -4,29 +4,38 @@
 
 #include <glm/glm.hpp>
 
-#include "core/Scene.h"
 #include "ecs/Component.h"
 #include "renderer/rData.h"
-#include "renderer/Primitive.h"
-#include "renderer/Texture.h"
 
 namespace Pontilus
 {
-    struct Scene;
+    class Scene;
     namespace ECS
     {
-        struct Component;
+        class Component;
 
-        class GameObject
+        class Entity
         {
             public:
-            ~GameObject();
+            ~Entity();
             static int _id;
             std::vector<Component *> components = std::vector<Component *>();
             const int id = ++_id;
             Scene *currentScene;
-            
+
             void addComponent(Component *c);
+
+            template<typename T>
+            T *getComponent() {
+                for (Component *component : this->components) {
+                    if (T *c = dynamic_cast<T*>(component)) {
+                        return c;
+                    }
+                }
+
+                return nullptr;
+            }
+
             Component *getComponent(const std::type_info &ti);
             // returns component for you to free it at end of lifecycle
             Component *removeComponent(const std::type_info &ti);

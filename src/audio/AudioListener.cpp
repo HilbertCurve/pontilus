@@ -17,11 +17,11 @@ namespace Pontilus
             if (this->parent)
             {
                 ECS::Transform *_t = (ECS::Transform *)this->parent->getComponent(typeid(ECS::Transform));
-                __alCall(alListener3f, AL_POSITION, _t->pos.x, _t->pos.y, _t->pos.z);
+                _alCall(alListener3f, AL_POSITION, _t->pos.x, _t->pos.y, _t->pos.z);
             }
             else
             {
-                __alCall(alListener3f, AL_POSITION, 0.0f, 0.0f, 0.0f);
+                _alCall(alListener3f, AL_POSITION, 0.0f, 0.0f, 0.0f);
             }
             // TODO: direction and velocity
 

@@ -17,7 +17,7 @@ namespace Pontilus
     {
         static const vAttrib vAttribDefault[] =
             {
-                {PONT_POS, PONT_FLOAT, 3},
+                {PONT_POS, PONT_FLOAT, 4},
                 {PONT_COLOR, PONT_FLOAT, 4},
                 {PONT_TEXCOORD, PONT_FLOAT, 2},
                 {PONT_TEXID, PONT_FLOAT, 1}
@@ -109,7 +109,7 @@ namespace Pontilus
         {
             // ensure r has been initialized
             // every rData should have a layout
-            __pAssert(this->layoutCount == 0, "Attempted to resize uninitialized rData.");
+            _pAssert(this->layoutCount == 0, "Attempted to resize uninitialized rData.");
 
             this->data = realloc(this->data, this->getLayoutLen() * newNumVerts);
 
@@ -125,6 +125,83 @@ namespace Pontilus
                     this->primitive->generateIndices(this->indices, i);
                 }
             }
+        }
+
+        void rData::drawRect(glm::vec3 pos, glm::vec3 whd, glm::vec3 rot, glm::vec4 color) {
+            uint32_t stride = dataOffset;
+
+            constexpr auto ident = glm::identity<glm::mat4>();
+
+            glm::mat4 rotation = rotate(ident, rot.x, glm::vec3{1.0f, 0.0f, 0.0f});
+            rotation = rotate(rotation, rot.y, glm::vec3{0.0f, 1.0f, 0.0f});
+            rotation = rotate(rotation, rot.z, glm::vec3{0.0f, 0.0f, 1.0f});
+            glm::mat4 translation = translate(rotation, pos);
+            for (int i = 0; i < 4; i++)
+            {
+                glm::vec3 orientation;
+                switch (i)
+                {
+                    case 0: orientation = {1.0f * whd.x, 1.0f * whd.y, 0.0f}; break;
+                    case 1: orientation = {0.0f * whd.x, 1.0f * whd.y, 0.0f}; break;
+                    case 2: orientation = {0.0f * whd.x, 0.0f * whd.y, 0.0f}; break;
+                    case 3: orientation = {1.0f * whd.x, 0.0f * whd.y, 0.0f}; break;
+                    default: { }
+                }
+
+
+                off_len result = getAttribMetaData(PONT_POS);
+                if (result.second >= 4 * sizeof(float))
+                {
+                    glm::vec4 t_orient = translation * rotation * glm::vec4(orientation - glm::vec3(0.5f * whd.x, 0.5f * whd.y, 0.0f), 1.0f);
+
+                    memcpy(static_cast<char *>(data) + result.first + stride, value_ptr(t_orient), 4 * sizeof(float));
+                    //for (int j = 0; j < 3; j++)
+                    //{
+                    //    ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&t.pos)[j];
+                    //}
+                }
+
+                result = getAttribMetaData(PONT_COLOR);
+                if (result.second >= 4 * sizeof(float))
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        ((float *)((char *)data + result.first + stride))[j] = (color)[j];
+                    }
+                }
+
+                result = getAttribMetaData(PONT_TEXCOORD);
+
+                if (result.second >= 2 * sizeof(float))
+                {
+                    orientation.x /= whd.x;
+                    orientation.y /= whd.y;
+                    for (int j = 0; j < 2; j++)
+                    {
+                        ((float *)((char *)data + result.first + stride))[j] = 0.0; //this->tex.source == nullptr ? 0.0 : this->tex.texCoords[j + i * 2];
+                    }
+                }
+
+                result = getAttribMetaData(PONT_TEXID);
+                if (result.second == 1 * sizeof(float)) // I'd be very confused if there was more than one texID.
+                {
+                    /*
+                    if (this->tex.source == nullptr)
+                    {
+                        *(float *)((char *)r.data + result.first + stride) = 0.0f;
+                    }
+                    else
+                    {
+                        *(float *)((char *)r.data + result.first + stride) = this->tex.source == nullptr ? 0.0 : this->tex.source->id();
+                    }
+                    */
+                }
+                stride += getLayoutLen();
+            }
+
+            isDirty = true;
+
+            dataOffset = stride;
         }
 
         void rData::clear()
@@ -171,9 +248,9 @@ namespace Pontilus
         }
 
         // this should, theoretically, return the pointer to a place in the rData and the size of that attribute.
-        rData::off_len rData::getAttribMetaData(vProp p)
+        rData::off_len rData::getAttribMetaData(vProp p) const
         {
-            off_len result = {0, p};
+            off_len result = {0, static_cast<size_t>(p)};
 
             int offsetInBytes = 0;
 

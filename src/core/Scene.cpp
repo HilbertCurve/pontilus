@@ -8,7 +8,7 @@
 #include "audio/AudioSource.h"
 #include "core/Application.h"
 #include "core/InputListener.h"
-#include "ecs/GameObject.h"
+#include "ecs/Entity.h"
 #include "renderer/TextRenderer.h"
 #include "renderer/SpriteRenderer.h"
 #include "renderer/Renderer.h"
@@ -50,32 +50,38 @@ namespace Pontilus
     static Audio::WAVFile *theNoise = new Audio::WAVFile();
         */
 
-    ECS::GameObject &Scene::spawn()
-    {
-        ECS::GameObject *obj = new ECS::GameObject();
-        obj->currentScene = this;
-        this->objs.emplace_back(obj);
-        return *this->objs.back();
+    Renderer::Camera *Scene::getCamera() const {
+        return this->camera;
     }
 
-    ECS::GameObject &Scene::get(int id) {
-        for (size_t i = 0; i < this->objs.size(); i++)
+    void Scene::setCamera(Renderer::Camera *c) {
+        delete this->camera; // DUBIOUS?
+        this->camera = c;
+    }
+
+    ECS::Entity *Scene::spawn() {
+        auto *obj = new ECS::Entity();
+        obj->currentScene = this;
+        this->objs.emplace_back(obj);
+        return this->objs.back();
+    }
+
+    ECS::Entity *Scene::get(const size_t id) const {
+        for (auto gameObject : this->objs)
         {
-            ECS::GameObject *gameObject = this->objs[i];
             if (gameObject->id == id)
             {
-                return *gameObject;
+                return gameObject;
             }
         }
 
-        __pError("Could not find GameObject of id %u.", id);
+        _pError("Could not find GameObject of id %u.", id);
     }
 
-    void Scene::despawn(int id)
-    {
+    void Scene::despawn(const size_t id) {
         for (size_t i = 0; i < this->objs.size(); i++)
         {
-            ECS::GameObject *gameObject = this->objs[i];
+            ECS::Entity *gameObject = this->objs[i];
             if (gameObject->id == id)
             {
                 this->objs.erase(this->objs.begin() + i);
@@ -84,8 +90,7 @@ namespace Pontilus
         }
     }
 
-    void Scene::updateObjects(double dt)
-    {
+    void Scene::updateObjects(double dt) const {
         for (size_t i = 0; i < this->objs.size(); i++)
         {
             this->objs.at(i)->update(dt);
@@ -94,7 +99,7 @@ namespace Pontilus
 
     void Scene::freeObjects()
     {
-        for (ECS::GameObject *obj : this->objs) {
+        for (ECS::Entity *obj : this->objs) {
             delete obj;
         }
         this->objs.clear();

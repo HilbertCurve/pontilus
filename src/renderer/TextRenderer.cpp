@@ -17,13 +17,13 @@ namespace Pontilus
             using namespace Pontilus::ECS;
 
 
-            __pAssert(this->font != nullptr, "Text must be initialized with a font.");
+            _pAssert(this->font != nullptr, "Text must be initialized with a font.");
 
             int stride = r.dataOffset;
 
             Transform *transformPointer = (Transform *)this->parent->getComponent(typeid(Transform));
             if (!transformPointer) {
-                __pWarning("Attempt to render text without a transform; I don't know where to draw!");
+                _pWarning("Attempt to render text without a transform; I don't know where to draw!");
                 return 1;
             }
             Transform _t = *transformPointer;
@@ -161,7 +161,7 @@ namespace Pontilus
 
             }
             
-            __pAssert(scale == this->font->fontSize / (this->font->ascent - this->font->descent), "A font was trampled on!");
+            _pAssert(scale == this->font->fontSize / (this->font->ascent - this->font->descent), "A font was trampled on!");
 
             r.dataOffset = stride;
 

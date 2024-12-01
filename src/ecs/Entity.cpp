@@ -1,15 +1,15 @@
 #include "core/Application.h"
 #include "core/Scene.h"
-#include "ecs/GameObject.h"
+#include "ecs/Entity.h"
 #include "utils/Utils.h"
 
 namespace Pontilus
 {
     namespace ECS
     {
-        int GameObject::_id = 0;
+        int Entity::_id = 0;
 
-        GameObject::~GameObject() {
+        Entity::~Entity() {
             for (Component *c : components) {
                 if (!c->isSingleton())
                     c->clear();
@@ -17,17 +17,17 @@ namespace Pontilus
                 delete c;
             }
 
-            __pMessage("GameObject of id %u deleted.", this->id);
+            _pMessage("GameObject of id %u deleted.", this->id);
         }
 
-        void GameObject::addComponent(Component *c)
+        void Entity::addComponent(Component *c)
         {
             for (uint32_t i = 0; i < this->components.size(); i++)
             {
                 Component *ca = this->components.at(i);
                 if (typeid(*ca) == typeid(*c))
                 {
-                    __pWarning("Component of type %s already in GameObject %p.", typeid(*c).name(), this);
+                    _pWarning("Component of type %s already in GameObject %p.", typeid(*c).name(), this);
                     return;
                 }
             }
@@ -36,10 +36,10 @@ namespace Pontilus
             c->parent = this;
             
             //if (debugMode())
-                __pMessage("Component added to GameObject of id %i of type %s.", this->id, typeid(*c).name());
+                _pMessage("Component added to GameObject of id %i of type %s.", this->id, typeid(*c).name());
         }
 
-        Component *GameObject::getComponent(const std::type_info &ti)
+        Component *Entity::getComponent(const std::type_info &ti)
         {
             for (uint32_t i = 0; i < this->components.size(); i++)
             {
@@ -53,7 +53,7 @@ namespace Pontilus
             return nullptr;
         }
 
-        Component *GameObject::removeComponent(const std::type_info &ti)
+        Component *Entity::removeComponent(const std::type_info &ti)
         {
             for (uint32_t i = 0; i < this->components.size(); i++)
             {
@@ -64,24 +64,24 @@ namespace Pontilus
                     this->components.erase(this->components.begin() + i);
                     ca->parent = nullptr;
                     //if (debugMode())
-                        __pMessage("Component removed from gameObject %p of type %s.", this, ti.name());
+                        _pMessage("Component removed from gameObject %p of type %s.", this, ti.name());
                     return ca;
                 }
                 i++;
             }
 
-            __pWarning("Component of type %s not found in GameObject %p.", ti.name(), this);
+            _pWarning("Component of type %s not found in GameObject %p.", ti.name(), this);
             return nullptr;
         }
 
-        void GameObject::update(double dt)
+        void Entity::update(double dt)
         {
             for (uint32_t i = 0; i < this->components.size(); i++)
             {
                 Component *c = this->components.at(i);
                 if (int err = c->update(dt) != 0)
                 {
-                    __pError("Update failed: error code %u\n", err);
+                    _pError("Update failed: error code %u\n", err);
                 }
             }
         }

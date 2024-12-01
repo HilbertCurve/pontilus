@@ -25,17 +25,18 @@ namespace Pontilus
         {
             if (mode == CameraMode::PERSPECTIVE)
             {
-                projection = glm::perspective(90.0f, width / height, 0.0f, 100.0f);
+                projection = glm::perspective(this->fov, width / height, 1.0f, 10000.0f);
             }
             else if (mode == CameraMode::ORTHOGONAL)
             {
+                //auto bounds = std::min(width, height);
                 float left = -width / 2;
                 float right = -left;
 
                 float down = -height / 2;
                 float up = -down;
 
-                projection = glm::ortho(left, right, down, up, -10.0f, 100.0f);
+                projection = glm::ortho(left, right, down, up, 0.0f, 100.0f);
             }
 
             return projection;
@@ -43,11 +44,9 @@ namespace Pontilus
 
         glm::mat4 &Camera::getView()
         {
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
-                glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1, 0, 0)) * // pitch
-                glm::rotate(glm::mat4(1.0f), rotation.y, glm::vec3(0, 1, 0));  // yaw
+            glm::mat4 transform = lookAt(position, position - glm::vec3(0.0, 0.0, 1.0), {0.0, 1.0, 0.0});
 
-            view = glm::inverse(transform);
+            view = transform;
 
             return view;
         }
@@ -57,7 +56,7 @@ namespace Pontilus
             return this->position;
         }
 
-        float Camera::getZoom()
+        float Camera::getZoom() const
         {
             return this->zoom;
         }
@@ -98,9 +97,16 @@ namespace Pontilus
             rotation += glm::vec3(dpitch, dyaw, 0);
         }
 
-        void Camera::changeZoom(float dz)
+        void Camera::setZoom(float dz)
         {
             zoom += dz;
+        }
+
+        void Camera::setWidth(int newWidth) {
+            this->width = newWidth;
+        }
+        void Camera::setHeight(int newHeight) {
+            this->height = newHeight;
         }
     }
 }

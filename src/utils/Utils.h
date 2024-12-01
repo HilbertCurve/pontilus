@@ -1,25 +1,27 @@
 /* date = October 17th 2021 5:25 pm */
 
-#ifndef _PONTILUS_UTILS_H
-#define _PONTILUS_UTILS_H
+#ifndef PONTILUS_UTILS_H
+#define PONTILUS_UTILS_H
 
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstring>
+#include <cstdio>
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
 #include <glad/gl.h>
 
-#define __alCall(fun, ...) \
+// TODO: refactor to be templated functions
+
+#define _alCall(fun, ...) \
 {\
     fun(__VA_ARGS__);\
     if (int err = alGetError())\
     {\
-        __pError("OpenAL error code 0x%04X recieved.", err);\
+        _pError("OpenAL error code 0x%04X recieved.", err);\
     }\
 }
 
-#define __pError(message, ...) \
+#define _pError(message, ...) \
 {\
     fprintf(stderr, "\x1B[01m\x1B[31mERROR:\x1B[0m ");\
     fprintf(stderr, message __VA_OPT__(,) __VA_ARGS__);\
@@ -27,21 +29,21 @@
     exit(-1);\
 }
 
-#define __pWarning(message, ...) \
+#define _pWarning(message, ...) \
 if (true/*echoOn()*/) {\
     fprintf(stdout, "\x1B[01m\x1B[31mWARN:\x1B[0m ");\
     fprintf(stdout, message __VA_OPT__(,) __VA_ARGS__);\
     fprintf(stdout, "\n");\
 }
 
-#define __pMessage(message, ...) \
+#define _pMessage(message, ...) \
 if (true/*echoOn()*/) {\
     printf("\x1B[01m\x1B[32mINFO:\x1B[0m ");\
     printf(message __VA_OPT__(,) __VA_ARGS__);\
     printf("\n");\
 }
 
-#define __pAssert(x, reason, ...) \
+#define _pAssert(x, reason, ...) \
 if (!(x))\
 {\
     fprintf(stderr, "\x1B[01m\x1B[31mERROR: Assertion failed at file %s, line %d:\x1B[0m ",\
@@ -85,5 +87,5 @@ namespace Pontilus
     glm::vec3 screenToWorldSize(const glm::vec2 screenSize);
 }
 
-#endif // _PONTILUS_UTILS_H
+#endif // PONTILUS_UTILS_H
 

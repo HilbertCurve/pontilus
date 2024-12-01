@@ -67,7 +67,7 @@ namespace Pontilus
         this->title = std::string("Unnamed Window");
 
         this->ptr = glfwCreateWindow(this->width, this->height, this->title.c_str(), NULL, NULL);
-        __pAssert(this->ptr, "Could not initialize GLFW window.");
+        _pAssert(this->ptr, "Could not initialize GLFW window.");
         
         glfwMakeContextCurrent(this->ptr);
 
@@ -81,7 +81,9 @@ namespace Pontilus
                 Window &w = Application::get()->getWindowByGLFW(r);
                 w.setWidth(newWidth);
                 w.setHeight(newHeight);
-                glViewport(0, 0, w.getWidth(), w.getHeight());
+                w.getCamera().setWidth(newWidth);
+                w.getCamera().setHeight(newHeight);
+                glViewport(0, 0, newWidth, newHeight);
             });
         
         glfwSetCursorPosCallback(this->ptr, IO::mousePosCallback);
@@ -123,7 +125,7 @@ namespace Pontilus
             // update engines
             //TODO: fixed update for updateAll() and getCurrentScene()->update()
             if (!this->scene) {
-                __pError("No scene set for window!");
+                _pError("No scene set for window!");
             }
             this->scene->updateObjects(dt);
             this->scene->update(dt);
@@ -160,15 +162,13 @@ namespace Pontilus
 
         if (!s.isUsed()) {
             this->scene = &s;
-            __pAssert(this->scene->init, "New scene doesn't have init function set.");
-            __pAssert(this->scene->update, "New scene doesn't have update function set.")
-            __pAssert(this->scene->clean, "New scene doesn't have clean function set.")
+            this->scene->setCamera(&this->camera);
             this->scene->init();
             this->scene->setUsed(true);
             return;
         }
 
-        __pError("Cannot set scene to window of ID %lu; scene is already used!", this->id);
+        _pError("Cannot set scene to window of ID %lu; scene is already used!", this->id);
     }
 
     Application *Application::inst = nullptr;
@@ -192,7 +192,7 @@ namespace Pontilus
             }
         }
 
-        __pError("Cannot find window of id %lu in application.", id);
+        _pError("Cannot find window of id %lu in application.", id);
     }
 
     Window &Application::getWindowByGLFW(GLFWwindow *ptr) {
@@ -202,14 +202,14 @@ namespace Pontilus
             }
         }
 
-        __pError("Cannot get window of GLFW pointer %p; is there a dangling GLFW context??", ptr);
+        _pError("Cannot get window of GLFW pointer %p; is there a dangling GLFW context??", ptr);
     }
 
     void Application::init()
     {
         glfwSetErrorCallback(printError);
 
-        __pAssert(glfwInit(), "Could not initialize GLFW instance");
+        _pAssert(glfwInit(), "Could not initialize GLFW instance");
 
         // GLFW
         glfwDefaultWindowHints();
@@ -228,7 +228,7 @@ namespace Pontilus
         // initialize opengl backend
         if (!gladLoadGL((GLADloadfunc) glfwGetProcAddress))
         {
-            __pError("Failed to initialize OpenGL context");
+            _pError("Failed to initialize OpenGL context");
         }
         // transparency stuff
         glEnable(GL_BLEND);
@@ -239,7 +239,13 @@ namespace Pontilus
         Audio::initAudio();
 
         // say hi
-        __pMessage("Hello: %s", glGetString(GL_VERSION));
+        _pMessage("Hello: %p", glGetString(GL_VERSION));
+        Window &w = Application::get()->getMainWindow();
+        w.setWidth(800);
+        w.setHeight(600);
+        w.getCamera().setWidth(800);
+        w.getCamera().setHeight(600);
+        glViewport(0, 0, 800, 600);
     }
 
     void Application::run()

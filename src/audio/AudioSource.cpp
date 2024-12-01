@@ -12,9 +12,9 @@ namespace Pontilus
         void AudioSource::init()
         {
             if (!__pAudioCheck) return;
-            __alCall(alGenSources, 1, &this->source);
-            __alCall(alSourcef, this->source, AL_PITCH, 1.0f);
-            __alCall(alSourcef, this->source, AL_GAIN, 1.0f);
+            _alCall(alGenSources, 1, &this->source);
+            _alCall(alSourcef, this->source, AL_PITCH, 1.0f);
+            _alCall(alSourcef, this->source, AL_GAIN, 1.0f);
 
             Pontilus::Audio::addSource(*this);
         }
@@ -34,7 +34,7 @@ namespace Pontilus
             if (!__pAudioCheck) return;
             if (!this->parent)
             {
-                __pError("AudioSource at %p has no parent.", this);
+                _pError("AudioSource at %p has no parent.", this);
             }
                 
             if (this->state == AL_PLAYING) this->stop();
@@ -50,32 +50,32 @@ namespace Pontilus
                 int offset = i * BUFFER_SIZE;
 
                 if (offset + BUFFER_SIZE < f.dataSize)
-                    __alCall(alBufferData, f.buffers[i], f.format, f.audioData + offset, BUFFER_SIZE, f.sampleRate)
+                    _alCall(alBufferData, f.buffers[i], f.format, f.audioData + offset, BUFFER_SIZE, f.sampleRate)
                 else if (offset < f.dataSize && offset + BUFFER_SIZE > f.dataSize)
                 {
                     char *data = (char *) malloc(BUFFER_SIZE);
                     memset(data, 0, BUFFER_SIZE);
                     memcpy(data, f.audioData + offset, f.dataSize - offset);
-                    __alCall(alBufferData, f.buffers[i], f.format, data, BUFFER_SIZE, f.sampleRate);
+                    _alCall(alBufferData, f.buffers[i], f.format, data, BUFFER_SIZE, f.sampleRate);
                     free(data);
                 }
                 else
                 {
                     char *data = (char *) malloc(BUFFER_SIZE);
                     memset(data, 0, BUFFER_SIZE);
-                    __alCall(alBufferData, f.buffers[i], f.format, data, BUFFER_SIZE, f.sampleRate);
+                    _alCall(alBufferData, f.buffers[i], f.format, data, BUFFER_SIZE, f.sampleRate);
                     free(data);
                 }
             }
 
-            __alCall(alSourcei, this->source, AL_LOOPING, _looping);
+            _alCall(alSourcei, this->source, AL_LOOPING, _looping);
             this->looping = _looping;
-            __alCall(alSourceQueueBuffers, this->source, NUM_BUFFERS_PER_FILE, &f.buffers[0]);
+            _alCall(alSourceQueueBuffers, this->source, NUM_BUFFERS_PER_FILE, &f.buffers[0]);
 
             this->cursor = (int) fmin(NUM_BUFFERS_PER_FILE * BUFFER_SIZE, f.dataSize);
             this->atEnd = false;
 
-            __alCall(alSourcePlay, this->source); // i could probably do multithreading with this
+            _alCall(alSourcePlay, this->source); // i could probably do multithreading with this
 
             this->state = AL_PLAYING;
             this->currentFile = &f;
@@ -87,20 +87,20 @@ namespace Pontilus
             if (!__pAudioCheck) return 0;
             if (!this->parent)
             {
-                __alCall(alSource3f, this->alSource(), AL_POSITION, 0.0f, 0.0f, 0.0f);
+                _alCall(alSource3f, this->alSource(), AL_POSITION, 0.0f, 0.0f, 0.0f);
             }
             else
             {
                 auto _transform = (ECS::Transform*) this->parent->getComponent(typeid(ECS::Transform));
-                __alCall(alSource3f, this->alSource(), AL_POSITION, _transform->pos.x, _transform->pos.y, _transform->pos.z);
+                _alCall(alSource3f, this->alSource(), AL_POSITION, _transform->pos.x, _transform->pos.y, _transform->pos.z);
             }
             // TODO: velocity
 
             
-            __alCall(alGetSourcei, this->alSource(), AL_SOURCE_STATE, &this->getState());
+            _alCall(alGetSourcei, this->alSource(), AL_SOURCE_STATE, &this->getState());
 
             ALint buffersProcessed = 0;
-            __alCall(alGetSourcei, this->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+            _alCall(alGetSourcei, this->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
             
             if (buffersProcessed <= 0) return 0;
 
@@ -109,7 +109,7 @@ namespace Pontilus
                 if (++buffPtr >= NUM_BUFFERS_PER_FILE) buffPtr = 0;
 
                 ALuint buffer = this->currentFile->buffers[buffPtr];
-                __alCall(alSourceUnqueueBuffers, this->source, 1, &buffer);
+                _alCall(alSourceUnqueueBuffers, this->source, 1, &buffer);
 
                 if (this->state == AL_STOPPED)
                 {
@@ -148,8 +148,8 @@ namespace Pontilus
                     
                 }
 
-                __alCall(alBufferData, buffer, this->currentFile->format, data, BUFFER_SIZE, this->currentFile->sampleRate);
-                __alCall(alSourceQueueBuffers, this->source, 1, &buffer);
+                _alCall(alBufferData, buffer, this->currentFile->format, data, BUFFER_SIZE, this->currentFile->sampleRate);
+                _alCall(alSourceQueueBuffers, this->source, 1, &buffer);
 
                 free(data);
             }
@@ -159,8 +159,8 @@ namespace Pontilus
         void AudioSource::stop()
         {
             if (!__pAudioCheck) return;
-            __alCall(alSourceStop, this->source);
-            __alCall(alSourceUnqueueBuffers, this->source, 4, &this->currentFile->buffers[0]);
+            _alCall(alSourceStop, this->source);
+            _alCall(alSourceUnqueueBuffers, this->source, 4, &this->currentFile->buffers[0]);
 
             this->currentFile = nullptr;
             this->state = AL_STOPPED;
@@ -170,7 +170,7 @@ namespace Pontilus
         {
             if (!__pAudioCheck) return;
             if (state == AL_PLAYING) this->stop();
-            __alCall(alDeleteSources, 1, &this->source);
+            _alCall(alDeleteSources, 1, &this->source);
         }
     }
 }

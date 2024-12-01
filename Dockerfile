@@ -4,7 +4,7 @@ RUN export DEBIAN_FRONTEND=noninteractive
 RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
 
 RUN apt-get update && apt-get --assume-yes install git build-essential cmake 
-RUN apt-get --assume-yes install libx11-dev libxxf86vm-dev libxrandr-dev libpthread-workqueue-dev libxi-dev libdlm3 libxinerama-dev libxcursor-dev libgle3-dev
+RUN apt-get --assume-yes install libx11-dev libxxf86vm-dev libxrandr-dev libpthread-workqueue-dev libxi-dev libdlm3 libxinerama-dev libxcursor-dev libgle3-dev libwayland-dev pkg-config libxkbcommon-dev nlohmann-json3-dev
 
 WORKDIR "/usr"
 RUN mkdir work
@@ -33,11 +33,13 @@ RUN cmake ..
 RUN make install
 WORKDIR "/usr/work"
 
-RUN git clone https://github.com/HilbertCurve/pontilus
+RUN git clone --recurse-submodules https://github.com/HilbertCurve/pontilus
 WORKDIR "/usr/work/pontilus"
-RUN ./build.sh
-WORKDIR "/usr/work/pontilus/examples"
-CMD ["./build_test.sh"]
+RUN mkdir -p build
+WORKDIR "/usr/work/pontilus/build"
+RUN cmake ..
+RUN cmake build .
+
 
 # to run in directory {D} of this file:
 #

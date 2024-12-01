@@ -3,7 +3,10 @@
 #pragma once
 
 #include <vector>
-#include "ecs/GameObject.h"
+
+#include "ecs/EntityBuilder.h"
+#include "ecs/Entity.h"
+#include "renderer/Camera.h"
 #include "renderer/rData.h"
 
 namespace Pontilus
@@ -14,35 +17,56 @@ namespace Pontilus
 
     namespace ECS
     {
-        class GameObject;
+        class Entity;
     }
 
     class Scene
     {
-
         public:
+        virtual ~Scene() = default;
+
+        Renderer::Camera *getCamera() const;
+        void setCamera(Renderer::Camera *c);
+
         Scene() = default;
-        Scene(_init i, _update u, _clean c) : init(i), update(u), clean(c) { this->used = false; };
         // SHOULD SCENE HAVE THESE????????
         // probably not, should be inheritance. I'm fighting demons
-        _init init;
-        _update update;
-        _clean clean;
-        ECS::GameObject &spawn();
-        ECS::GameObject &get(int id);
-        void despawn(int id);
+        virtual void init() = 0;
+
+        virtual void update(double) = 0;
+
+        virtual void clean() = 0;
+
+
+        ECS::Entity *spawn();
+
+        template<class T>
+        ECS::Entity *build() {
+            ECS::EntityBuilder *builder = new T();
+
+            auto obj = this->spawn();
+            builder->build(obj);
+
+            delete builder;
+
+            return obj;
+        }
+
+        ECS::Entity *get(size_t id) const;
+        void despawn(size_t id);
         // DEPRECATED: use spawns
         // void addObject(ECS::GameObject obj);
         // void removeObject(int id);
 
-        void updateObjects(double dt);
+        void updateObjects(double dt) const;
         void freeObjects();
 
         bool isUsed() { return this->used; }
         void setUsed(bool _used) { this->used = _used; }
 
         private:
-        std::vector<ECS::GameObject *> objs = std::vector<ECS::GameObject *>();
+        Renderer::Camera *camera{};
+        std::vector<ECS::Entity *> objs = std::vector<ECS::Entity *>();
         bool used = false;
     };
 }

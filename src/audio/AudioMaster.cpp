@@ -25,16 +25,16 @@ namespace Pontilus
             currentDevice = alcOpenDevice(nullptr);
             if (!currentDevice)
             {
-                __pWarning("OpenAL could not find default audio device");
+                _pWarning("OpenAL could not find default audio device");
                 hasAudioDevice = false;
                 return;
             }
 
             currentContext = alcCreateContext(currentDevice, nullptr); // TODO: audio attributes
-            __pAssert(currentContext, "OpenAL could not initialize audio context.");
+            _pAssert(currentContext, "OpenAL could not initialize audio context.");
 
             bool contextMadeCurrent = alcMakeContextCurrent(currentContext);
-            __pAssert(contextMadeCurrent, "OpenAL could not make audio context current.");
+            _pAssert(contextMadeCurrent, "OpenAL could not make audio context current.");
         }
 
         void addSource(AudioSource &s)
@@ -59,7 +59,7 @@ namespace Pontilus
 
             alcDestroyContext(currentContext);
             alcMakeContextCurrent(nullptr);
-            __pAssert(alcCloseDevice(currentDevice), "Attempted to destroy uninitialized OpenGL context.");
+            _pAssert(alcCloseDevice(currentDevice), "Attempted to destroy uninitialized OpenGL context.");
         }
 
         int initWAVFile(WAVFile &wf, const char *filepath)
@@ -69,7 +69,7 @@ namespace Pontilus
 
             if (!f)
             {
-                __pWarning(".wav file %s doesn't exist.", filepath);
+                _pWarning(".wav file %s doesn't exist.", filepath);
                 return -1;
             }
 
@@ -79,7 +79,7 @@ namespace Pontilus
 
             if (strncmp(buffer, "RIFF", 4) != 0)
             {
-                __pWarning("File %s isn't a valid .wav file.", filepath);
+                _pWarning("File %s isn't a valid .wav file.", filepath);
                 return -2;
             }
 
@@ -90,7 +90,7 @@ namespace Pontilus
 
             if (strncmp(buffer, "WAVE", 4) != 0)
             {
-                __pWarning("File %s isn't a valid .wav file.", filepath);
+                _pWarning("File %s isn't a valid .wav file.", filepath);
                 return -2;
             }
 
@@ -109,7 +109,7 @@ namespace Pontilus
             fread(buffer, 4, 1, f);
             if (strncmp(buffer, "data", 4) != 0)
             {
-                __pWarning("File %s isn't a valid .wav file.", filepath);
+                _pWarning("File %s isn't a valid .wav file.", filepath);
                 return -2;
             }
 
@@ -130,7 +130,7 @@ namespace Pontilus
             else
             {
                 wf.format = AL_FORMAT_STEREO8;
-                __pWarning("Unrecognized .wav format: %d channels, %d bits per sample; defaulting to 2 and 16 respectively.", wf.channels, wf.bitsPerSample);
+                _pWarning("Unrecognized .wav format: %d channels, %d bits per sample; defaulting to 2 and 16 respectively.", wf.channels, wf.bitsPerSample);
             }
 
             /*
@@ -138,7 +138,7 @@ namespace Pontilus
             long duration = numberOfSamples / f.sampleRate; // unnecessary as of right now
              */
 
-            __alCall(alGenBuffers, NUM_BUFFERS_PER_FILE, &wf.buffers[0]);
+            _alCall(alGenBuffers, NUM_BUFFERS_PER_FILE, &wf.buffers[0]);
 
             audioFiles.push_back(&wf);
 
@@ -150,7 +150,7 @@ namespace Pontilus
             if (!__pAudioCheck) return;
             if (!wf.filepath)
             {
-                __pWarning("Attempted to free uninitialized WAVFile at %p.", &wf);
+                _pWarning("Attempted to free uninitialized WAVFile at %p.", &wf);
                 return;
             }
 

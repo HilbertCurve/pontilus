@@ -26,6 +26,7 @@ target_include_directories(pontilus_compile_flags
 
 find_package(OpenGL REQUIRED)
 find_package(OpenAL REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 # control where the static and shared libraries are built so that on windows
 # we don't need to tinker with the path to run the executable
@@ -39,7 +40,7 @@ add_subdirectory(src)
 add_library(pontilus src)
 set_target_properties(pontilus PROPERTIES LINKER_LANGUAGE CXX POSITION_INDEPENDENT_CODE TRUE)
 
-target_link_libraries(pontilus PUBLIC pontilus_compile_flags pontilus_src OpenGL openal)
+target_link_libraries(pontilus PUBLIC pontilus_compile_flags pontilus_src OpenGL openal glm::glm)
 
 target_include_directories(pontilus INTERFACE
                            "${CMAKE_SOURCE_DIR}/src"
@@ -55,7 +56,8 @@ add_test(NAME mandelbrot COMMAND mandelbrot)
 add_subdirectory("${CMAKE_SOURCE_DIR}/examples/platformer")
 add_test(NAME platformer COMMAND platformer)
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/examples/rpg_ext")
-add_executable(rpg "${CMAKE_SOURCE_DIR}/examples/rpg.cpp")
-target_link_libraries(rpg PUBLIC pontilus rpg_ext)
+add_subdirectory("${CMAKE_SOURCE_DIR}/examples/rpg_game")
 add_test(NAME rpg COMMAND rpg)
+
+add_subdirectory("${CMAKE_SOURCE_DIR}/examples/chess_clone")
+add_test(NAME chessClone COMMAND chessClone)

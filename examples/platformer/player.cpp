@@ -1,6 +1,6 @@
 #include "player.h"
 
-#include <ecs/GameObject.h>
+#include <ecs/Entity.h>
 #include <ecs/Transform.h>
 #include <core/InputListener.h>
 #include <renderer/SpriteRenderer.h>
@@ -25,10 +25,10 @@ namespace Platformer
 
         // TODO: streamlined component check function?
         Player &p = Player::get();
-        GameObject &g = *p.parent;
+        Entity &g = *p.parent;
         Transform *tptr = (Transform*)g.getComponent(typeid(Transform));
         if (!tptr) {
-            __pWarning("Can only update the player if parent GameObject has a Transform!");
+            _pWarning("Can only update the player if parent GameObject has a Transform!");
             return 1;
         }
         // update player's position:
@@ -53,7 +53,7 @@ namespace Platformer
         tiles.clear();
 
         if (!this->currentTileMap) {
-            __pMessage("Skipping collision as no collider is assigned.");
+            _pMessage("Skipping collision as no collider is assigned.");
             return;
         }
         TileMap &t = *this->currentTileMap;
@@ -64,7 +64,7 @@ namespace Platformer
     bool Player::hasFloor() {
         Transform &tPlayer = *(Transform *)this->parent->getComponent(typeid(Transform));
         if (!this->currentTileMap) {
-            __pMessage("Skipping collision as no collider is assigned.");
+            _pMessage("Skipping collision as no collider is assigned.");
             return false;
         }
 

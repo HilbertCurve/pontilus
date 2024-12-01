@@ -15,7 +15,7 @@ namespace Platformer
         // the Editor needs a transform to know where to draw itself
         ECS::Transform *tptr = (ECS::Transform *)this->parent->getComponent(typeid(ECS::Transform));
         if (!tptr) {
-            __pWarning("Editor component needs a Transform!");
+            _pWarning("Editor component needs a Transform!");
             return 1;
         }
 

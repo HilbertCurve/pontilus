@@ -49,7 +49,7 @@ namespace Pontilus
                 if (!(this->spr = dynamic_cast<Renderer::SpriteRenderer *> (
                     this->parent->getComponent(typeid(Renderer::SpriteRenderer)))))
                 {
-                    __pWarning("GameObject at %p has Animation component but not SpriteRenderer component.", this->parent);
+                    _pWarning("GameObject at %p has Animation component but not SpriteRenderer component.", this->parent);
                     return false;
                 }
             }
@@ -61,11 +61,11 @@ namespace Pontilus
         {
             if (start < 0)
             {
-                __pWarning("Animation at %p can't have negative starting bound %d (for now).", this, start);
+                _pWarning("Animation at %p can't have negative starting bound %d (for now).", this, start);
             }
             else if (end >= this->textures.size())
             {
-                __pWarning("Animation at %p can't have ending bound %d greater than highest index %ld (for now).", this, end, this->textures.size());
+                _pWarning("Animation at %p can't have ending bound %d greater than highest index %ld (for now).", this, end, this->textures.size());
             }
             else
             {

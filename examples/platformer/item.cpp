@@ -1,7 +1,7 @@
 #include "item.h"
 
 #include <ecs/Transform.h>
-#include <ecs/GameObject.h>
+#include <ecs/Entity.h>
 
 namespace Platformer
 {

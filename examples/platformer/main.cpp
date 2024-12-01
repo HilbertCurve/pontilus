@@ -5,7 +5,7 @@
 
 #include <core/Application.h>
 #include <core/Scene.h>
-#include <ecs/GameObject.h>
+#include <ecs/Entity.h>
 #include <renderer/SpriteRenderer.h>
 #include <ecs/Transform.h>
 
@@ -27,13 +27,13 @@ namespace Platformer
     static Scene primary = {
         []() {
             itemmap = Renderer::IconMap("../examples/platformer/assets/item_tilemap.png", 32, 32, 0);
-            ECS::GameObject &player = primary.spawn();
+            ECS::Entity &player = primary.spawn();
 
             player.addComponent(new ECS::Transform({0.0, 2.0, 1.0}, {2.0, 4.0, 1.0}, {0.0, 0.0, 0.0}));
             player.addComponent(&Platformer::Player::get());
             player.addComponent(new Renderer::SpriteRenderer({0.0, 0.0, 1.0, 1.0}));
 
-            ECS::GameObject &tilemap = primary.spawn();
+            ECS::Entity &tilemap = primary.spawn();
 
             tilemap.addComponent(new ECS::Transform({0.0, 0.0, -1.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}));
             tilemap.addComponent(new Platformer::TileMap(2.0f, 2.0f, -1.0f));
@@ -43,14 +43,14 @@ namespace Platformer
             t.setTile({0,-1},0);
             t.setTextures("../assets/textures/tilemap1.png", 16, 16, 0);
 
-            ECS::GameObject &editor = primary.spawn();
+            ECS::Entity &editor = primary.spawn();
 
             editor.addComponent(new ECS::Transform({0.0, 0.0, -1.0}, {2.0, 2.0, 1.0}, {0.0, 0.0, 0.0}));
             editor.addComponent(&Platformer::Editor::get());
             editor.addComponent(new Renderer::SpriteRenderer({1.0, 1.0, 1.0, 1.0}));
 
-            ECS::GameObject &cherry = primary.spawn();
-            ECS::GameObject &heart = primary.spawn();
+            ECS::Entity &cherry = primary.spawn();
+            ECS::Entity &heart = primary.spawn();
 
             cherry.addComponent(new ECS::Transform({3.0f, 3.0f, 1.0f}, {3.0, 3.0, 1.0}, {0.0, 0.0, 0.0}));
             cherry.addComponent(new Renderer::SpriteRenderer(itemmap.get(0), {1.0, 1.0, 1.0, 1.0}));

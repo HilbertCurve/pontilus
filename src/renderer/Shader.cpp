@@ -29,7 +29,7 @@ namespace Pontilus
 
             if (vertFile == nullptr)
             {
-                __pError("Could not open \"%s\".\n", vertPath.c_str());
+                _pError("Could not open \"%s\".\n", vertPath.c_str());
                 exit(-1);
             }
 
@@ -49,7 +49,7 @@ namespace Pontilus
 
             if (fragFile == nullptr)
             {
-                __pError("Could not open \"%s\".\n", fragPath.c_str());
+                _pError("Could not open \"%s\".\n", fragPath.c_str());
                 exit(-1);
             }
 
@@ -70,7 +70,7 @@ namespace Pontilus
             int infoLogLength;
 
             // Compile Vertex Shader
-            __pMessage("Compiling vertex shader: %s", vertPath.c_str());
+            _pMessage("Compiling vertex shader: %s", vertPath.c_str());
 
             const char *vertPtr = &vertCode[0];
             glShaderSource(this->vertexID, 1, &vertPtr, &vertFilesize);
@@ -83,11 +83,11 @@ namespace Pontilus
             {
                 std::vector<char> vertexShaderErrorMessage(infoLogLength + 1);
                 glGetShaderInfoLog(this->vertexID, infoLogLength, NULL, &vertexShaderErrorMessage[0]);
-                __pError("Error compiling vertex shader:\n%s", &vertexShaderErrorMessage[0]);
+                _pError("Error compiling vertex shader:\n%s", &vertexShaderErrorMessage[0]);
             }
 
             // compile fragment shader
-            __pMessage("Compiling fragment shader: %s", fragPath.c_str());
+            _pMessage("Compiling fragment shader: %s", fragPath.c_str());
             const char *fragPtr = &fragCode[0];
             glShaderSource(this->fragmentID, 1, &fragPtr, &fragFilesize);
             glCompileShader(this->fragmentID);
@@ -99,7 +99,7 @@ namespace Pontilus
             {
                 std::vector<char> fragmentShaderErrorMessage(infoLogLength + 1);
                 glGetShaderInfoLog(this->fragmentID, infoLogLength, NULL, &fragmentShaderErrorMessage[0]);
-                __pError("Error compiling fragment shader:\n%s", &fragmentShaderErrorMessage[0]);
+                _pError("Error compiling fragment shader:\n%s", &fragmentShaderErrorMessage[0]);
             }
 
             // link to program
@@ -115,7 +115,7 @@ namespace Pontilus
             {
                 std::vector<char> shaderLinkingErrorMessage(infoLogLength + 1);
                 glGetShaderInfoLog(this->shaderProgramID, infoLogLength, NULL, &shaderLinkingErrorMessage[0]);
-                __pError("Error linking shaders:\n%s", &shaderLinkingErrorMessage[0]);
+                _pError("Error linking shaders:\n%s", &shaderLinkingErrorMessage[0]);
             }
         }
 

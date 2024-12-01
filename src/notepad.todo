@@ -37,7 +37,7 @@ Misc:
 
  ___  ___ 
 |        |
-|        |  SCENES SHOULDN'T HAVE FREAKING FUNCTION POINTERS AS MEMBERS! JUST USE INHERITANCE!!!
+|   :>   |  SCENES SHOULDN'T HAVE FREAKING FUNCTION POINTERS AS MEMBERS! JUST USE INHERITANCE!!!
 |___  ___|
 
 Postprocessing:
@@ -189,12 +189,13 @@ Roadmap:
         [+] Basic platformer
         [ ] More platformers
         [ ] Mario clone
+        [ ] Block Blast
         WIP
         [ ] RPG-ish
 
 Issues:
-    [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame.
-    It's because of it being orthographic instead of perspective
+    [+] Camera.cpp has wierd visual bugs involving an object rotating out of frame. - It's because of it being orthographic instead of perspective
+    [+] Actually implement perspective camera mode.
     [ ] Text isn't rendering properly; the edges of glyphs clip and they don't kern properly.
 
 Backburner:

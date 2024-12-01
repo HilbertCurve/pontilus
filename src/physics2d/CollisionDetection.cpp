@@ -98,7 +98,7 @@ namespace Pontilus
             }
             else
             {
-                __pError("Casting error for types %s and %s.", typeid(*p_a).name(), typeid(*p_b).name());
+                _pError("Casting error for types %s and %s.", typeid(*p_a).name(), typeid(*p_b).name());
             }
             return {};
         }
@@ -339,7 +339,7 @@ namespace Pontilus
                         else
                         {
                             // another impossible condition.
-                            __pError("Impossible condition met.");
+                            _pError("Impossible condition met.");
                         }
 
                         ret.collisionPoints.push_back(collisionPoints[0]);
@@ -348,7 +348,7 @@ namespace Pontilus
                     case 3:
                     {
                         // this is mathematically impossible; something bad has happened.
-                        __pError("Two AABBs cannot intersect each other in 3 places.");
+                        _pError("Two AABBs cannot intersect each other in 3 places.");
                     } break;
                     case 4:
                     {

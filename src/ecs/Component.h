@@ -2,23 +2,24 @@
 
 #pragma once
 
-#include "ecs/GameObject.h"
+#include "ecs/Entity.h"
 
 namespace Pontilus
 {
     namespace ECS
     {
-        class GameObject;
+        class Entity;
 
-        struct Component
+        class Component
         {
-            GameObject *parent = nullptr;
 
+        public:
             virtual bool operator==(Component &c);
             virtual int update(double dt) = 0;
             virtual void clear() {};
             virtual bool isSingleton() { return false; }
             virtual ~Component() = default;
+            Entity *parent = nullptr;
         };
     }
 }

@@ -34,7 +34,7 @@ namespace Pontilus
             bool loaded = stbtt_InitFont(&info, (unsigned char *) fontFile.buffer, 0) != 0;
             if (!loaded)
             {
-                __pError("Font loading failed for font %s.", fontname);
+                _pError("Font loading failed for font %s.", fontname);
             }
 
             this->info = info;

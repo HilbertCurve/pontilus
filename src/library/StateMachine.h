@@ -12,7 +12,7 @@ namespace Pontilus
     {
         class StateMachine;
 
-        typedef void (*_update)(double dt, ECS::GameObject *parent);
+        typedef void (*_update)(double dt, ECS::Entity *parent);
         class State
         {
             public:

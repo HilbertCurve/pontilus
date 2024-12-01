@@ -14,7 +14,7 @@ namespace Pontilus
     {
         enum vProp
         {
-            PONT_POS,
+            PONT_POS = 0,
             PONT_COLOR,
             PONT_TEXCOORD,
             PONT_TEXID,
@@ -56,8 +56,14 @@ namespace Pontilus
 
             int getLayoutLen();
             typedef Pair<size_t, size_t> off_len;
-            off_len getAttribMetaData(vProp p);
+            off_len getAttribMetaData(vProp p) const;
             void generateIndices();
+
+            // adding various geometry primitives
+
+            void drawRect(glm::vec3 pos, glm::vec3 whd, glm::vec3 rot, glm::vec4 color);
+            void drawCircle();
+            //void drawEllipse();
 
             /**
              * Gets the pointer to the first instance of r's vertex attribute property p.
@@ -87,6 +93,10 @@ namespace Pontilus
         // specify how they put vertex data into an rData
         class Renderable
         {
+        public:
+            virtual ~Renderable() = default;
+
+        private:
             virtual int toRData(Renderer::rData &r) = 0;
         };
 

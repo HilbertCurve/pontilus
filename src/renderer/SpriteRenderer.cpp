@@ -1,6 +1,7 @@
 #include "renderer/SpriteRenderer.h"
 
-#include <glm/gtx/transform.hpp>
+//#include <glm/gtx/transform.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 #include "renderer/rData.h"
 #include "renderer/Renderer.h"
@@ -36,14 +37,16 @@ namespace Pontilus
             if (!this->visible)
                 return 0;
 
-            int stride = r.dataOffset;
+            uint32_t stride = r.dataOffset;
 
-            Transform t = *(Transform*)parent->getComponent(typeid(Transform));
+            Transform t = *dynamic_cast<Transform *>(parent->getComponent(typeid(Transform)));
 
-            glm::mat4 rotation = glm::rotate(t.rot.x, glm::vec3{1.0f, 0.0f, 0.0f}) *
-                                    glm::rotate(t.rot.y, glm::vec3{0.0f, 1.0f, 0.0f}) *
-                                    glm::rotate(t.rot.z, glm::vec3{0.0f, 0.0f, 1.0f});
-            glm::mat4 translation = glm::translate(t.pos);
+            constexpr auto ident = glm::identity<glm::mat4>();
+
+            glm::mat4 rotation = rotate(ident, t.rot.x, glm::vec3{1.0f, 0.0f, 0.0f});
+            rotation = rotate(rotation, t.rot.y, glm::vec3{0.0f, 1.0f, 0.0f});
+            rotation = rotate(rotation, t.rot.z, glm::vec3{0.0f, 0.0f, 1.0f});
+            glm::mat4 translation = translate(rotation, t.pos);
             for (int i = 0; i < 4; i++)
             {
                 glm::vec3 orientation;
@@ -53,15 +56,16 @@ namespace Pontilus
                     case 1: orientation = {0.0f * t.whd.x, 1.0f * t.whd.y, 0.0f}; break;
                     case 2: orientation = {0.0f * t.whd.x, 0.0f * t.whd.y, 0.0f}; break;
                     case 3: orientation = {1.0f * t.whd.x, 0.0f * t.whd.y, 0.0f}; break;
+                    default: { }
                 }
 
 
                 rData::off_len result = r.getAttribMetaData(PONT_POS);
-                if (result.second >= 3 * sizeof(float))
+                if (result.second >= 4 * sizeof(float))
                 {
-                    glm::vec3 t_orient = translation * rotation * glm::vec4(orientation - glm::vec3(0.5f * t.whd.x, 0.5f * t.whd.y, 0.0f), 1.0f);
+                    glm::vec4 t_orient = translation * rotation * glm::vec4(orientation - glm::vec3(0.5f * t.whd.x, 0.5f * t.whd.y, 0.0f), 1.0f);
 
-                    memcpy((char *) r.data + result.first + stride, value_ptr(t_orient), 3 * sizeof(float));
+                    memcpy(static_cast<char *>(r.data) + result.first + stride, value_ptr(t_orient), 4 * sizeof(float));
                     //for (int j = 0; j < 3; j++)
                     //{
                     //    ((float *)((char *)r.data + result.first + stride))[j] = ((float *)&t.pos)[j];

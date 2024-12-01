@@ -30,26 +30,27 @@ namespace Pontilus
         Window();
         Window(Window &) = delete;
 
-        size_t getWidth() { return width; }
-        size_t getHeight() { return height; }
-
+        size_t getWidth() const { return width; }
+        size_t getHeight() const { return height; }
         void setWidth(size_t w) { this->width = w; }
         void setHeight(size_t h) { this->height = h; }
 
-        size_t getID() { return this->id; }
+        size_t getID() const { return this->id; }
 
+        const std::string &getTitle() { return this->title; }
         void setTitle(std::string &t);
+
         void update(double dt);
 
-        Scene &getScene() { return *this->scene; }
+        Scene &getScene() const { return *this->scene; }
         void setScene(Scene &s);
 
         Renderer::Camera &getCamera() { return this->camera; }
 
-        bool closing() { return isClosing; }
+        bool closing() const { return isClosing; }
 
         // Const because glfw access should be either private or immutable
-        const GLFWwindow *getGLFW() { return this->ptr; }
+        const GLFWwindow *getGLFW() const { return this->ptr; }
 
         ~Window();
     };
@@ -65,19 +66,19 @@ namespace Pontilus
         Window &getMainWindow() { return this->getWindow(0); }
         Window &getWindow(size_t id);
         Window &getWindowByGLFW(GLFWwindow *ptr);
-        size_t newWindow();
+        //size_t newWindow();
         /**
          * Hands control flow of the program to the Pontilus Application.
          */
         void run();
-        double fps() { return 1.0 / dt; }
+        double fps() const { return 1.0 / dt; }
 
         private:
         void init();
         void removeWindow(size_t id);
         std::vector<Window *> windows;
-        bool printDebug;
-        double dt;
+        bool printDebug{};
+        double dt{};
 
         Application();
         static Application *inst;

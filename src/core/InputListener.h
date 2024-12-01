@@ -16,6 +16,7 @@ namespace Pontilus
 {
     namespace IO
     {
+        // tell me you write c without telling me you write c
         struct Mouse
         {
             // 199 bits
@@ -79,6 +80,11 @@ namespace Pontilus
          * Checks to see if a certain key is pressed.
          */
         bool isKeyPressed(int key);
+
+        // TODO!!!
+        bool isKeyTriggered(int key);
+        bool isKeyHeld(int key);
+
         /**
          * Resets mouse drag.
          */
