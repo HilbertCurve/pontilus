@@ -12,7 +12,9 @@ add_subdirectory(physics2d)
 add_subdirectory(utils)
 add_subdirectory(vendor)
 
-add_library(pontilus_src INTERFACE)
+add_library(pontilus_src INTERFACE
+        gui/UIFrame.h
+        gui/UIFrame.h)
 target_link_libraries(pontilus_src INTERFACE audio core ecs renderer library math model utils vendor)
 
 target_include_directories(pontilus_src INTERFACE

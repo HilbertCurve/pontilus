@@ -5,7 +5,12 @@ add_executable(rpg "${CMAKE_SOURCE_DIR}/examples/rpg_game/rpg.cpp"
         Player.cpp
         Player.h
         Enemy.cpp
-        Enemy.h)
+        Enemy.h
+        TextBox.cpp
+        TextBox.h
+        NPC.cpp
+        NPC.h
+)
 target_link_libraries(rpg PUBLIC pontilus)
 
 set_target_properties(rpg PROPERTIES LINKER_LANGUAGE CXX)

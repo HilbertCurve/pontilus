@@ -11,17 +11,19 @@ namespace RpgGame {
     int Player::Controller::update(double dt) {
         using namespace Pontilus;
         auto velocity = glm::vec3(0.0);
-        if (IO::isKeyPressed(GLFW_KEY_W)) {
-            velocity += glm::vec3{0.0, 1.0, 0.0};
-        }
-        if (IO::isKeyPressed(GLFW_KEY_S)) {
-            velocity += glm::vec3{0.0, -1.0, 0.0};
-        }
-        if (IO::isKeyPressed(GLFW_KEY_D)) {
-            velocity += glm::vec3{1.0, 0.0, 0.0};
-        }
-        if (IO::isKeyPressed(GLFW_KEY_A)) {
-            velocity += glm::vec3{-1.0, 0.0, 0.0};
+        if (!this->frozen) {
+            if (IO::isKeyPressed(GLFW_KEY_W)) {
+                velocity += glm::vec3{0.0, 1.0, 0.0};
+            }
+            if (IO::isKeyPressed(GLFW_KEY_S)) {
+                velocity += glm::vec3{0.0, -1.0, 0.0};
+            }
+            if (IO::isKeyPressed(GLFW_KEY_D)) {
+                velocity += glm::vec3{1.0, 0.0, 0.0};
+            }
+            if (IO::isKeyPressed(GLFW_KEY_A)) {
+                velocity += glm::vec3{-1.0, 0.0, 0.0};
+            }
         }
 
         auto transform = this->parent->getComponent<ECS::Transform>();
@@ -30,10 +32,18 @@ namespace RpgGame {
         return 0;
     }
 
+    void Player::Controller::freeze() {
+        this->frozen = true;
+    }
+
+    void Player::Controller::unfreeze() {
+        this->frozen = false;
+    }
+
     void Player::build(Pontilus::ECS::Entity *obj) {
         using namespace Pontilus;
         obj->addComponent(new ECS::Transform(
-            glm::vec3{1.0, 1.0, -1.0},
+            glm::vec3{50.0, 0.0, -1.0},
             glm::vec3{50.0, 50.0, 1.0},
             glm::vec3{0.0, 0.0, 0.0}
         ));

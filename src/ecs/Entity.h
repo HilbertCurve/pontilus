@@ -16,14 +16,17 @@ namespace Pontilus
 
         class Entity
         {
-            public:
+        public:
             ~Entity();
             static int _id;
             std::vector<Component *> components = std::vector<Component *>();
             const int id = ++_id;
             Scene *currentScene;
+            std::string name;
+            static const std::string::const_pointer SET_NAME_PREFIX;
+            static const std::string::const_pointer AUTO_NAME_PREFIX;
 
-            void addComponent(Component *c);
+            Entity *addComponent(Component *c);
 
             template<typename T>
             T *getComponent() {
@@ -34,6 +37,13 @@ namespace Pontilus
                 }
 
                 return nullptr;
+            }
+
+            template<typename T>
+            Entity *build() {
+                static T *builder = new T();
+                builder->build(this);
+                return this;
             }
 
             Component *getComponent(const std::type_info &ti);

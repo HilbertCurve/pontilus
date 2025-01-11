@@ -248,6 +248,7 @@ namespace Pontilus
 
             // reset the offset; time to reload data!
             buffer.dataOffset = 0;
+            buffer.vertCount = 0;
 
             shader.detach();
         }

@@ -14,9 +14,9 @@ namespace Pontilus
             glm::vec3 pos;
             glm::vec3 whd;
             glm::vec3 rot;
-            Transform() = default;
+            Transform() : pos({0.0}), whd({50.0}), rot({0.0}) { }
             Transform(glm::vec3 _pos, glm::vec3 _whd, glm::vec3 _rot) :
-                    pos(_pos), whd(_whd), rot(_rot) {}
+                    pos(_pos), whd(_whd), rot(_rot) { }
             virtual ~Transform() { }
             virtual int update(double);
             virtual bool operator==(Transform &);

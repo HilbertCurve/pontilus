@@ -11,9 +11,11 @@
 
 namespace Pontilus
 {
+    /*
     typedef void (* _init)();
     typedef void (* _update)(double dt);
     typedef void (* _clean)();
+    */
 
     namespace ECS
     {
@@ -22,29 +24,31 @@ namespace Pontilus
 
     class Scene
     {
-        public:
+    public:
         virtual ~Scene() = default;
 
         Renderer::Camera *getCamera() const;
         void setCamera(Renderer::Camera *c);
 
         Scene() = default;
-        // SHOULD SCENE HAVE THESE????????
-        // probably not, should be inheritance. I'm fighting demons
+
         virtual void init() = 0;
-
         virtual void update(double) = 0;
-
         virtual void clean() = 0;
 
-
         ECS::Entity *spawn();
+        ECS::Entity *spawn(const std::string &name);
 
         template<class T>
         ECS::Entity *build() {
+            std::string name = std::string("entity_") + std::to_string(ECS::Entity::_id) + std::string("_auto");
+            return this->build<T>(name);
+        }
+        template<class T>
+        ECS::Entity *build(const std::string &name) {
             ECS::EntityBuilder *builder = new T();
 
-            auto obj = this->spawn();
+            const auto obj = this->spawn(name);
             builder->build(obj);
 
             delete builder;
@@ -53,18 +57,18 @@ namespace Pontilus
         }
 
         ECS::Entity *get(size_t id) const;
+        ECS::Entity *get(const std::string &name) const;
+
         void despawn(size_t id);
-        // DEPRECATED: use spawns
-        // void addObject(ECS::GameObject obj);
-        // void removeObject(int id);
+        void despawn(const std::string &name);
 
         void updateObjects(double dt) const;
         void freeObjects();
 
-        bool isUsed() { return this->used; }
-        void setUsed(bool _used) { this->used = _used; }
+        bool isUsed() const { return this->used; }
+        void setUsed(const bool _used) { this->used = _used; }
 
-        private:
+    private:
         Renderer::Camera *camera{};
         std::vector<ECS::Entity *> objs = std::vector<ECS::Entity *>();
         bool used = false;

@@ -23,7 +23,7 @@ namespace Pontilus
 {
     namespace Renderer
     {
-        Font::Font(const char *fontname, unsigned int fontSize)
+       Font::Font(const char *fontname, unsigned int fontSize)
         {
             /* Load font (. ttf) file */
 
@@ -78,7 +78,7 @@ namespace Pontilus
 
                 /*
                  * Get the measurement in the horizontal direction
-                 * advanceWidth: currnet codepoint position;
+                 * advanceWidth: current codepoint position;
                  * leftSideBearing: Left side position;
                  */
                 stbtt_GetCodepointHMetrics(&info, (char)i, &advanceWidth, &leftSideBearing);
@@ -92,7 +92,7 @@ namespace Pontilus
 
                 /* Gets the border of a character */
                 int c_x1, c_y1, c_x2, c_y2;
-                stbtt_GetCodepointBitmapBox(&info, (char)i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+                stbtt_GetCodepointBitmapBox(&info, static_cast<char>(i), scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
                 /* Calculate the y of the bitmap (different characters have different heights) */
                 h = this->ascent + c_y1 + y;
@@ -113,7 +113,7 @@ namespace Pontilus
                     (float) x + (advanceWidth + leftSideBearing) * scale, (float) h,
                 };
 
-                glm::vec2 widthAndHeight = screenToWorldSize(glm::vec2{
+                glm::vec2 widthAndHeight = (glm::vec2{
                     texcoords[0] - texcoords[2], 
                     texcoords[3] - texcoords[5]});
 
@@ -130,11 +130,11 @@ namespace Pontilus
                 }
 
                 // at this point it's ready as an opengl texture
-                memcpy((void *) this->glyphs[i - 32].texCoords, texcoords, 8 * sizeof(float));
+                memcpy(this->glyphs[i - 32].texCoords, texcoords, 8 * sizeof(float));
 
                 this->glyphs[i - 32].width = widthAndHeight.x;
                 this->glyphs[i - 32].height = widthAndHeight.y;
-                this->glyphs[i - 32].descent = screenToWorldSize(glm::vec2{0.0f, c_y2}).y;
+                this->glyphs[i - 32].descent = c_y2;//(glm::vec2{0.0f, c_y2}).y;
 
                 this->glyphs[i - 32].parent = this;
 
@@ -181,8 +181,7 @@ namespace Pontilus
             RendererController::get().registerFont(*this);
         }
 
-        Glyph Font::get(const char c)
-        {
+        Glyph Font::get(const char c) const {
             /*
             Glyph ret;
 

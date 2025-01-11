@@ -17,26 +17,47 @@ namespace Pontilus
                 delete c;
             }
 
-            _pMessage("GameObject of id %u deleted.", this->id);
+            auto a_prefix = AUTO_NAME_PREFIX;
+            auto s_prefix = SET_NAME_PREFIX;
+            if (this->name.substr(this->name.length() - std::strlen(a_prefix)) == a_prefix) {
+                _pMessage("Entity of id %u deleted.", this->id);
+            } else {
+                auto demangle = this->name.substr(0, this->name.length() - std::strlen(s_prefix));
+                _pMessage("Entity of name \"%s\" deleted.", demangle.c_str());
+            }
         }
 
-        void Entity::addComponent(Component *c)
+        Entity *Entity::addComponent(Component *c)
         {
             for (uint32_t i = 0; i < this->components.size(); i++)
             {
-                Component *ca = this->components.at(i);
-                if (typeid(*ca) == typeid(*c))
+                if (typeid(*this->components.at(i)) == typeid(*c))
                 {
-                    _pWarning("Component of type %s already in GameObject %p.", typeid(*c).name(), this);
-                    return;
+                    auto a_prefix = AUTO_NAME_PREFIX;
+                    auto s_prefix = SET_NAME_PREFIX;
+                    if (this->name.substr(this->name.length() - std::strlen(a_prefix)) == a_prefix) {
+                        _pWarning("Component of type %s already in Entity %p.", typeid(*c).name(), this);
+                    } else {
+                        auto demangle = this->name.substr(0, this->name.length() - std::strlen(s_prefix));
+                        _pWarning("Component of type %s already in Entity \"%s\".", typeid(*c).name(), demangle.c_str());
+                    }
+                    return this;
                 }
             }
 
             this->components.push_back(c);
             c->parent = this;
-            
+
             //if (debugMode())
-                _pMessage("Component added to GameObject of id %i of type %s.", this->id, typeid(*c).name());
+            auto a_prefix = AUTO_NAME_PREFIX;
+            auto s_prefix = SET_NAME_PREFIX;
+            if (this->name.substr(this->name.length() - std::strlen(a_prefix)) == a_prefix) {
+                _pMessage("Component added to Entity of id %i of type %s.", this->id, typeid(*c).name());
+            } else {
+                auto demangle = this->name.substr(0, this->name.length() - std::strlen(s_prefix));
+                _pMessage("Component added to Entity \"%s\" of type %s.", demangle.c_str(), typeid(*c).name());
+            }
+            return this;
         }
 
         Component *Entity::getComponent(const std::type_info &ti)
@@ -64,13 +85,20 @@ namespace Pontilus
                     this->components.erase(this->components.begin() + i);
                     ca->parent = nullptr;
                     //if (debugMode())
-                        _pMessage("Component removed from gameObject %p of type %s.", this, ti.name());
+                    auto a_prefix = AUTO_NAME_PREFIX;
+                    auto s_prefix = SET_NAME_PREFIX;
+                    if (this->name.substr(this->name.length() - std::strlen(a_prefix)) == a_prefix) {
+                        _pMessage("Component removed from Entity %p of type %s.", this, ti.name());
+                    } else {
+                        auto demangle = this->name.substr(0, this->name.length() - std::strlen(s_prefix));
+                        _pMessage("Component removed from Entity \"%s\" of type %s.", demangle.c_str(), ti.name());
+                    }
                     return ca;
                 }
                 i++;
             }
 
-            _pWarning("Component of type %s not found in GameObject %p.", ti.name(), this);
+            _pWarning("Component of type %s not found in Entity %p.", ti.name(), this);
             return nullptr;
         }
 
@@ -81,9 +109,19 @@ namespace Pontilus
                 Component *c = this->components.at(i);
                 if (int err = c->update(dt) != 0)
                 {
-                    _pError("Update failed: error code %u\n", err);
+                    auto a_prefix = AUTO_NAME_PREFIX;
+                    auto s_prefix = SET_NAME_PREFIX;
+                    if (this->name.substr(this->name.length() - std::strlen(a_prefix)) == a_prefix) {
+                        _pError("Update failed on Entity of id %d: error code %u\n", this->id, err);
+                    } else {
+                        auto demangle = this->name.substr(0, this->name.length() - std::strlen(s_prefix));
+                        _pError("Update failed on Entity of name \"%s\": error code %u\n", demangle.c_str(), err);
+                    }
+
                 }
             }
         }
+        const std::string::const_pointer Entity::SET_NAME_PREFIX = "_explicit";
+        const std::string::const_pointer Entity::AUTO_NAME_PREFIX = "_auto";
     }
 }

@@ -140,6 +140,9 @@ namespace Pontilus
             instance.core._m.lastY = instance.core._m.yPos;
             instance.core._m.scrollX = 0;
             instance.core._m.scrollY = 0;
+            for (int i = 0; i < NUM_KEYS; i++) {
+                instance.core._k.keysHeld[i] = instance.core._k.keysPressed[i];
+            }
         }
 
         //***********************************************
@@ -157,6 +160,7 @@ namespace Pontilus
             else if (action == GLFW_RELEASE)
             {
                 instance.core._k.keysPressed[key] = false;
+                instance.core._k.keysHeld[key] = false;
             }
             else // bad action
             {
@@ -244,6 +248,15 @@ namespace Pontilus
                 return false;
             }
             return instance.core._k.keysPressed[key];
+        }
+
+        bool isKeyTriggered(int key) {
+            if (key >= NUM_KEYS || key < 0)
+            {
+                _pWarning("Tried to access illegal key %d.", key);
+                return false;
+            }
+            return instance.core._k.keysPressed[key] && !instance.core._k.keysHeld[key];
         }
 
         _IO::_IO()

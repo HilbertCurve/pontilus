@@ -10,10 +10,14 @@ namespace RpgGame {
     void Enemy::build(Pontilus::ECS::Entity *obj) {
         using namespace Pontilus;
         obj->addComponent(new ECS::Transform(
-            glm::vec3{1.0, 1.0, -1.0},
+            glm::vec3{0.0, 0.0, -1.0},
             glm::vec3{50.0, 50.0, 1.0},
             glm::vec3{0.0, 0.0, 0.0}
         ));
         obj->addComponent(new Renderer::SpriteRenderer({1.0, 1.0, 1.0, 1.0}));
+    }
+
+    int Enemy::EnemyController::update(double dt) {
+        return 0;
     }
 } // RpgGame

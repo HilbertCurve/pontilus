@@ -32,9 +32,9 @@ namespace Pontilus
             glm::vec3 posAccumulate = {0.0f, 0.0f, 0.0f};
             const float scale = this->font->fontSize / (this->font->ascent - this->font->descent);
             // this is for making text fit inside textboxes
-            //const float heightAdjust = -screenToWorldSize({0.0f, (float) this->font->ascent}).y;
-            const float heightAdjust = 0.0;
-            const float lineHeight = screenToWorldSize(glm::vec2(0.0f, this->font->ascent - this->font->descent)).y;
+            const float heightAdjust = -this->font->ascent;//-screenToWorldSize({0.0f, (float) this->font->ascent}).y;
+            //const float heightAdjust = 0.0;
+            const float lineHeight = this->font->ascent - this->font->descent;//screenToWorldSize(glm::vec2(0.0f, this->font->ascent - this->font->descent)).y;
             for (unsigned int i = 0; i < this->text.length(); i++)
             {
                 char c = this->text[i];
@@ -55,9 +55,9 @@ namespace Pontilus
                 // kern depending on the previous char
 
                 // kern please
-                if (i != 0)
+                if (i != this->text.length())
                 {
-                    //posAccumulate += screenToWorldSize({scale * stbtt_GetCodepointKernAdvance(&(g.parent->info), this->text[i - 1], this->text[i]), 0.0f});
+                    posAccumulate.x += stbtt_GetCodepointKernAdvance(g.parent->stbttBackend(), this->text[i], this->text[i + 1]);
                 }
 
                 for (int j = 0; j < 4; j++)
@@ -66,10 +66,10 @@ namespace Pontilus
 
                     switch (j)
                     {
-                        case 0: orientation = {1.0f * g.width, 1.0f * g.height, 0.0f}; break;
-                        case 1: orientation = {0.0f * g.width, 1.0f * g.height, 0.0f}; break;
-                        case 2: orientation = {0.0f * g.width, 0.0f * g.height, 0.0f}; break;
-                        case 3: orientation = {1.0f * g.width, 0.0f * g.height, 0.0f}; break;
+                        case 0: orientation = {1.0f * g.width, 0.0f * g.height, 0.0f}; break;
+                        case 1: orientation = {0.0f * g.width, 0.0f * g.height, 0.0f}; break;
+                        case 2: orientation = {0.0f * g.width, 1.0f * g.height, 0.0f}; break;
+                        case 3: orientation = {1.0f * g.width, 1.0f * g.height, 0.0f}; break;
                     }
 
                     float xDiff = 0;
@@ -85,15 +85,15 @@ namespace Pontilus
                     {
                         // instead position by bottom corner
                         // also move everything down a bit
-                        _t.pos += orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
-
-                        // TODO: just use memcpy, bonehead.
-                        for (int k = 0; k < 3; k++)
+                        constexpr auto ident = glm::identity<glm::mat4>();
+                        auto translate_vector = _t.pos - glm::vec3{xDiff, font->ascent - yDiff, 0.0f} + posAccumulate - glm::vec3{0.0f, g.descent, 0.0f};
+                        glm::mat4 trans = translate(ident, translate_vector);
+                        glm::vec4 t_orient = trans * glm::vec4(orientation, 1.0f);
+                        for (int k = 0; k < 4; k++)
                         {
-                            ((float *)((char *)r.data + result.first + stride))[k] = ((float *)&_t.pos)[k];
+                            memcpy(static_cast<char *>(r.data) + result.first + stride, value_ptr(t_orient), 4 * sizeof(float));
+                            //((float *)((char *)r.data + result.first + stride))[k] = (value_ptr(t_orient))[k];
                         }
-
-                        _t.pos -= orientation - glm::vec3{xDiff, g.height - yDiff - heightAdjust, 0.0f} + posAccumulate + glm::vec3{0.0f, g.descent, 0.0f};
                     }
                     
                     result = r.getAttribMetaData(PONT_COLOR);
@@ -156,7 +156,7 @@ namespace Pontilus
                 if (nextWordLength + posAccumulate.x > _t.whd.x && i + 1 < this->text.length() && this->text[i + 1] != ' ')
                 {
                     posAccumulate.x = 0;
-                    posAccumulate.y += lineHeight;
+                    posAccumulate.y -= lineHeight;
                 }
 
             }

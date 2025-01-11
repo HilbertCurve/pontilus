@@ -19,7 +19,6 @@ namespace Pontilus
         // tell me you write c without telling me you write c
         struct Mouse
         {
-            // 199 bits
             float scrollX, scrollY;
             float xPos, yPos, lastX, lastY;
             bool buttonsPressed[NUM_MOUSE_BUTTONS];
@@ -28,8 +27,8 @@ namespace Pontilus
 
         struct Keyboard
         {
-            // 350 bits
             bool keysPressed[NUM_KEYS];
+            bool keysHeld[NUM_KEYS];
         };
 
         struct _buttonCallback
@@ -50,18 +49,14 @@ namespace Pontilus
             void (* ptr)(int key, int action);
         };
 
-        // TOTAL MEMORY: 1 kb
         struct _IO
         {
             struct {
-                // 549 bits
                 Mouse _m;
                 Keyboard _k;
             } core;
-            // do with this as you please (perhaps some other usb input method)
-            bool misc[LEFTOVER_MEM];
 
-            _IO(); // to initialize empty callbacks
+            _IO();
         };
 
         /**

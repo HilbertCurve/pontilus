@@ -1,21 +1,21 @@
 #pragma once
 
-namespace Pontilus
-{
+namespace Pontilus {
     // forward declarations
-    namespace Math
-    {
+    namespace Math {
         class Rect;
     }
 
-    namespace GUI
-    {
+    namespace GUI {
+        /**
+         * An interface for letting an object be rendered as a UI element.
+         */
         class UIElement
         {
             /**
-             * Every UIElement must be renderable to a certain extent. 
+             * Every UIElement must be renderable to a certain extent.
             */
-            virtual void render(Math::Rect &subspace) = 0;
+            virtual void render() = 0;
             virtual void update() = 0;
         };
     }

@@ -14,7 +14,7 @@ namespace Pontilus
 
         struct Glyph
         {
-            const Font *parent;
+            Font *parent;
             float texCoords[8];
             float width, height, descent; // descent would be present in the char 'j'
         };
@@ -23,9 +23,10 @@ namespace Pontilus
         {
             public:
             Font(const char *filepath, unsigned int fontsize);
-            Glyph get(const char c);
+            Glyph get(char c) const;
+            stbtt_fontinfo *stbttBackend();
 
-            GLuint id() { return texID; }
+            GLuint id() const { return texID; }
 
             // it seems like a lot of fields in this struct are in the glyph struct...
 
@@ -48,5 +49,9 @@ namespace Pontilus
 
             GLuint texID;
         };
+
+        inline stbtt_fontinfo * Font::stbttBackend() {
+            return &this->info;
+        }
     }
 }

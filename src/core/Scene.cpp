@@ -60,8 +60,14 @@ namespace Pontilus
     }
 
     ECS::Entity *Scene::spawn() {
+        std::string name = std::string("entity_") + std::to_string(ECS::Entity::_id) + ECS::Entity::AUTO_NAME_PREFIX;
+        return this->spawn(name);
+    }
+
+    ECS::Entity * Scene::spawn(const std::string &name) {
         auto *obj = new ECS::Entity();
         obj->currentScene = this;
+        obj->name = name + ECS::Entity::SET_NAME_PREFIX;
         this->objs.emplace_back(obj);
         return this->objs.back();
     }
@@ -75,17 +81,38 @@ namespace Pontilus
             }
         }
 
-        _pError("Could not find GameObject of id %u.", id);
+        _pError("Could not find GameObject of id %lu.", id);
+    }
+
+    ECS::Entity *Scene::get(const std::string &name) const {
+        auto full_name = name + ECS::Entity::SET_NAME_PREFIX;
+        for (auto e : this->objs) {
+            if (e->name == full_name) {
+                return e;
+            }
+        }
+        // ?????
+        // I wish I had Option<>/Result<>
+        return nullptr;
     }
 
     void Scene::despawn(const size_t id) {
-        for (size_t i = 0; i < this->objs.size(); i++)
-        {
+        for (size_t i = 0; i < this->objs.size(); i++) {
             ECS::Entity *gameObject = this->objs[i];
-            if (gameObject->id == id)
-            {
+            if (gameObject->id == id) {
                 this->objs.erase(this->objs.begin() + i);
                 delete gameObject;
+                return;
+            }
+        }
+    }
+    void Scene::despawn(const std::string &name) {
+        for (size_t i = 0; i < this->objs.size(); i++) {
+            auto obj = this->objs[i];
+            if (obj->name == name + ECS::Entity::SET_NAME_PREFIX) {
+                this->objs.erase(this->objs.begin() + i);
+                delete obj;
+                return;
             }
         }
     }

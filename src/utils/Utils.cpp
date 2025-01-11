@@ -25,6 +25,8 @@ namespace Pontilus
             file = fopen(filepath, "r");
         }
 
+        _pAssert(file, "File %s could not be opened.", filepath);
+
         fseek(file, 0, SEEK_END);
         f.size = ftell(file);
         fseek(file, 0, SEEK_SET);

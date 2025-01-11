@@ -10,6 +10,11 @@ namespace RpgGame {
 class Enemy : public Pontilus::ECS::EntityBuilder {
 public:
     void build(Pontilus::ECS::Entity *obj) override;
+private:
+    class EnemyController : public Pontilus::ECS::Component {
+    public:
+        int update(double dt) override;
+    };
 };
 
 } // RpgGame

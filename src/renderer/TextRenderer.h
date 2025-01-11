@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "Renderer.h"
 #include "ecs/Component.h"
 #include "renderer/rData.h"
 #include "renderer/Font.h"
@@ -24,7 +25,7 @@ namespace Pontilus
             public:
             TextRenderer(const char *text, Renderer::Font &f, glm::vec4 color)
             {
-                this->init(text, f, color);
+               this->init(text, f, color);
             }
             void init(const char *text, Renderer::Font &f, glm::vec4 color);
             Renderer::Font *font;
@@ -34,7 +35,10 @@ namespace Pontilus
 
             int toRData(Renderer::rData &r);
 
-            virtual int update(double _dt) { return 0; }
+            int update(double _dt) override {
+                auto target = std::get<0>(RendererController::get().getTarget(RendererController::QUAD_TARGET));
+                return this->toRData(*target);
+            }
         };
     }
 }
