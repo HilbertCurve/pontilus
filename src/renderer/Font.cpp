@@ -1,4 +1,4 @@
-#include "renderer/Font.h"
+#include <pontilus/renderer/Font.h>
 
 #include <string>
 #include <glm/glm.hpp>
@@ -13,8 +13,8 @@
 #include <stb/stb_image_write.h>
 #undef STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "renderer/Renderer.h"
-#include "utils/Utils.h"
+#include <pontilus/renderer/Renderer.h>
+#include <pontilus/utils/Utils.h>
 
 #define _PONTILUS_FONT_TEX_WIDTH 512
 #define _PONTILUS_FONT_TEX_HEIGHT 512

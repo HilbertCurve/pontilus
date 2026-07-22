@@ -1,9 +1,9 @@
-[submodule "src/vendor/glfw"]
-	path = src/vendor/glfw
+[submodule "vendor/glfw"]
+	path = vendor/glfw
 	url = https://github.com/glfw/glfw
-[submodule "src/vendor/stb"]
-	path = src/vendor/stb
+[submodule "vendor/stb"]
+	path = vendor/stb
 	url = https://github.com/nothings/stb
-[submodule "src/vendor/json"]
-	path = src/vendor/json
+[submodule "vendor/json"]
+	path = vendor/json
 	url = https://github.com/nlohmann/json

@@ -1,6 +1,6 @@
-#include "renderer/Primitive.h"
+#include <pontilus/renderer/Primitive.h>
 
-#include "utils/Utils.h"
+#include <pontilus/utils/Utils.h>
 
 namespace Pontilus
 {

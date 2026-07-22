@@ -4,8 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "core/InputListener.h"
-#include "utils/Utils.h"
+#include <pontilus/core/InputListener.h>
+#include <pontilus/utils/Utils.h>
 
 namespace Pontilus
 {

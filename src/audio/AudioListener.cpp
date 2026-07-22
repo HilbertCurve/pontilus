@@ -1,6 +1,6 @@
-#include "audio/AudioListener.h"
-#include "ecs/Transform.h"
-#include "audio/AudioMaster.h"
+#include <pontilus/audio/AudioListener.h>
+#include <pontilus/ecs/Transform.h>
+#include <pontilus/audio/AudioMaster.h>
 
 namespace Pontilus
 {

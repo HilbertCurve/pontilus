@@ -1,12 +1,12 @@
-#include "utils/Utils.h"
+#include <pontilus/utils/Utils.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/glm.hpp>
-#include <vendor/json/include/nlohmann/json.hpp>
+#include <nlohmann/json.hpp>
 
-#include "renderer/Camera.h"
-#include "core/Application.h"
+#include <pontilus/renderer/Camera.h>
+#include <pontilus/core/Application.h>
 
 namespace Pontilus
 {

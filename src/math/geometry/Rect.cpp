@@ -1,6 +1,6 @@
-#include "math/geometry/Rect.h"
+#include <pontilus/math/geometry/Rect.h>
 
-#include "math/set/Span.h"
+#include <pontilus/math/set/Span.h>
 
 namespace Pontilus
 {

@@ -1,4 +1,4 @@
-#include "ecs/Component.h"
+#include <pontilus/ecs/Component.h>
 
 namespace Pontilus
 {

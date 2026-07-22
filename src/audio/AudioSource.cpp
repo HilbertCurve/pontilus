@@ -1,6 +1,6 @@
-#include "audio/AudioSource.h"
-#include "ecs/Transform.h"
-#include "audio/AudioMaster.h"
+#include <pontilus/audio/AudioSource.h>
+#include <pontilus/ecs/Transform.h>
+#include <pontilus/audio/AudioMaster.h>
 
 #include <AL/al.h>
 #include <math.h>

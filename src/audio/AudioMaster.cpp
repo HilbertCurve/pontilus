@@ -1,12 +1,12 @@
-#include "audio/AudioMaster.h"
-#include "audio/AudioListener.h"
-#include "audio/AudioSource.h"
+#include <pontilus/audio/AudioMaster.h>
+#include <pontilus/audio/AudioListener.h>
+#include <pontilus/audio/AudioSource.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <AL/alc.h>
-#include "utils/Utils.h"
+#include <pontilus/utils/Utils.h>
 
 namespace Pontilus
 {

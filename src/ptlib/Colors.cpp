@@ -1,4 +1,4 @@
-#include "ptlib/Colors.h"
+#include <pontilus/ptlib/Colors.h>
 
 namespace Pontilus {
     namespace Colors {

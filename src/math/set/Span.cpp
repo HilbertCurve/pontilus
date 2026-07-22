@@ -1,5 +1,5 @@
-#include "Span.h"
-#include "math/number/FloatUtils.h"
+#include <pontilus/math/set/Span.h>
+#include <pontilus/math/number/FloatUtils.h>
 
 namespace Pontilus
 {

@@ -1,15 +1,15 @@
-#include "renderer/Renderer.h"
+#include <pontilus/renderer/Renderer.h>
 
 #include <glad/gl.h>
 #include <stdio.h>
 
-#include "core/Application.h"
-#include "renderer/Shader.h"
-#include "renderer/Camera.h"
-#include "renderer/Texture.h"
-#include "renderer/Font.h"
-#include "renderer/rData.h"
-#include "renderer/Primitive.h"
+#include <pontilus/core/Application.h>
+#include <pontilus/renderer/Shader.h>
+#include <pontilus/renderer/Camera.h>
+#include <pontilus/renderer/Texture.h>
+#include <pontilus/renderer/Font.h>
+#include <pontilus/renderer/rData.h>
+#include <pontilus/renderer/Primitive.h>
 
 namespace Pontilus
 {

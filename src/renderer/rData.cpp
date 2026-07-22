@@ -1,13 +1,13 @@
-#include "renderer/rData.h"
+#include <pontilus/renderer/rData.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
 
-#include "core/Application.h"
-#include "renderer/Shader.h"
-#include "renderer/Renderer.h"
-#include "utils/Utils.h"
+#include <pontilus/core/Application.h>
+#include <pontilus/renderer/Shader.h>
+#include <pontilus/renderer/Renderer.h>
+#include <pontilus/utils/Utils.h>
 
 #define MAX_MESH_INDICES 1 << 14
 

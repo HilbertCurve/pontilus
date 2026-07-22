@@ -1,7 +1,7 @@
-#include "core/Application.h"
-#include "core/Scene.h"
-#include "ecs/Entity.h"
-#include "utils/Utils.h"
+#include <pontilus/core/Application.h>
+#include <pontilus/core/Scene.h>
+#include <pontilus/ecs/Entity.h>
+#include <pontilus/utils/Utils.h>
 
 namespace Pontilus
 {

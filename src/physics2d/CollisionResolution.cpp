@@ -1,7 +1,7 @@
-#include "physics2d/CollisionResolution.h"
-#include "physics2d/CollisionDetection.h"
-#include "ecs/Body2D.h"
-#include "utils/PMath.h"
+#include <pontilus/physics2d/CollisionResolution.h>
+#include <pontilus/physics2d/CollisionDetection.h>
+#include <pontilus/ecs/Body2D.h>
+#include <pontilus/utils/PMath.h>
 
 #include <glm/glm.hpp>
 

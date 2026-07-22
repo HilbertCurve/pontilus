@@ -1,5 +1,5 @@
-#include "ptlib/StateMachine.h"
-#include "core/InputListener.h"
+#include <pontilus/ptlib/StateMachine.h>
+#include <pontilus/core/InputListener.h>
 
 namespace Pontilus
 {

@@ -1,8 +1,8 @@
-#include "model/ModelRenderer.h"
+#include <pontilus/model/ModelRenderer.h>
 
-#include "renderer/Renderer.h"
-#include "ecs/Component.h"
-#include "ecs/Transform.h"
+#include <pontilus/renderer/Renderer.h>
+#include <pontilus/ecs/Component.h>
+#include <pontilus/ecs/Transform.h>
 //#include <glm/gtx/transform.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <nlohmann/json.hpp>

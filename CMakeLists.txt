@@ -15,14 +15,14 @@ target_compile_options(pontilus_compile_flags INTERFACE
 )
 target_include_directories(pontilus_compile_flags
   INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/vendor/json/single_include>
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/vendor/glfw/include>
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/vendor>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/vendor/json/single_include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/vendor/glfw/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/vendor>
 )
 
 # set(ALSOFT_EXAMPLES=OFF)
-# add_subdirectory("${CMAKE_SOURCE_DIR}/src/vendor/openal-soft")
+# add_subdirectory("${CMAKE_SOURCE_DIR}/vendor/openal-soft")
 
 find_package(OpenGL REQUIRED)
 find_package(OpenAL REQUIRED)
@@ -36,6 +36,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 add_subdirectory(src)
+add_subdirectory(vendor)
 
 add_library(pontilus src)
 set_target_properties(pontilus PROPERTIES LINKER_LANGUAGE CXX POSITION_INDEPENDENT_CODE TRUE)
@@ -44,8 +45,8 @@ target_link_libraries(pontilus PUBLIC pontilus_compile_flags pontilus_src OpenGL
 
 target_include_directories(pontilus INTERFACE
                            "${CMAKE_SOURCE_DIR}/src"
-                           "${CMAKE_SOURCE_DIR}/src/vendor/glfw/include"
-                           "${CMAKE_SOURCE_DIR}/src/vendor"
+                           "${CMAKE_SOURCE_DIR}/vendor/glfw/include"
+                           "${CMAKE_SOURCE_DIR}/vendor"
                            )
 # todo: pull dependencies
 

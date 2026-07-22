@@ -1,12 +1,12 @@
-#include "renderer/SpriteRenderer.h"
+#include <pontilus/renderer/SpriteRenderer.h>
 
 //#include <glm/gtx/transform.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
-#include "renderer/rData.h"
-#include "renderer/Renderer.h"
+#include <pontilus/renderer/rData.h>
+#include <pontilus/renderer/Renderer.h>
 #include <typeinfo>
-#include "ecs/Transform.h"
+#include <pontilus/ecs/Transform.h>
 
 namespace Pontilus
 {

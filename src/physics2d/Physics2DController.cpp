@@ -1,6 +1,6 @@
-#include "physics2d/Physics2DController.h"
-#include "physics2d/CollisionDetection.h"
-#include "physics2d/CollisionResolution.h"
+#include <pontilus/physics2d/Physics2DController.h>
+#include <pontilus/physics2d/CollisionDetection.h>
+#include <pontilus/physics2d/CollisionResolution.h>
 
 namespace Pontilus
 {

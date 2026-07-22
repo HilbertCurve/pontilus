@@ -1,6 +1,6 @@
-// #include "ecs/Body2D.h"
-// #include "renderer/rData.h"
-// #include "physics2d/Physics2DController.h"
+// #include <pontilus/ecs/Body2D.h>
+// #include <pontilus/renderer/rData.h>
+// #include <pontilus/physics2d/Physics2DController.h>
 
 // namespace Pontilus
 // {

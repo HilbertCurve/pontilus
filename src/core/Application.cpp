@@ -5,18 +5,18 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "core/Application.h"
-#include "core/Scene.h"
-#include "core/InputListener.h"
-#include "audio/AudioMaster.h"
-#include "renderer/Renderer.h"
-#include "renderer/Camera.h"
-#include "renderer/rData.h"
-#include "renderer/Font.h"
-#include "renderer/Texture.h"
-#include "renderer/TextRenderer.h"
-#include "renderer/SpriteRenderer.h"
-#include "ecs/Transform.h"
+#include <pontilus/core/Application.h>
+#include <pontilus/core/Scene.h>
+#include <pontilus/core/InputListener.h>
+#include <pontilus/audio/AudioMaster.h>
+#include <pontilus/renderer/Renderer.h>
+#include <pontilus/renderer/Camera.h>
+#include <pontilus/renderer/rData.h>
+#include <pontilus/renderer/Font.h>
+#include <pontilus/renderer/Texture.h>
+#include <pontilus/renderer/TextRenderer.h>
+#include <pontilus/renderer/SpriteRenderer.h>
+#include <pontilus/ecs/Transform.h>
 
 // TODO: there really should be a single struct `Application` that holds a lot of the static stuff in this engine.
 namespace Pontilus

@@ -1,4 +1,4 @@
-#include "physics2d/Constraint.h"
+#include <pontilus/physics2d/Constraint.h>
 
 namespace Pontilus
 {

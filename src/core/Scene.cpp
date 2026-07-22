@@ -1,21 +1,21 @@
-#include "core/Scene.h"
+#include <pontilus/core/Scene.h>
 
 #include <glm/glm.hpp>
 #include <string>
 
-#include "audio/AudioMaster.h"
-#include "audio/AudioListener.h"
-#include "audio/AudioSource.h"
-#include "core/Application.h"
-#include "core/InputListener.h"
-#include "ecs/Entity.h"
-#include "renderer/TextRenderer.h"
-#include "renderer/SpriteRenderer.h"
-#include "renderer/Renderer.h"
-#include "renderer/rData.h"
-#include "renderer/Font.h"
-#include "renderer/Camera.h"
-#include "model/ModelRenderer.h"
+#include <pontilus/audio/AudioMaster.h>
+#include <pontilus/audio/AudioListener.h>
+#include <pontilus/audio/AudioSource.h>
+#include <pontilus/core/Application.h>
+#include <pontilus/core/InputListener.h>
+#include <pontilus/ecs/Entity.h>
+#include <pontilus/renderer/TextRenderer.h>
+#include <pontilus/renderer/SpriteRenderer.h>
+#include <pontilus/renderer/Renderer.h>
+#include <pontilus/renderer/rData.h>
+#include <pontilus/renderer/Font.h>
+#include <pontilus/renderer/Camera.h>
+#include <pontilus/model/ModelRenderer.h>
 
 namespace Pontilus
 {
