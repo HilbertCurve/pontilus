@@ -14,7 +14,6 @@
 #include "renderer/rData.h"
 #include "renderer/Font.h"
 #include "renderer/Texture.h"
-#include "library/StateMachine.h"
 #include "renderer/TextRenderer.h"
 #include "renderer/SpriteRenderer.h"
 #include "ecs/Transform.h"

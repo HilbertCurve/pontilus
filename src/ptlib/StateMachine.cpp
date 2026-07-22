@@ -1,4 +1,4 @@
-#include "library/StateMachine.h"
+#include "ptlib/StateMachine.h"
 #include "core/InputListener.h"
 
 namespace Pontilus

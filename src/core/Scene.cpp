@@ -15,7 +15,6 @@
 #include "renderer/rData.h"
 #include "renderer/Font.h"
 #include "renderer/Camera.h"
-#include "library/Animation.h"
 #include "model/ModelRenderer.h"
 
 namespace Pontilus

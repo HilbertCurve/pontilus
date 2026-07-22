@@ -4,7 +4,7 @@ add_subdirectory(core)
 add_subdirectory(ecs)
 add_subdirectory(renderer)
 # add_subdirectory(gui)
-add_subdirectory(library)
+add_subdirectory(ptlib)
 add_subdirectory(math)
 add_subdirectory(model)
 # add_subdirectory(physics2d)
@@ -15,7 +15,7 @@ add_subdirectory(vendor)
 add_library(pontilus_src INTERFACE
         gui/UIFrame.h
         gui/UIFrame.h)
-target_link_libraries(pontilus_src INTERFACE audio core ecs renderer library math model utils vendor)
+target_link_libraries(pontilus_src INTERFACE audio core ecs renderer ptlib math model utils vendor)
 
 target_include_directories(pontilus_src INTERFACE
                            "${CMAKE_SOURCE_DIR}/src"
