@@ -18,8 +18,8 @@ list(APPEND source "${CMAKE_SOURCE_DIR}/src/vendor/glad/gl.c")
 list(APPEND header "${CMAKE_SOURCE_DIR}/src/vendor/glad/gl.h")
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/vendor/glfw")
+add_subdirectory("${CMAKE_SOURCE_DIR}/src/vendor/json")
 
-find_package(nlohmann_json 3.2.0 REQUIRED)
 add_library(vendor ${source} ${header})
 target_link_libraries(vendor INTERFACE nlohmann_json::nlohmann_json glfw)
 

@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "ecs/Body2D.h"
+#include "physics2d/Body2D.h"
 #include "utils/Utils.h"
 
 namespace Pontilus

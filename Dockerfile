@@ -10,15 +10,6 @@ WORKDIR "/usr"
 RUN mkdir work
 WORKDIR "/usr/work"
 
-# glfw
-RUN git clone https://github.com/glfw/glfw
-WORKDIR "/usr/work/glfw"
-RUN mkdir build
-WORKDIR "/usr/work/glfw/build"
-RUN cmake ..
-RUN make install
-WORKDIR "/usr/work"
-
 # glm
 RUN git clone https://github.com/g-truc/glm
 WORKDIR "/usr/work/glm"
@@ -40,6 +31,7 @@ WORKDIR "/usr/work/pontilus/build"
 RUN cmake ..
 RUN cmake build .
 
+CMD sh
 
 # to run in directory {D} of this file:
 #

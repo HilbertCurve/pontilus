@@ -49,15 +49,3 @@ target_include_directories(pontilus INTERFACE
                            )
 # todo: pull dependencies
 
-add_executable(mandelbrot "${CMAKE_SOURCE_DIR}/examples/mandelbrot.cpp")
-target_link_libraries(mandelbrot PUBLIC pontilus)
-add_test(NAME mandelbrot COMMAND mandelbrot)
-
-add_subdirectory("${CMAKE_SOURCE_DIR}/examples/platformer")
-add_test(NAME platformer COMMAND platformer)
-
-add_subdirectory("${CMAKE_SOURCE_DIR}/examples/rpg_game")
-add_test(NAME rpg COMMAND rpg)
-
-add_subdirectory("${CMAKE_SOURCE_DIR}/examples/chess_clone")
-add_test(NAME chessClone COMMAND chessClone)

@@ -1,11 +1,9 @@
-set(chessCloneSources main.cpp )
+set(chessCloneSources main.cpp)
 set(chessCloneHeaders
         ChessScene.cpp
         ChessScene.h
         ChessPiece.cpp
         ChessPiece.h
-        Grid.cpp
-        Grid.h
 )
 
 add_executable(chessClone ${chessCloneSources} ${chessCloneHeaders})
